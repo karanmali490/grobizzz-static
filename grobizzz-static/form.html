@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grobizzz – Create Your Business Website</title>
+  <link rel="stylesheet" href="css/form.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar / Progress -->
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">G</span>
+        <span class="logo-text">Grobizzz</span>
+      </div>
+      <p class="tagline">Your website in 60 seconds</p>
+
+      <nav class="steps-nav">
+        <div class="step-item active" data-step="1">
+          <div class="step-number">1</div>
+          <div class="step-info">
+            <strong>Basic Info</strong>
+            <span>Business details</span>
+          </div>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="step-number">2</div>
+          <div class="step-info">
+            <strong>Contact & Location</strong>
+            <span>Address & phone</span>
+          </div>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="step-number">3</div>
+          <div class="step-info">
+            <strong>Branding</strong>
+            <span>Logo & colours</span>
+          </div>
+        </div>
+        <div class="step-item" data-step="4">
+          <div class="step-number">4</div>
+          <div class="step-info">
+            <strong>Hero Section</strong>
+            <span>Main banner</span>
+          </div>
+        </div>
+        <div class="step-item" data-step="5">
+          <div class="step-number">5</div>
+          <div class="step-info">
+            <strong>Menu / Services</strong>
+            <span>What you offer</span>
+          </div>
+        </div>
+        <div class="step-item" data-step="6">
+          <div class="step-number">6</div>
+          <div class="step-info">
+            <strong>Gallery</strong>
+            <span>Photos & videos</span>
+          </div>
+        </div>
+        <div class="step-item" data-step="7">
+          <div class="step-number">7</div>
+          <div class="step-info">
+            <strong>Ordering & Social</strong>
+            <span>Links & reviews</span>
+          </div>
+        </div>
+        <div class="step-item" data-step="8">
+          <div class="step-number">8</div>
+          <div class="step-info">
+            <strong>Final Settings</strong>
+            <span>Domain & launch</span>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="progress-text">Step <span id="current-step-display">1</span> of 8</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 12.5%"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Form Area -->
+    <main class="main">
+      <header class="main-header">
+        <h1 id="step-title">Basic Business Information</h1>
+        <p id="step-desc">Tell us about your business so we can create a professional website for you.</p>
+      </header>
+
+      <form id="grobizzz-form" novalidate>
+        <!-- ==================== STEP 1: Basic Info ==================== -->
+        <section class="form-step active" data-step="1">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Business Type <span class="required">*</span></label>
+              <p class="helper" style="margin-bottom:12px">Choose your business type. The form and profile template will adapt automatically.</p>
+              <input type="hidden" name="category" id="field-category" value="" required />
+              <input type="hidden" name="template_slug" id="field-template" value="modern" />
+              <div class="biz-type-grid" id="biz-type-grid">
+                <button type="button" class="biz-type-card" data-type="doctors" data-template="service">
+                  <span class="biz-type-icon">🩺</span>
+                  <strong>Doctors</strong>
+                  <small>Clinic &amp; services</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="hotels" data-template="modern">
+                  <span class="biz-type-icon">🏨</span>
+                  <strong>Hotels</strong>
+                  <small>Rooms &amp; facilities</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="resorts" data-template="modern">
+                  <span class="biz-type-icon">🌴</span>
+                  <strong>Resorts</strong>
+                  <small>Stay &amp; experiences</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="cafe-restaurant" data-template="restaurant">
+                  <span class="biz-type-icon">🍽️</span>
+                  <strong>Cafe &amp; Restaurant</strong>
+                  <small>Menu, Zomato, Swiggy</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="industry" data-template="modern">
+                  <span class="biz-type-icon">🏭</span>
+                  <strong>Industry</strong>
+                  <small>Company profile</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="home-decors" data-template="modern">
+                  <span class="biz-type-icon">🛋️</span>
+                  <strong>Home Decors</strong>
+                  <small>Products &amp; gallery</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="jewellers" data-template="modern">
+                  <span class="biz-type-icon">💎</span>
+                  <strong>Jewellers</strong>
+                  <small>Collections &amp; gallery</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="cake-shops" data-template="restaurant">
+                  <span class="biz-type-icon">🎂</span>
+                  <strong>Cake Shops</strong>
+                  <small>Menu &amp; orders</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="automobile" data-template="service">
+                  <span class="biz-type-icon">🚗</span>
+                  <strong>Automobile</strong>
+                  <small>Services &amp; sales</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="agro" data-template="modern">
+                  <span class="biz-type-icon">🌾</span>
+                  <strong>Agro</strong>
+                  <small>Products &amp; contact</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="education" data-template="service">
+                  <span class="biz-type-icon">🎓</span>
+                  <strong>Education</strong>
+                  <small>Courses &amp; admissions</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="general-store" data-template="modern">
+                  <span class="biz-type-icon">🏪</span>
+                  <strong>General Store</strong>
+                  <small>Products &amp; location</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="salon-spa" data-template="service">
+                  <span class="biz-type-icon">💇</span>
+                  <strong>Salon &amp; Spa</strong>
+                  <small>Services &amp; pricing</small>
+                </button>
+                <button type="button" class="biz-type-card" data-type="transportation" data-template="service">
+                  <span class="biz-type-icon">🚌</span>
+                  <strong>Transportation</strong>
+                  <small>Fleet &amp; booking</small>
+                </button>
+              </div>
+              <p id="biz-type-error"<p id="biz-type-error" class="error-inline" hidden>Please select a business type to continue.</p>
+            </div>
+
+            <div class="form-group full" id="block-after-type" hidden>
+              <div class="selected-type-banner" id="selected-type-banner"></div>
+            </div>
+
+            <div class="form-group full type-dependent" hidden>
+              <label>Business Name <span class="required">*</span></label>
+              <input type="text" name="business_name" id="field-business-name" placeholder="e.g. Hyde-Out Cafe" />
+            </div>
+
+            <div class="form-group type-dependent" hidden>
+              <label>Year Established</label>
+              <input type="number" name="year_established" placeholder="e.g. 2019" min="1900" max="2026" />
+            </div>
+
+            <div class="form-group full type-dependent" hidden>
+              <label>Sub-Category / Specialty Tags</label>
+              <input type="text" name="specialty_tags" id="field-specialty" placeholder="e.g. Café · Lounge · Family Restaurant" />
+              <small>Separate with · or commas</small>
+            </div>
+
+            <div class="form-group full type-dependent" hidden>
+              <label>Short Tagline <span class="required">*</span></label>
+              <input type="text" name="tagline" id="field-tagline" maxlength="120" placeholder="A warm corner on Jalna Road for long breakfasts..." />
+              <small>Max 120 characters</small>
+            </div>
+
+            <div class="form-group full type-dependent" hidden>
+              <label>Our Story / About <span class="required">*</span></label>
+              <textarea name="about" id="field-about" rows="5" placeholder="Tell customers who you are, what makes you special, and what they can expect..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 2: Contact & Location ==================== -->
+        <section class="form-step" data-step="2">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Full Address <span class="required">*</span></label>
+              <textarea name="address" rows="2" placeholder="Chetan Trade Center, Opp. SFS School, Jalna Road" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>City <span class="required">*</span></label>
+              <input type="text" name="city" placeholder="Chhatrapati Sambhajinagar" required />
+            </div>
+
+            <div class="form-group">
+              <label>Pincode</label>
+              <input type="text" name="pincode" placeholder="431001" />
+            </div>
+
+            <div class="form-group">
+              <label>Primary Phone <span class="required">*</span></label>
+              <input type="tel" name="phone_primary" placeholder="+91 98907 77333" required />
+            </div>
+
+            <div class="form-group">
+              <label>WhatsApp Number</label>
+              <input type="tel" name="phone_whatsapp" placeholder="+91 98907 77333" />
+            </div>
+
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" name="email" placeholder="hello@yourbusiness.com" />
+            </div>
+
+            <div class="form-group">
+              <label>Google Maps Link</label>
+              <input type="url" name="maps_link" placeholder="https://maps.google.com/..." />
+            </div>
+
+            <div class="form-group full">
+              <label>Business Hours</label>
+              <div class="hours-grid">
+                <div class="hours-row">
+                  <span>Monday – Sunday</span>
+                  <input type="text" name="hours" placeholder="Open daily · 9:00 AM – 11:00 PM" />
+                </div>
+              </div>
+              <small>Example: Open daily · All-day breakfast served</small>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 3: Branding ==================== -->
+        <section class="form-step" data-step="3">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Logo Upload <span class="required">*</span></label>
+              <div class="upload-box" id="logo-upload">
+                <input type="file" name="logo" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml" />
+                <div class="upload-content">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  <p>Click or drag logo here</p>
+                  <small>PNG, JPG or SVG (max 2MB)</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Favicon (optional)</label>
+              <div class="upload-box small">
+                <input type="file" name="favicon" accept="image/png,image/x-icon" />
+                <div class="upload-content">
+                  <p>Upload favicon</p>
+                  <small>32×32 px recommended</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Primary Colour</label>
+              <div class="color-picker">
+                <input type="color" name="color_primary" value="#c97b3a" />
+                <input type="text" name="color_primary_hex" value="#c97b3a" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Secondary Colour</label>
+              <div class="color-picker">
+                <input type="color" name="color_secondary" value="#1a1a1a" />
+                <input type="text" name="color_secondary_hex" value="#1a1a1a" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Accent Colour</label>
+              <div class="color-picker">
+                <input type="color" name="color_accent" value="#f5f0e8" />
+                <input type="text" name="color_accent_hex" value="#f5f0e8" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Theme Style</label>
+              <select name="theme_style">
+                <option value="warm-dark">Warm Dark (like Hyde-Out)</option>
+                <option value="modern-light">Modern Light</option>
+                <option value="elegant">Elegant</option>
+                <option value="vibrant">Vibrant</option>
+                <option value="minimal">Minimal</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+                <!-- ==================== STEP 4: Cover / Hero ==================== -->
+        <section class="form-step" data-step="4">
+          <div class="form-grid">
+            <div class="form-group full type-banner" id="step4-banner">
+              <div class="selected-type-banner" id="step4-type-hint">Select a business type in Step 1 first.</div>
+            </div>
+
+            <div class="form-group full">
+              <label id="step4-cover-label">Cover / Banner Image</label>
+              <div class="upload-box">
+                <input type="file" name="hero_media" accept="image/jpeg,image/jpg,image/png,image/webp" />
+                <div class="upload-content">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  <p id="step4-cover-help">Upload cover / banner image</p>
+                  <small>JPG or PNG, recommended 1920×1080</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label id="step4-headline-label">Headline on cover</label>
+              <input type="text" name="hero_headline" id="field-hero-headline" placeholder="Your business name" />
+              <small id="step4-headline-hint">Usually your business name</small>
+            </div>
+
+            <div class="form-group full">
+              <label id="step4-sub-label">Sub-headline / short line</label>
+              <textarea name="hero_subheadline" id="field-hero-sub" rows="2" placeholder="One line under the title"></textarea>
+            </div>
+
+            <!-- Food CTAs -->
+            <div class="form-group full field-mode-menu" id="cta-food-block" hidden>
+              <label>Buttons to show on profile</label>
+              <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="order" checked /> Order Online</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="directions" checked /> Get Directions</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="call" checked /> Call Us</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="whatsapp" checked /> WhatsApp</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="save_contact" checked /> Add to Contact</label>
+              </div>
+            </div>
+
+            <!-- Service CTAs -->
+            <div class="form-group full field-mode-services" id="cta-service-block" hidden>
+              <label>Buttons to show on profile</label>
+              <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="call" checked /> Call Us</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="whatsapp" checked /> WhatsApp / Enquire</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="directions" checked /> Get Directions</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="book_table" checked /> Book Appointment</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="save_contact" checked /> Add to Contact</label>
+              </div>
+            </div>
+
+            <!-- Product / modern CTAs -->
+            <div class="form-group full field-mode-products" id="cta-product-block" hidden>
+              <label>Buttons to show on profile</label>
+              <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="call" checked /> Call Us</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="whatsapp" checked /> WhatsApp</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="directions" checked /> Get Directions</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="save_contact" checked /> Add to Contact</label>
+                <label class="checkbox-item"><input type="checkbox" name="cta[]" value="sms" /> SMS</label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 5: Menu / Services / Products ==================== -->
+        <section class="form-step" data-step="5">
+          <div class="form-grid">
+            <div class="form-group full">
+              <div class="selected-type-banner" id="step5-type-hint">Select a business type in Step 1 first.</div>
+            </div>
+
+            <div class="form-group full">
+              <label id="offer-label">Categories</label>
+              <p class="helper" id="offer-helper">Add categories for what you offer.</p>
+              <div id="categories-container">
+                <div class="category-row">
+                  <input type="text" name="categories[]" id="cat-input-0" placeholder="Category name" />
+                  <button type="button" class="btn-icon remove-category" title="Remove">×</button>
+                </div>
+              </div>
+              <button type="button" class="btn-secondary" id="add-category">+ Add Category</button>
+            </div>
+
+            <div class="form-group full">
+              <label id="featured-label">Featured items (optional)</label>
+              <textarea name="featured_items" id="field-featured" rows="4" placeholder="List items, one per line or comma separated"></textarea>
+              <small id="featured-hint">These appear on your public profile</small>
+            </div>
+
+            <!-- Extra hint blocks by mode -->
+            <div class="form-group full field-mode-menu" hidden>
+              <p class="helper" style="margin:0">Example for restaurants: Breakfast, Pizza, Beverages — then list dishes in Featured.</p>
+            </div>
+            <div class="form-group full field-mode-services" hidden>
+              <p class="helper" style="margin:0">Example for services: Consultation, Treatments — then list services with prices in Featured.</p>
+            </div>
+            <div class="form-group full field-mode-products" hidden>
+              <p class="helper" style="margin:0">Example for shops: Gold, Diamond, Daily wear — then list collections in Featured.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 6: Gallery ==================== -->
+        <section class="form-step" data-step="6">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Upload Photos (Interior, Food, Products, Team)</label>
+              <div class="upload-box large">
+                <input type="file" name="gallery_images" accept="image/*" multiple />
+                <div class="upload-content">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  <p>Drag & drop multiple images or click to browse</p>
+                  <small>You can upload 10–30 photos. Best quality recommended.</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label>Upload Short Videos (optional)</label>
+              <div class="upload-box">
+                <input type="file" name="gallery_videos" accept="video/mp4,video/webm" multiple />
+                <div class="upload-content">
+                  <p>Upload short videos for gallery or hero</p>
+                  <small>MP4 or WebM, max 30 seconds recommended</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 7: Ordering & Social ==================== -->
+        <section class="form-step" data-step="7">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Zomato Link</label>
+              <input type="url" name="zomato_link" placeholder="https://www.zomato.com/..." />
+            </div>
+            <div class="form-group">
+              <label>Swiggy Link</label>
+              <input type="url" name="swiggy_link" placeholder="https://www.swiggy.com/..." />
+            </div>
+
+            <div class="form-group">
+              <label>Instagram URL</label>
+              <input type="url" name="instagram" placeholder="https://instagram.com/yourpage" />
+            </div>
+            <div class="form-group">
+              <label>Facebook URL</label>
+              <input type="url" name="facebook" placeholder="https://facebook.com/yourpage" />
+            </div>
+            <div class="form-group">
+              <label>YouTube URL</label>
+              <input type="url" name="youtube" placeholder="https://youtube.com/..." />
+            </div>
+            <div class="form-group">
+              <label>Google Business Profile</label>
+              <input type="url" name="google_business" placeholder="https://g.page/..." />
+            </div>
+
+            <div class="form-group full">
+              <label class="checkbox-item large">
+                <input type="checkbox" name="show_reviews" checked />
+                Show Google Reviews section on website
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== STEP 8: Final Settings ==================== -->
+        <section class="form-step" data-step="8">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Preferred Subdomain <span class="required">*</span></label>
+              <div class="subdomain-input">
+                <input type="text" name="subdomain" placeholder="hydeoutcafe" required />
+                <span class="suffix">.grobizzz.in</span>
+              </div>
+              <small>Only letters, numbers and hyphens. This will be your website address.</small>
+            </div>
+
+            <div class="form-group full">
+              <label>Custom Domain (optional – later)</label>
+              <input type="text" name="custom_domain" placeholder="www.yourbusiness.com" />
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-item large">
+                <input type="checkbox" name="floating_whatsapp" checked />
+                Show floating WhatsApp button
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-item large">
+                <input type="checkbox" name="share_button" checked />
+                Show share button
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-item large">
+                <input type="checkbox" name="add_to_contact" checked />
+                Show “Add to Contact” button (downloads .vcf)
+              </label>
+            </div>
+
+            <div class="form-group full">
+              <label>SEO Keywords (optional)</label>
+              <input type="text" name="seo_keywords" placeholder="cafe, restaurant, best breakfast, jalna road" />
+            </div>
+
+            <div class="form-group full">
+              <label>Meta Description (optional)</label>
+              <textarea name="meta_description" rows="2" placeholder="A short description that appears in Google search results..."></textarea>
+            </div>
+
+            <div class="success-box">
+              <h3>🎉 Almost done!</h3>
+              <p>Click <strong>Generate Website</strong> and your professional site will be ready in under a minute on your chosen subdomain.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Navigation Buttons -->
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="prev-btn" disabled>← Previous</button>
+          <button type="button" class="btn-primary" id="next-btn">Next Step →</button>
+          <button type="submit" class="btn-primary generate" id="generate-btn" style="display:none">Generate My Website 🚀</button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/form.js"></script>
+</body>
+</html>
