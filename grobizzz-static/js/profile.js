@@ -301,9 +301,10 @@
 
   function floatHtml(b, features) {
     var h = '<div class="float-btns">';
-    if (features.whatsapp !== false && b.whatsapp) h += '<a href="' + waLink(b.whatsapp) + '" target="_blank" rel="noopener" class="float-btn float-wa" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>';
-    if (features.call !== false && b.phone) h += '<a href="' + telLink(b.phone) + '" class="float-btn float-call" aria-label="Call"><i class="fa-solid fa-phone"></i></a>';
-    if (features.maps !== false && b.google_maps_url) h += '<a href="' + esc(b.google_maps_url) + '" target="_blank" rel="noopener" class="float-btn float-maps" aria-label="Maps"><i class="fa-solid fa-location-dot"></i></a>';
+    /* Only WhatsApp on left – Call/Maps/Share are on the right or in hero (no overlap) */
+    if (features.whatsapp !== false && b.whatsapp) {
+      h += '<a href="' + waLink(b.whatsapp) + '" target="_blank" rel="noopener" class="float-btn float-wa" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>';
+    }
     return h + '</div>';
   }
 
@@ -396,8 +397,8 @@
     }
     html += '<section class="contact-sec"><div class="contact-panel"><div class="contact-info-col">';
     html += '<span class="sec-label">Find Us</span><h2>Visit Us</h2>';
-    if (b.address) html += '<div class="info-item"><div class="info-icon"><i class="fa-solid fa-location-dot"></i></div><div class="info-text"><span class="info-label">Address</span><span class="info-value">' + esc(b.address) + (b.city ? '<br>' + esc(b.city) : '') + '</span></div></div>';
-    if (b.phone) html += '<div class="info-item"><div class="info-icon"><i class="fa-solid fa-phone"></i></div><div class="info-text"><span class="info-label">Phone</span><span class="info-value"><a href="' + telLink(b.phone) + '">' + esc(b.phone) + '</a></span></div></div>';
+    if (b.address) html += '<div class="info-item"><div class="info-icon"><i class="fa-solid fa-location-dot"></i></div><div class="info-text"><span class="info-label">Address:</span><span class="info-value">' + esc(b.address) + (b.city ? '<br>' + esc(b.city) : '') + '</span></div></div>';
+    if (b.phone) html += '<div class="info-item"><div class="info-icon"><i class="fa-solid fa-phone"></i></div><div class="info-text"><span class="info-label">Phone:</span><span class="info-value"><a href="' + telLink(b.phone) + '">' + esc(b.phone) + '</a></span></div></div>';
     html += '</div><div class="contact-actions-col">';
     if (b.google_maps_url) html += '<a href="' + esc(b.google_maps_url) + '" target="_blank" rel="noopener" class="action-btn primary"><div class="ab-icon"><i class="fa-solid fa-diamond-turn-right"></i></div><div class="ab-text"><span class="ab-title">Get Directions</span></div></a>';
     if (b.whatsapp) html += '<a href="' + waLink(b.whatsapp) + '" target="_blank" rel="noopener" class="action-btn whatsapp"><div class="ab-icon"><i class="fa-brands fa-whatsapp"></i></div><div class="ab-text"><span class="ab-title">WhatsApp</span></div></a>';
@@ -644,12 +645,16 @@
   }
 
   function getSb() {
+    if (window.__grobizzzSb) return window.__grobizzzSb;
     var cfg = window.GROBIZZZ_CONFIG || {};
     if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || cfg.SUPABASE_ANON_KEY === 'YOUR_ANON_KEY') {
       showError('Configure js/config.js with your Supabase URL and anon key.');
       return null;
     }
-    return window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    window.__grobizzzSb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+    return window.__grobizzzSb;
   }
 
   async function init() {
