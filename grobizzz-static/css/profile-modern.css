@@ -132,8 +132,8 @@ section.mod-sec{padding:68px 0}
 /* About typography */
 .about-lead{font-family:var(--font-d,Georgia,serif);font-style:italic;font-size:1.25rem;color:var(--ember-soft,#c97b3a);margin:0 0 18px;line-height:1.45;letter-spacing:.01em}
 .about-body{max-width:36em}
-.about-body p{font-size:1.05rem;line-height:1.85;color:var(--mist,#b8a99a);margin:0 0 1.1em;letter-spacing:.02em}
-.about-body p:first-of-type{font-size:1.12rem;color:var(--cream,#f4e9d8)}
+.about-body p{font-size:1.05rem;line-height:1.85;color:#2a2a2a;margin:0 0 1.1em;letter-spacing:.02em}
+.about-body p:first-of-type{font-size:1.12rem;color:#111;font-weight:500}
 
 /* Address / Phone */
 .info-label{font-size:.72rem!important;letter-spacing:.18em!important;font-weight:700!important;color:rgba(244,233,216,.55)!important}

@@ -79,46 +79,39 @@
 
   function applyColors(b, tpl) {
     var root = document.documentElement;
-    var primary = b.primary_color || '';
-    var secondary = b.secondary_color || '';
-    var accent = b.accent_color || '';
+    var primary = b.primary_color || '#c97b3a';
+    var secondary = b.secondary_color || '#1a1208';
+    var accent = b.accent_color || '#f5f0e8';
 
-    if (primary) {
-      root.style.setProperty('--primary', primary);
-      root.style.setProperty('--ember', primary);
-      root.style.setProperty('--ember-soft', primary);
-      root.style.setProperty('--accent', primary);
-      root.style.setProperty('--red', primary);
-      root.style.setProperty('--gold', primary);
-      root.style.setProperty('--gold-dim', primary);
-      root.style.setProperty('--gold-light', primary);
-      // Hero CTA uses brand primary
-      root.style.setProperty('--cta', primary);
-    }
-    if (secondary) {
-      root.style.setProperty('--secondary', secondary);
-      root.style.setProperty('--den', secondary);
-      root.style.setProperty('--den-soft', secondary);
-      root.style.setProperty('--ink', secondary);
-      root.style.setProperty('--bg-dark', secondary);
-    }
-    if (accent) {
-      root.style.setProperty('--accent-bg', accent);
-      root.style.setProperty('--cream', accent);
-      root.style.setProperty('--mist', accent);
-      root.style.setProperty('--surface', accent);
-    }
+    root.style.setProperty('--primary', primary);
+    root.style.setProperty('--ember', primary);
+    root.style.setProperty('--ember-soft', primary);
+    root.style.setProperty('--accent', primary);
+    root.style.setProperty('--red', primary);
+    root.style.setProperty('--gold', primary);
+    root.style.setProperty('--gold-dim', primary);
+    root.style.setProperty('--gold-light', primary);
+    root.style.setProperty('--cta', primary);
 
-    // Theme color for mobile browser chrome
+    root.style.setProperty('--secondary', secondary);
+    root.style.setProperty('--den', secondary);
+    root.style.setProperty('--den-soft', secondary);
+    root.style.setProperty('--ink', secondary);
+    root.style.setProperty('--bg-dark', secondary);
+
+    root.style.setProperty('--accent-bg', accent);
+    root.style.setProperty('--cream', accent);
+    root.style.setProperty('--surface', accent);
+    root.style.setProperty('--mist', accent);
+
     var meta = document.querySelector('meta[name="theme-color"]');
     if (!meta) {
       meta = document.createElement('meta');
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    if (secondary || primary) meta.setAttribute('content', secondary || primary);
+    meta.setAttribute('content', secondary);
 
-    // Inject a small style override so hard-coded template colours follow palette
     var styleId = 'palette-live';
     var st = document.getElementById(styleId);
     if (!st) {
@@ -126,23 +119,38 @@
       st.id = styleId;
       document.head.appendChild(st);
     }
-    var css = '';
-    if (primary) {
-      css += '.btn-primary,.action-btn.primary{background:' + primary + '!important;border-color:' + primary + '!important;}';
-      css += '.pill i,.sec-label,.eyebrow,.info-icon i{color:' + primary + '!important;}';
-      css += '.logo-ring{border-color:' + primary + '!important;}';
-      css += '.contact-sec,.hours-sec{--brand:' + primary + ';}';
-    }
-    if (secondary) {
-      css += '.contact-sec,.hero-overlay{/* brand dark */}';
-      css += '.contact-sec{background:' + secondary + '!important;}';
-      css += '.gbz-footer{border-top-color:' + primary + '!important;}';
-    }
-    if (accent) {
-      css += '.order-sec,.menu-sec{background:' + accent + '!important;}';
-    }
-    st.textContent = css;
+
+    var parts = [];
+    parts.push('body,#app{background:' + accent + ' !important;}');
+    parts.push('.about,.about-sec,.menu-sec,.order-sec,.gallery-sec,.social-sec,.reviews-sec{background:' + accent + ' !important;}');
+    parts.push('.about .sec-head,.about-text .sec-head{color:' + secondary + ' !important;}');
+    parts.push('.about .sec-label,.about-text .sec-label{color:' + primary + ' !important;}');
+    parts.push('.about-lead{color:' + primary + ' !important;}');
+    parts.push('.about-body p,.about-text p{color:' + secondary + ' !important;}');
+    parts.push('.about-body p:first-of-type{color:' + secondary + ' !important;font-weight:500;}');
+    parts.push('.menu-sec .sec-head,.order-sec .sec-head,.gallery-sec .sec-head{color:' + secondary + ' !important;}');
+    parts.push('.menu-sec .sec-label,.order-sec .sec-label,.gallery-sec .sec-label{color:' + primary + ' !important;}');
+    parts.push('.item-name,.item-desc{color:' + secondary + ' !important;}');
+    parts.push('.contact-sec,.mod-contact,.svc-contact{background:' + secondary + ' !important;color:' + accent + ' !important;}');
+    parts.push('.hero-overlay{background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,' + secondary + 'ee 100%) !important;}');
+    parts.push('.btn-primary,.action-btn.primary{background:' + primary + ' !important;border-color:' + primary + ' !important;color:' + secondary + ' !important;}');
+    parts.push('.btn-ghost{border-color:rgba(255,255,255,.4) !important;}');
+    parts.push('.sec-label,.eyebrow,.info-icon i,.pill i{color:' + primary + ' !important;}');
+    parts.push('.logo-ring,.mod-logo{border-color:' + primary + ' !important;box-shadow:0 0 0 6px ' + primary + '22 !important;}');
+    parts.push('.action-btn:hover{border-color:' + primary + ' !important;}');
+    parts.push('.owner-social{border-color:' + primary + '33 !important;}');
+    parts.push('.owner-social:hover{background:' + primary + ' !important;color:#fff !important;}');
+    parts.push('.item-card,.o-card{border-color:' + primary + '22 !important;}');
+    parts.push('.scroll-top,.share-btn{background:' + primary + ' !important;}');
+    parts.push('.gbz-footer{border-top-color:' + primary + ' !important;}');
+    parts.push('.info-label{color:' + primary + ' !important;}');
+    parts.push('.visit-title,.sec-head{color:' + secondary + ' !important;}');
+    parts.push('.contact-sec .sec-head,.contact-sec h2,.contact-sec .info-value,.contact-sec .info-value a{color:' + accent + ' !important;}');
+    parts.push('.hours-sec{background:' + secondary + ' !important;color:' + accent + ' !important;}');
+    parts.push('.hours-sec .sec-head,.hours-sec .sec-label{color:' + primary + ' !important;}');
+    st.textContent = parts.join('\n');
   }
+
 
   function setSEO(b) {
     var title = b.seo_title || (b.business_name + (b.category ? ' · ' + b.category : '') + ' | Grobizzz');
