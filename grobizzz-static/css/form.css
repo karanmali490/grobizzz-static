@@ -666,3 +666,19 @@ small, .helper {
   font-size: 0.85rem;
   margin-top: 8px;
 }
+
+/* Colour palette cards – Color Hunt style */
+.palette-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-top:10px}
+.palette-card{display:flex;flex-direction:column;padding:0;border:none;border-radius:12px;background:#fff;cursor:pointer;font-family:inherit;text-align:left;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s;outline:3px solid transparent}
+.palette-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.palette-card.selected{outline-color:#111;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.palette-swatches{display:flex;flex-direction:column;height:140px;width:100%}
+.palette-swatches i{display:block;flex:1;width:100%;min-height:0}
+.palette-card strong{font-size:.8rem;color:#333;padding:10px 12px;background:#fff;font-weight:600}
+
+.upload-preview{margin-top:12px;text-align:center}
+.upload-preview .preview-thumb{max-width:120px;max-height:120px;border-radius:10px;object-fit:cover}
+.upload-preview .preview-video{max-width:100%;max-height:180px;border-radius:10px;background:#000}
+.upload-ok{color:#059669;font-weight:600;margin:8px 0 4px}
+.upload-box.has-file{border-color:#059669;background:#f0fdf4}
+.upload-err{color:#dc2626;font-weight:600}

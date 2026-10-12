@@ -154,6 +154,51 @@
 
 
   
+  
+  function isVideoUrl(url) {
+    if (!url) return false;
+    return /\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(url);
+  }
+
+  function mediaTile(url, alt) {
+    alt = alt || '';
+    if (isVideoUrl(url)) {
+      return '<div class="media-tile video-tile"><video src="' + esc(url) + '" controls playsinline preload="metadata"></video></div>';
+    }
+    return '<img src="' + esc(url) + '" alt="' + esc(alt) + '" loading="lazy" onclick="openLB(this.src,this.alt)" />';
+  }
+
+  function socialSection(b) {
+    var links = [];
+    if (b.instagram_url) links.push({ href: b.instagram_url, icon: 'fa-brands fa-instagram', label: 'Instagram' });
+    if (b.facebook_url) links.push({ href: b.facebook_url, icon: 'fa-brands fa-facebook-f', label: 'Facebook' });
+    if (b.youtube_url) links.push({ href: b.youtube_url, icon: 'fa-brands fa-youtube', label: 'YouTube' });
+    if (!links.length) return '';
+    var h = '<section class="social-sec"><p class="sec-label">Connect</p><h2 class="sec-head">Follow Us</h2><div class="owner-socials">';
+    links.forEach(function (l) {
+      h += '<a class="owner-social" href="' + esc(l.href) + '" target="_blank" rel="noopener"><i class="' + l.icon + '"></i><span>' + l.label + '</span></a>';
+    });
+    h += '</div></section>';
+    return h;
+  }
+
+  function reviewsSection(b) {
+    var url = b.google_business_url || b.google_maps_url || '';
+    if (!url) return '';
+    return (
+      '<section class="order-sec reviews-sec">' +
+        '<p class="sec-label">Reviews</p>' +
+        '<h2 class="sec-head">Google Reviews</h2>' +
+        '<div class="order-cards">' +
+          '<a class="o-card o-google" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+            '<img class="o-logo" src="images/google-reviews-logo.png" alt="Google Reviews" />' +
+            '<span>Read &amp; Write Reviews</span>' +
+          '</a>' +
+        '</div>' +
+      '</section>'
+    );
+  }
+
   function formatAbout(text) {
     if (!text) return '';
     var parts = String(text).split(/\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
@@ -388,7 +433,7 @@
     if (gallery.length) {
       html += '<section class="gallery-sec" id="gallery"><p class="sec-label">Gallery</p><h2 class="sec-head">The Space</h2><div class="amb-grid">';
       gallery.forEach(function (g, i) {
-        html += '<img src="' + esc(g.image_url) + '" alt="' + esc(g.caption || '') + '" loading="lazy" onclick="openLB(this.src,this.alt)" />';
+        html += mediaTile(g.image_url, g.caption || '');
       });
       html += '</div></section>';
     }
@@ -433,6 +478,8 @@
     if (b.phone) html += '<a href="' + telLink(b.phone) + '" class="action-btn"><div class="ab-icon"><i class="fa-solid fa-phone"></i></div><div class="ab-text"><span class="ab-title">Call</span></div></a>';
     html += '</div></div>';
     html += '<div class="map-frame"><div class="map-box"><iframe src="' + mapSrc(b) + '" loading="lazy" title="Map"></iframe></div></div></section>';
+    html += reviewsSection(b);
+    html += socialSection(b);
     html += gbzFooter();
     html += floatHtml(b, features);
     html += shareScrollHtml(b);
@@ -526,6 +573,8 @@
     if (b.email) html += '<div class="contact-detail"><div class="contact-detail-icon"><i class="fa-solid fa-envelope"></i></div><div class="contact-detail-text"><a href="mailto:' + esc(b.email) + '">' + esc(b.email) + '</a></div></div>';
     html += '</div><div class="map-wrap"><iframe src="' + mapSrc(b) + '" loading="lazy" title="Map"></iframe></div></div></div></section>';
 
+    html += reviewsSection(b);
+    html += socialSection(b);
     html += gbzFooter();
     html += floatHtml(b, features);
     html += shareScrollHtml(b);
@@ -619,6 +668,8 @@
     html += '</div></div></section>';
     html += '<div class="map-full"><iframe src="' + mapSrc(b) + '" loading="lazy" title="Map"></iframe></div>';
 
+    html += reviewsSection(b);
+    html += socialSection(b);
     html += gbzFooter();
     html += floatHtml(b, features);
     html += shareScrollHtml(b);

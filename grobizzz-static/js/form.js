@@ -404,26 +404,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // Colour palette selection
-  const paletteGrid = document.getElementById('palette-grid');
+  // Colour palette selection (Color Hunt style)
+  function applyPalette(card) {
+    if (!card) return;
+    var grid = document.getElementById('palette-grid');
+    if (grid) {
+      grid.querySelectorAll('.palette-card').forEach(function (c) { c.classList.remove('selected'); });
+    }
+    card.classList.add('selected');
+    var p = card.getAttribute('data-p');
+    var s = card.getAttribute('data-s');
+    var a = card.getAttribute('data-a');
+    var h = card.getAttribute('data-h');
+    var elP = document.getElementById('color_primary');
+    var elS = document.getElementById('color_secondary');
+    var elA = document.getElementById('color_accent');
+    var elH = document.getElementById('color_highlight');
+    if (elP) elP.value = p || '';
+    if (elS) elS.value = s || '';
+    if (elA) elA.value = a || '';
+    if (elH) elH.value = h || '';
+  }
+  var paletteGrid = document.getElementById('palette-grid');
   if (paletteGrid) {
-    paletteGrid.querySelectorAll('.palette-card').forEach(function (card) {
-      card.addEventListener('click', function () {
-        paletteGrid.querySelectorAll('.palette-card').forEach(function (c) { c.classList.remove('selected'); });
-        card.classList.add('selected');
-        var p = card.getAttribute('data-p');
-        var s = card.getAttribute('data-s');
-        var a = card.getAttribute('data-a');
-        var h = card.getAttribute('data-h');
-        var elP = document.getElementById('color_primary');
-        var elS = document.getElementById('color_secondary');
-        var elA = document.getElementById('color_accent');
-        var elH = document.getElementById('color_highlight');
-        if (elP) elP.value = p;
-        if (elS) elS.value = s;
-        if (elA) elA.value = a;
-        if (elH) elH.value = h;
-      });
+    paletteGrid.addEventListener('click', function (e) {
+      var card = e.target.closest('.palette-card');
+      if (!card) return;
+      e.preventDefault();
+      e.stopPropagation();
+      applyPalette(card);
     });
   }
 
@@ -574,50 +583,61 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ---------- Image select preview + confirmation ----------
+  var MAX_VIDEO_MB = 25;
+  var OK_VIDEO = /\.(mp4|webm|mov|m4v)$/i;
+
   function setupImagePreview(inputName) {
-    const input = form.querySelector('input[name="' + inputName + '"]');
+    var input = form.querySelector('input[name="' + inputName + '"]');
     if (!input) return;
 
-    input.addEventListener('change', () => {
-      const box = input.closest('.upload-box');
+    input.addEventListener('change', function () {
+      var box = input.closest('.upload-box');
       if (!box) return;
 
-      let preview = box.querySelector('.upload-preview');
+      var preview = box.querySelector('.upload-preview');
       if (!preview) {
         preview = document.createElement('div');
         preview.className = 'upload-preview';
         box.appendChild(preview);
       }
 
-      const files = input.files;
+      var files = input.files;
       if (!files || !files.length) {
         preview.innerHTML = '';
         box.classList.remove('has-file');
         return;
       }
 
-      box.classList.add('has-file');
-
-      if (input.multiple) {
-        const names = Array.from(files).slice(0, 8).map(f => f.name).join(', ');
-        const extra = files.length > 8 ? ' +' + (files.length - 8) + ' more' : '';
-        preview.innerHTML =
-          '<p class="upload-ok">✓ ' + files.length + ' image(s) selected</p>' +
-          '<small>' + names + extra + '</small>';
-      } else {
-        const file = files[0];
-        const isImage = file.type.startsWith('image/');
-        if (isImage) {
-          const url = URL.createObjectURL(file);
-          preview.innerHTML =
-            '<img src="' + url + '" alt="preview" class="preview-thumb" />' +
-            '<p class="upload-ok">✓ Selected: ' + file.name + '</p>' +
-            '<small>' + Math.round(file.size / 1024) + ' KB</small>';
+      var html = '';
+      var validFiles = [];
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var isImg = file.type.indexOf('image/') === 0;
+        var isVid = file.type.indexOf('video/') === 0 || OK_VIDEO.test(file.name);
+        if (!isImg && !isVid) {
+          html += '<p class="upload-err">✗ Skip ' + file.name + ' (use JPG/PNG or MP4/WebM)</p>';
+          continue;
+        }
+        if (isVid && file.size > MAX_VIDEO_MB * 1024 * 1024) {
+          html += '<p class="upload-err">✗ ' + file.name + ' too large (max ' + MAX_VIDEO_MB + ' MB)</p>';
+          continue;
+        }
+        validFiles.push(file);
+        var url = URL.createObjectURL(file);
+        var sizeLabel = file.size > 1024 * 1024
+          ? (file.size / (1024 * 1024)).toFixed(1) + ' MB'
+          : Math.round(file.size / 1024) + ' KB';
+        if (isVid) {
+          html += '<video class="preview-video" src="' + url + '" controls playsinline></video>';
+          html += '<p class="upload-ok">✓ Video: ' + file.name + ' (' + sizeLabel + ')</p>';
         } else {
-          preview.innerHTML =
-            '<p class="upload-ok">✓ Selected: ' + file.name + '</p>';
+          html += '<img src="' + url + '" alt="preview" class="preview-thumb" />';
+          html += '<p class="upload-ok">✓ Image: ' + file.name + ' (' + sizeLabel + ')</p>';
         }
       }
+      if (validFiles.length) box.classList.add('has-file');
+      else box.classList.remove('has-file');
+      preview.innerHTML = html || '<p class="upload-err">No valid files</p>';
     });
   }
 
@@ -625,6 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupImagePreview('favicon');
   setupImagePreview('hero_media');
   setupImagePreview('gallery_images');
+  setupImagePreview('gallery_videos');
 
   // ---------- Color sync ----------
   document.querySelectorAll('.color-picker').forEach(picker => {
@@ -758,6 +779,8 @@ document.addEventListener('DOMContentLoaded', () => {
           generateBtn.textContent = 'Uploading gallery ' + (i + 1) + '/' + files.length + '…';
           const f = files[i];
           const ok = (f.type && (f.type.startsWith('image/') || f.type.startsWith('video/'))) || /\.(mp4|webm|mov|m4v)$/i.test(f.name || '');
+          const isVid = (f.type && f.type.startsWith('video/')) || /\.(mp4|webm|mov|m4v)$/i.test(f.name || '');
+          if (isVid && f.size > 25 * 1024 * 1024) { alert(f.name + ' is larger than 25 MB'); continue; }
           if (ok) {
             const url = await uploadFile(f, 'business-gallery');
             if (url) gallery_urls.push(url);
