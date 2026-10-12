@@ -403,6 +403,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (span) span.textContent = spanText;
   }
 
+
+  // Colour palette selection
+  const paletteGrid = document.getElementById('palette-grid');
+  if (paletteGrid) {
+    paletteGrid.querySelectorAll('.palette-card').forEach(function (card) {
+      card.addEventListener('click', function () {
+        paletteGrid.querySelectorAll('.palette-card').forEach(function (c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        var p = card.getAttribute('data-p');
+        var s = card.getAttribute('data-s');
+        var a = card.getAttribute('data-a');
+        var h = card.getAttribute('data-h');
+        var elP = document.getElementById('color_primary');
+        var elS = document.getElementById('color_secondary');
+        var elA = document.getElementById('color_accent');
+        var elH = document.getElementById('color_highlight');
+        if (elP) elP.value = p;
+        if (elS) elS.value = s;
+        if (elA) elA.value = a;
+        if (elH) elH.value = h;
+      });
+    });
+  }
+
   const bizGrid = document.getElementById('biz-type-grid');
   if (bizGrid) {
     bizGrid.addEventListener('click', (e) => {
@@ -621,6 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Supabase helpers (static / no Node) =====
   function getSupabase() {
+    if (window.__grobizzzSb) return window.__grobizzzSb;
     var cfg = window.GROBIZZZ_CONFIG || {};
     if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || cfg.SUPABASE_ANON_KEY === 'YOUR_ANON_KEY') {
       alert('Please set SUPABASE_URL and SUPABASE_ANON_KEY in js/config.js');
@@ -629,7 +654,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.supabase || !window.supabase.createClient) {
       throw new Error('Supabase SDK not loaded. Check script tag in form.html');
     }
-    return window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    window.__grobizzzSb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+    return window.__grobizzzSb;
   }
 
   function slugifyName(name) {
@@ -728,10 +756,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const files = Array.from(galleryInput.files).slice(0, 20);
         for (let i = 0; i < files.length; i++) {
           generateBtn.textContent = 'Uploading gallery ' + (i + 1) + '/' + files.length + '…';
-          if (files[i].type.startsWith('image/')) {
-            const url = await uploadFile(files[i], 'business-gallery');
+          const f = files[i];
+          const ok = (f.type && (f.type.startsWith('image/') || f.type.startsWith('video/'))) || /\.(mp4|webm|mov|m4v)$/i.test(f.name || '');
+          if (ok) {
+            const url = await uploadFile(f, 'business-gallery');
             if (url) gallery_urls.push(url);
           }
+        }
+      }
+
+      const videoInput = form.querySelector('input[name="gallery_videos"]');
+      if (videoInput && videoInput.files && videoInput.files.length) {
+        const vfiles = Array.from(videoInput.files).slice(0, 10);
+        for (let i = 0; i < vfiles.length; i++) {
+          generateBtn.textContent = 'Uploading video ' + (i + 1) + '/' + vfiles.length + '…';
+          const url = await uploadFile(vfiles[i], 'business-gallery');
+          if (url) gallery_urls.push(url);
         }
       }
 
@@ -755,9 +795,9 @@ document.addEventListener('DOMContentLoaded', () => {
         city: raw.city,
         pincode: raw.pincode || null,
         google_maps_url: raw.maps_link || null,
-        primary_color: raw.color_primary || raw.color_primary_hex || '#c97b3a',
-        secondary_color: raw.color_secondary || raw.color_secondary_hex || '#1a1a1a',
-        accent_color: raw.color_accent || raw.color_accent_hex || '#f5f0e8',
+        primary_color: raw.color_primary || '#c97b3a',
+        secondary_color: raw.color_secondary || '#1a1a1a',
+        accent_color: raw.color_accent || '#f5f0e8',
         instagram_url: raw.instagram || null,
         facebook_url: raw.facebook || null,
         youtube_url: raw.youtube || null,

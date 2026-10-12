@@ -110,3 +110,43 @@
 .hero-overlay{background:linear-gradient(180deg,rgba(12,8,5,.35) 0%,rgba(12,8,5,.55) 45%,rgba(12,8,5,.88) 100%)!important}
 /* Address/Phone label spacing */
 .info-label{margin-right:6px;letter-spacing:.12em}
+
+
+/* Google Reviews button */
+.btn-reviews{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;background:#fff;color:#1a73e8;font-weight:700;font-size:.88rem;border:none;box-shadow:0 6px 18px rgba(0,0,0,.2);margin:4px}
+.btn-reviews:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(26,115,232,.35)}
+.btn-reviews i{color:#ea4335}
+
+/* About typography */
+.about-lead{font-family:var(--font-d,Georgia,serif);font-style:italic;font-size:1.25rem;color:var(--ember-soft,#c97b3a);margin:0 0 18px;line-height:1.45;letter-spacing:.01em}
+.about-body{max-width:36em}
+.about-body p{font-size:1.05rem;line-height:1.85;color:var(--mist,#b8a99a);margin:0 0 1.1em;letter-spacing:.02em}
+.about-body p:first-of-type{font-size:1.12rem;color:var(--cream,#f4e9d8)}
+
+/* Address / Phone */
+.info-label{font-size:.72rem!important;letter-spacing:.18em!important;font-weight:700!important;color:rgba(244,233,216,.55)!important}
+.info-value{font-size:1.05rem!important;font-weight:500;letter-spacing:.02em;line-height:1.6!important}
+
+/* Zomato / Swiggy cards with logos */
+.o-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px 24px;min-width:160px;border-radius:18px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.08);text-decoration:none;color:#1a1a1a;transition:transform .2s,box-shadow .2s}
+.o-card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,.12)}
+.o-card .o-logo{width:56px;height:56px;object-fit:contain}
+.o-card span{font-weight:600;font-size:.9rem}
+.o-zomato{border:1px solid rgba(226,27,34,.15)}
+.o-swiggy{border:1px solid rgba(252,128,25,.2)}
+.order-cards{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
+
+/* Footer – black / cyan Grobizzz */
+.gbz-footer{background:linear-gradient(180deg,#000 0%,#081c22 40%,#000 100%)!important;color:#a5f3fc!important;padding:40px 20px 28px!important;text-align:center!important;border-top:3px solid #22d3ee!important}
+.gbz-footer .powered{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;font-size:.85rem;color:#cffafe;text-transform:uppercase;letter-spacing:.1em}
+.gbz-footer .powered img{height:36px;width:auto;max-width:180px}
+.gbz-footer .f-links{display:flex;justify-content:center;gap:24px;margin-bottom:18px;flex-wrap:wrap}
+.gbz-footer .f-links a{color:#ecfeff;font-size:.92rem;text-decoration:none}
+.gbz-footer .f-links a:hover{color:#fff}
+.gbz-footer .follow-label{font-size:.85rem;margin-bottom:6px;color:#a5f3fc}
+.gbz-footer .f-socials{display:flex;justify-content:center;gap:12px;margin:14px 0 22px;flex-wrap:wrap}
+.gbz-footer .f-socials a{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.95rem;text-decoration:none;transition:all .25s}
+.gbz-footer .f-socials a:hover{background:#22d3ee;color:#000;transform:translateY(-3px)}
+.gbz-footer .copy{font-size:.82rem;border-top:1px solid rgba(255,255,255,.12);padding-top:18px;margin-top:8px;color:#a5f3fc}
+
+.visit-title{margin-bottom:24px}

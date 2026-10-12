@@ -153,19 +153,45 @@
   }
 
 
+  
+  function formatAbout(text) {
+    if (!text) return '';
+    var parts = String(text).split(/\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
+    if (!parts.length) parts = [String(text)];
+    return parts.map(function (para) { return '<p>' + esc(para) + '</p>'; }).join('');
+  }
+
+  function reviewsBtn(b) {
+    var url = b.google_business_url || b.google_maps_url || '';
+    if (!url) return '';
+    return '<a href="' + esc(url) + '" target="_blank" rel="noopener" class="btn btn-reviews"><i class="fa-brands fa-google"></i> Google Reviews</a>';
+  }
+
   function gbzFooter() {
     var y = new Date().getFullYear();
-    return '<footer class="gbz-footer"><div class="powered"><span>Powered by</span> <a href="https://grobizzz.in/" target="_blank" rel="noopener">Grobizzz</a></div>' +
-      '<div class="f-links"><a href="https://grobizzz.in/" target="_blank" rel="noopener">About Us</a><a href="https://grobizzz.in/" target="_blank" rel="noopener">Contact Us</a></div>' +
-      '<p style="font-size:.85rem;margin-bottom:6px">Follow Us</p>' +
-      '<div class="f-socials">' +
-      '<a href="https://www.facebook.com/profile.php?id=61571578101681" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>' +
-      '<a href="https://x.com/Grobizin" target="_blank" rel="noopener" aria-label="X"><i class="fab fa-x-twitter"></i></a>' +
-      '<a href="https://www.instagram.com/grobizzz.in" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>' +
-      '<a href="https://www.youtube.com/channel/UC3qtz8dAlwcPCyrrYUkfmqA" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>' +
-      '<a href="https://wa.me/919699544383" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>' +
-      '</div>' +
-      '<div class="copy">© ' + y + ' Grobizzz. All rights reserved. Designed by <a href="https://kdrtit.in/" target="_blank" rel="noopener">KDRT IT Solution LLP</a></div></footer>';
+    return (
+      '<footer class="gbz-footer">' +
+        '<div class="powered">' +
+          '<span>POWERED BY</span>' +
+          '<a href="https://grobizzz.in/" target="_blank" rel="noopener">' +
+            '<img src="images/grobizzz-logo.png" alt="Grobizzz" onerror="this.style.display=\'none\'" />' +
+          '</a>' +
+        '</div>' +
+        '<div class="f-links">' +
+          '<a href="https://grobizzz.in/" target="_blank" rel="noopener">About Us</a>' +
+          '<a href="https://grobizzz.in/" target="_blank" rel="noopener">Contact Us</a>' +
+        '</div>' +
+        '<p class="follow-label">Follow Us</p>' +
+        '<div class="f-socials">' +
+          '<a href="https://www.facebook.com/profile.php?id=61571578101681" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>' +
+          '<a href="https://x.com/Grobizin" target="_blank" rel="noopener" aria-label="X"><i class="fab fa-x-twitter"></i></a>' +
+          '<a href="https://www.instagram.com/grobizzz.in" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>' +
+          '<a href="https://www.youtube.com/channel/UC3qtz8dAlwcPCyrrYUkfmqA" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>' +
+          '<a href="https://wa.me/919699544383" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>' +
+        '</div>' +
+        '<div class="copy">© ' + y + ' Grobizzz. All rights reserved.</div>' +
+      '</footer>'
+    );
   }
 
   function buildShareMessage(b) {
@@ -338,6 +364,7 @@
     if (b.google_maps_url) html += '<a href="' + esc(b.google_maps_url) + '" target="_blank" rel="noopener" class="btn btn-ghost"><i class="fa-solid fa-location-dot"></i> Get Directions</a>';
     html += '<button type="button" class="btn btn-ghost" id="share-btn"><i class="fa-solid fa-share-nodes"></i> Share</button>';
     html += '<button type="button" class="btn btn-ghost" data-vcard><i class="fa-solid fa-address-card"></i> Add to Contact</button>';
+    html += reviewsBtn(b);
     html += '</div><div class="pill-row">';
     if (b.phone) html += '<a href="' + telLink(b.phone) + '" class="pill"><i class="fa-solid fa-phone"></i> Call Us</a>';
     if (b.whatsapp) html += '<a href="' + waLink(b.whatsapp) + '" target="_blank" rel="noopener" class="pill"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>';
@@ -347,7 +374,8 @@
     if (b.about || b.description) {
       html += '<section class="about" id="about"><div class="about-inner"><div class="about-text">';
       html += '<p class="sec-label">Our Story</p><h2 class="sec-head">About ' + esc(b.business_name) + '</h2>';
-      html += '<p>' + esc(b.about || b.description) + '</p></div>';
+      html += '<p class="about-lead">Every great place has a story — here is ours.</p>';
+      html += '<div class="about-body">' + formatAbout(b.about || b.description) + '</div></div>';
       if (gallery.length) {
         html += '<div class="collage">';
         html += '<img class="c-a" src="' + esc(gallery[0].image_url) + '" alt="" loading="lazy" onclick="openLB(this.src,this.alt)" />';
@@ -391,12 +419,12 @@
     }
     if (b.zomato_url || b.swiggy_url) {
       html += '<section class="order-sec"><p class="sec-label">Order</p><h2 class="sec-head">Order Online</h2><div class="order-cards">';
-      if (b.zomato_url) html += '<a class="o-card" href="' + esc(b.zomato_url) + '" target="_blank" rel="noopener"><i class="fa-solid fa-utensils"></i><span>Zomato</span></a>';
-      if (b.swiggy_url) html += '<a class="o-card" href="' + esc(b.swiggy_url) + '" target="_blank" rel="noopener"><i class="fa-solid fa-motorcycle"></i><span>Swiggy</span></a>';
+      if (b.zomato_url) html += '<a class="o-card o-zomato" href="' + esc(b.zomato_url) + '" target="_blank" rel="noopener"><img class="o-logo" src="images/zomato.png" alt="Zomato" /><span>Order on Zomato</span></a>';
+      if (b.swiggy_url) html += '<a class="o-card o-swiggy" href="' + esc(b.swiggy_url) + '" target="_blank" rel="noopener"><img class="o-logo" src="images/swiggy.png" alt="Swiggy" /><span>Order on Swiggy</span></a>';
       html += '</div></section>';
     }
     html += '<section class="contact-sec"><div class="contact-panel"><div class="contact-info-col">';
-    html += '<span class="sec-label">Find Us</span><h2>Visit Us</h2>';
+    html += '<h2 class="sec-head visit-title">Visit Us</h2>';
     if (b.address) html += '<div class="info-item"><div class="info-icon"><i class="fa-solid fa-location-dot"></i></div><div class="info-text"><span class="info-label">Address:</span><span class="info-value">' + esc(b.address) + (b.city ? '<br>' + esc(b.city) : '') + '</span></div></div>';
     if (b.phone) html += '<div class="info-item"><div class="info-icon"><i class="fa-solid fa-phone"></i></div><div class="info-text"><span class="info-label">Phone:</span><span class="info-value"><a href="' + telLink(b.phone) + '">' + esc(b.phone) + '</a></span></div></div>';
     html += '</div><div class="contact-actions-col">';
@@ -447,7 +475,8 @@
 
     if (b.about || b.description) {
       html += '<section class="section"><div class="section-inner"><p class="eyebrow">About</p><h2 class="section-title">Our <span>Story</span></h2><div class="divider"></div>';
-      html += '<p class="about-text">' + esc(b.about || b.description) + '</p>';
+      html += '<div class="about-body about-text">' + formatAbout(b.about || b.description) + '</div>';
+      html += '<div style="margin-top:20px">' + reviewsBtn(b) + '</div>';
       if (b.subcategory) {
         html += '<div class="credential-row">';
         String(b.subcategory).split(/[·,|]/).forEach(function (t) {
@@ -490,7 +519,7 @@
       html += '<section class="section section-alt"><div class="section-inner"><p class="eyebrow">Timings</p><h2 class="section-title">Opening <span>Hours</span></h2><div class="divider"></div>' + hoursHtml(hours) + '</div></section>';
     }
 
-    html += '<section class="section"><div class="section-inner"><p class="eyebrow">Find Us</p><h2 class="section-title">Contact <span>&amp; Location</span></h2><div class="divider"></div><div class="contact-grid"><div>';
+    html += '<section class="section"><div class="section-inner"><p class="eyebrow">Location</p><h2 class="section-title">Visit <span>Us</span></h2><div class="divider"></div><div class="contact-grid"><div>';
     html += '<div style="font-family:var(--font-display);font-size:1.4rem;color:var(--accent);margin-bottom:16px">' + esc(b.business_name) + '</div>';
     if (b.address) html += '<div class="contact-detail"><div class="contact-detail-icon"><i class="fa-solid fa-map-marker-alt"></i></div><div class="contact-detail-text">' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + '</div></div>';
     if (b.phone) html += '<div class="contact-detail"><div class="contact-detail-icon"><i class="fa-solid fa-phone"></i></div><div class="contact-detail-text"><a href="' + telLink(b.phone) + '">' + esc(b.phone) + '</a></div></div>';

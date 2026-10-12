@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -287,39 +287,47 @@
               </div>
             </div>
 
-            <div class="form-group">
-              <label>Primary Colour</label>
-              <div class="color-picker">
-                <input type="color" name="color_primary" value="#c97b3a" />
-                <input type="text" name="color_primary_hex" value="#c97b3a" />
+            <div class="form-group full">
+              <label>Colour palette <span class="required">*</span></label>
+              <p class="helper">Tap one frame — 4 colours work together on your profile.</p>
+              <input type="hidden" name="color_primary" id="color_primary" value="#c97b3a" />
+              <input type="hidden" name="color_secondary" id="color_secondary" value="#1a1a1a" />
+              <input type="hidden" name="color_accent" id="color_accent" value="#f5f0e8" />
+              <input type="hidden" name="color_highlight" id="color_highlight" value="#f5c542" />
+              <div class="palette-grid" id="palette-grid">
+                <button type="button" class="palette-card selected" data-p="#c97b3a" data-s="#1a1208" data-a="#f5f0e8" data-h="#f5c542">
+                  <div class="palette-swatches"><i style="background:#c97b3a"></i><i style="background:#1a1208"></i><i style="background:#f5f0e8"></i><i style="background:#f5c542"></i></div>
+                  <strong>Warm Cafe</strong>
+                </button>
+                <button type="button" class="palette-card" data-p="#6d28d9" data-s="#1e1b4b" data-a="#f5f3ff" data-h="#c4b5fd">
+                  <div class="palette-swatches"><i style="background:#6d28d9"></i><i style="background:#1e1b4b"></i><i style="background:#f5f3ff"></i><i style="background:#c4b5fd"></i></div>
+                  <strong>Royal Purple</strong>
+                </button>
+                <button type="button" class="palette-card" data-p="#e11d48" data-s="#1c1917" data-a="#fff1f2" data-h="#fb7185">
+                  <div class="palette-swatches"><i style="background:#e11d48"></i><i style="background:#1c1917"></i><i style="background:#fff1f2"></i><i style="background:#fb7185"></i></div>
+                  <strong>Bold Red</strong>
+                </button>
+                <button type="button" class="palette-card" data-p="#0d9488" data-s="#042f2e" data-a="#f0fdfa" data-h="#2dd4bf">
+                  <div class="palette-swatches"><i style="background:#0d9488"></i><i style="background:#042f2e"></i><i style="background:#f0fdfa"></i><i style="background:#2dd4bf"></i></div>
+                  <strong>Fresh Teal</strong>
+                </button>
+                <button type="button" class="palette-card" data-p="#2563eb" data-s="#0f172a" data-a="#eff6ff" data-h="#60a5fa">
+                  <div class="palette-swatches"><i style="background:#2563eb"></i><i style="background:#0f172a"></i><i style="background:#eff6ff"></i><i style="background:#60a5fa"></i></div>
+                  <strong>Ocean Blue</strong>
+                </button>
+                <button type="button" class="palette-card" data-p="#d97706" data-s="#1c1917" data-a="#fffbeb" data-h="#fbbf24">
+                  <div class="palette-swatches"><i style="background:#d97706"></i><i style="background:#1c1917"></i><i style="background:#fffbeb"></i><i style="background:#fbbf24"></i></div>
+                  <strong>Golden Spice</strong>
+                </button>
+                <button type="button" class="palette-card" data-p="#059669" data-s="#064e3b" data-a="#ecfdf5" data-h="#34d399">
+                  <div class="palette-swatches"><i style="background:#059669"></i><i style="background:#064e3b"></i><i style="background:#ecfdf5"></i><i style="background:#34d399"></i></div>
+                  <strong>Green Fresh</strong>
+                </button>
+                <button type="button" class="palette-card" data-p="#db2777" data-s="#500724" data-a="#fdf2f8" data-h="#f472b6">
+                  <div class="palette-swatches"><i style="background:#db2777"></i><i style="background:#500724"></i><i style="background:#fdf2f8"></i><i style="background:#f472b6"></i></div>
+                  <strong>Rose Pink</strong>
+                </button>
               </div>
-            </div>
-
-            <div class="form-group">
-              <label>Secondary Colour</label>
-              <div class="color-picker">
-                <input type="color" name="color_secondary" value="#1a1a1a" />
-                <input type="text" name="color_secondary_hex" value="#1a1a1a" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Accent Colour</label>
-              <div class="color-picker">
-                <input type="color" name="color_accent" value="#f5f0e8" />
-                <input type="text" name="color_accent_hex" value="#f5f0e8" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Theme Style</label>
-              <select name="theme_style">
-                <option value="warm-dark">Warm Dark (like Hyde-Out)</option>
-                <option value="modern-light">Modern Light</option>
-                <option value="elegant">Elegant</option>
-                <option value="vibrant">Vibrant</option>
-                <option value="minimal">Minimal</option>
-              </select>
             </div>
           </div>
         </section>
@@ -448,9 +456,9 @@
             <div class="form-group full">
               <label>Upload Short Videos (optional)</label>
               <div class="upload-box">
-                <input type="file" name="gallery_videos" accept="video/mp4,video/webm" multiple />
+                <input type="file" name="gallery_videos" accept="video/mp4,video/webm,video/quicktime,video/*" multiple />
                 <div class="upload-content">
-                  <p>Upload short videos for gallery or hero</p>
+                  <p>Upload short videos (MP4 / WebM, max ~20MB each)</p>
                   <small>MP4 or WebM, max 30 seconds recommended</small>
                 </div>
               </div>
