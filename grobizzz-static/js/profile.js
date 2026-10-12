@@ -79,17 +79,69 @@
 
   function applyColors(b, tpl) {
     var root = document.documentElement;
-    if (b.primary_color) {
-      root.style.setProperty('--primary', b.primary_color);
-      if (tpl === 'restaurant') root.style.setProperty('--ember', b.primary_color);
-      if (tpl === 'service') { root.style.setProperty('--accent', b.primary_color); root.style.setProperty('--red', b.primary_color); }
-      if (tpl === 'modern') { root.style.setProperty('--gold', b.primary_color); root.style.setProperty('--gold-dim', b.primary_color); }
+    var primary = b.primary_color || '';
+    var secondary = b.secondary_color || '';
+    var accent = b.accent_color || '';
+
+    if (primary) {
+      root.style.setProperty('--primary', primary);
+      root.style.setProperty('--ember', primary);
+      root.style.setProperty('--ember-soft', primary);
+      root.style.setProperty('--accent', primary);
+      root.style.setProperty('--red', primary);
+      root.style.setProperty('--gold', primary);
+      root.style.setProperty('--gold-dim', primary);
+      root.style.setProperty('--gold-light', primary);
+      // Hero CTA uses brand primary
+      root.style.setProperty('--cta', primary);
     }
-    if (b.secondary_color) {
-      root.style.setProperty('--secondary', b.secondary_color);
-      root.style.setProperty('--den', b.secondary_color);
-      if (tpl === 'modern') root.style.setProperty('--ink', b.secondary_color);
+    if (secondary) {
+      root.style.setProperty('--secondary', secondary);
+      root.style.setProperty('--den', secondary);
+      root.style.setProperty('--den-soft', secondary);
+      root.style.setProperty('--ink', secondary);
+      root.style.setProperty('--bg-dark', secondary);
     }
+    if (accent) {
+      root.style.setProperty('--accent-bg', accent);
+      root.style.setProperty('--cream', accent);
+      root.style.setProperty('--mist', accent);
+      root.style.setProperty('--surface', accent);
+    }
+
+    // Theme color for mobile browser chrome
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'theme-color');
+      document.head.appendChild(meta);
+    }
+    if (secondary || primary) meta.setAttribute('content', secondary || primary);
+
+    // Inject a small style override so hard-coded template colours follow palette
+    var styleId = 'palette-live';
+    var st = document.getElementById(styleId);
+    if (!st) {
+      st = document.createElement('style');
+      st.id = styleId;
+      document.head.appendChild(st);
+    }
+    var css = '';
+    if (primary) {
+      css += '.btn-primary,.action-btn.primary{background:' + primary + '!important;border-color:' + primary + '!important;}';
+      css += '.pill i,.sec-label,.eyebrow,.info-icon i{color:' + primary + '!important;}';
+      css += '.logo-ring{border-color:' + primary + '!important;}';
+      css += '.contact-sec,.hours-sec{--brand:' + primary + ';}';
+    }
+    if (secondary) {
+      css += '.contact-sec,.hero-overlay{/* brand dark */}';
+      css += '.contact-sec{background:' + secondary + '!important;}';
+      css += '.gbz-footer{border-top-color:' + primary + '!important;}';
+    }
+    if (accent) {
+      css += '.order-sec,.menu-sec{background:' + accent + '!important;}';
+    }
+    st.textContent = css;
   }
 
   function setSEO(b) {
@@ -183,6 +235,8 @@
   }
 
   function reviewsSection(b) {
+    var feat = b.features || {};
+    if (feat.show_reviews === false) return '';
     var url = b.google_business_url || b.google_maps_url || '';
     if (!url) return '';
     return (

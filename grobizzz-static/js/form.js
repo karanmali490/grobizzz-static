@@ -818,9 +818,9 @@ document.addEventListener('DOMContentLoaded', () => {
         city: raw.city,
         pincode: raw.pincode || null,
         google_maps_url: raw.maps_link || null,
-        primary_color: raw.color_primary || '#c97b3a',
-        secondary_color: raw.color_secondary || '#1a1a1a',
-        accent_color: raw.color_accent || '#f5f0e8',
+        primary_color: (document.getElementById('color_primary') && document.getElementById('color_primary').value) || raw.color_primary || '#c97b3a',
+        secondary_color: (document.getElementById('color_secondary') && document.getElementById('color_secondary').value) || raw.color_secondary || '#1a1a1a',
+        accent_color: (document.getElementById('color_accent') && document.getElementById('color_accent').value) || raw.color_accent || '#f5f0e8',
         instagram_url: raw.instagram || null,
         facebook_url: raw.facebook || null,
         youtube_url: raw.youtube || null,
@@ -844,7 +844,8 @@ document.addEventListener('DOMContentLoaded', () => {
           services: !isMenu,
           social: true,
           vcard: (function(){ var el=document.querySelector('input[name="add_to_contact"]'); return el ? el.checked !== false : true; })(),
-          verified: false
+          verified: false,
+          show_reviews: (function(){ var el=document.querySelector('input[name="show_reviews"]'); return el ? el.checked : true; })()
         }
       };
 

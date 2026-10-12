@@ -668,13 +668,13 @@ small, .helper {
 }
 
 /* Colour palette cards – Color Hunt style */
-.palette-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-top:10px}
-.palette-card{display:flex;flex-direction:column;padding:0;border:none;border-radius:12px;background:#fff;cursor:pointer;font-family:inherit;text-align:left;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s;outline:3px solid transparent}
-.palette-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.12)}
-.palette-card.selected{outline-color:#111;box-shadow:0 8px 24px rgba(0,0,0,.15)}
-.palette-swatches{display:flex;flex-direction:column;height:140px;width:100%}
-.palette-swatches i{display:block;flex:1;width:100%;min-height:0}
-.palette-card strong{font-size:.8rem;color:#333;padding:10px 12px;background:#fff;font-weight:600}
+.palette-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:18px;margin-top:12px;width:100%}
+.palette-card{display:flex;flex-direction:column;padding:0;margin:0;border:3px solid transparent;border-radius:14px;background:#fff;cursor:pointer;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.1);min-height:180px;width:100%;font:inherit;text-align:left}
+.palette-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.14)}
+.palette-card.selected{border-color:#111;box-shadow:0 0 0 2px #111,0 8px 24px rgba(0,0,0,.15)}
+.palette-swatches{display:flex;flex-direction:column;height:130px;width:100%;flex-shrink:0}
+.palette-swatches .sw,.palette-swatches i{display:block;flex:1 1 0;width:100%;min-height:28px}
+.palette-card strong{display:block;padding:12px;font-size:13px;font-weight:600;color:#222;background:#fff}
 
 .upload-preview{margin-top:12px;text-align:center}
 .upload-preview .preview-thumb{max-width:120px;max-height:120px;border-radius:10px;object-fit:cover}
@@ -682,3 +682,12 @@ small, .helper {
 .upload-ok{color:#059669;font-weight:600;margin:8px 0 4px}
 .upload-box.has-file{border-color:#059669;background:#f0fdf4}
 .upload-err{color:#dc2626;font-weight:600}
+
+/* Upload size guidance */
+.upload-box small {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.4;
+  color: #6b7280;
+  font-size: 0.78rem;
+}

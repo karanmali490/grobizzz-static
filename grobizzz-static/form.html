@@ -8,6 +8,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style id="palette-critical">
+.palette-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))!important;gap:18px!important;margin-top:12px!important;width:100%!important}
+.palette-card{display:flex!important;flex-direction:column!important;padding:0!important;margin:0!important;border:3px solid transparent!important;border-radius:14px!important;background:#fff!important;cursor:pointer!important;overflow:hidden!important;box-shadow:0 3px 12px rgba(0,0,0,.1)!important;min-height:180px!important;width:100%!important;font:inherit!important;text-align:left!important}
+.palette-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.14)!important}
+.palette-card.selected{border-color:#111!important;box-shadow:0 0 0 2px #111,0 8px 24px rgba(0,0,0,.15)!important}
+.palette-swatches{display:flex!important;flex-direction:column!important;height:130px!important;width:100%!important;flex-shrink:0!important}
+.palette-swatches .sw{display:block!important;flex:1 1 0!important;width:100%!important;min-height:28px!important;height:auto!important}
+.palette-card strong{display:block!important;padding:12px!important;font-size:13px!important;font-weight:600!important;color:#222!important;background:#fff!important}
+</style>
 </head>
 <body>
   <div class="app">
@@ -271,7 +281,7 @@
                 <div class="upload-content">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
                   <p>Click or drag logo here</p>
-                  <small>PNG, JPG or SVG (max 2MB)</small>
+                  <small>Best: 512×512 px · Square PNG (transparent) · Max 2MB</small>
                 </div>
               </div>
             </div>
@@ -282,7 +292,7 @@
                 <input type="file" name="favicon" accept="image/png,image/x-icon" />
                 <div class="upload-content">
                   <p>Upload favicon</p>
-                  <small>32×32 px recommended</small>
+                  <small>Best: 32×32 or 64×64 px · PNG/ICO</small>
                 </div>
               </div>
             </div>
@@ -296,35 +306,35 @@
               <input type="hidden" name="color_highlight" id="color_highlight" value="#f5c542" />
               <div class="palette-grid" id="palette-grid">
                 <button type="button" class="palette-card selected" data-p="#c97b3a" data-s="#1a1208" data-a="#f5f0e8" data-h="#f5c542">
-                  <div class="palette-swatches"><i style="background:#c97b3a"></i><i style="background:#1a1208"></i><i style="background:#f5f0e8"></i><i style="background:#f5c542"></i></div>
+                  <div class="palette-swatches"><span class="sw" style="background:#c97b3a"></span><span class="sw" style="background:#1a1208"></span><span class="sw" style="background:#f5f0e8"></span><span class="sw" style="background:#f5c542"></span></div>
                   <strong>Warm Cafe</strong>
                 </button>
                 <button type="button" class="palette-card" data-p="#6d28d9" data-s="#1e1b4b" data-a="#f5f3ff" data-h="#c4b5fd">
-                  <div class="palette-swatches"><i style="background:#6d28d9"></i><i style="background:#1e1b4b"></i><i style="background:#f5f3ff"></i><i style="background:#c4b5fd"></i></div>
+                  <div class="palette-swatches"><span class="sw" style="background:#6d28d9"></span><span class="sw" style="background:#1e1b4b"></span><span class="sw" style="background:#f5f3ff"></span><span class="sw" style="background:#c4b5fd"></span></div>
                   <strong>Royal Purple</strong>
                 </button>
                 <button type="button" class="palette-card" data-p="#e11d48" data-s="#1c1917" data-a="#fff1f2" data-h="#fb7185">
-                  <div class="palette-swatches"><i style="background:#e11d48"></i><i style="background:#1c1917"></i><i style="background:#fff1f2"></i><i style="background:#fb7185"></i></div>
+                  <div class="palette-swatches"><span class="sw" style="background:#e11d48"></span><span class="sw" style="background:#1c1917"></span><span class="sw" style="background:#fff1f2"></span><span class="sw" style="background:#fb7185"></span></div>
                   <strong>Bold Red</strong>
                 </button>
                 <button type="button" class="palette-card" data-p="#0d9488" data-s="#042f2e" data-a="#f0fdfa" data-h="#2dd4bf">
-                  <div class="palette-swatches"><i style="background:#0d9488"></i><i style="background:#042f2e"></i><i style="background:#f0fdfa"></i><i style="background:#2dd4bf"></i></div>
+                  <div class="palette-swatches"><span class="sw" style="background:#0d9488"></span><span class="sw" style="background:#042f2e"></span><span class="sw" style="background:#f0fdfa"></span><span class="sw" style="background:#2dd4bf"></span></div>
                   <strong>Fresh Teal</strong>
                 </button>
                 <button type="button" class="palette-card" data-p="#2563eb" data-s="#0f172a" data-a="#eff6ff" data-h="#60a5fa">
-                  <div class="palette-swatches"><i style="background:#2563eb"></i><i style="background:#0f172a"></i><i style="background:#eff6ff"></i><i style="background:#60a5fa"></i></div>
+                  <div class="palette-swatches"><span class="sw" style="background:#2563eb"></span><span class="sw" style="background:#0f172a"></span><span class="sw" style="background:#eff6ff"></span><span class="sw" style="background:#60a5fa"></span></div>
                   <strong>Ocean Blue</strong>
                 </button>
                 <button type="button" class="palette-card" data-p="#d97706" data-s="#1c1917" data-a="#fffbeb" data-h="#fbbf24">
-                  <div class="palette-swatches"><i style="background:#d97706"></i><i style="background:#1c1917"></i><i style="background:#fffbeb"></i><i style="background:#fbbf24"></i></div>
+                  <div class="palette-swatches"><span class="sw" style="background:#d97706"></span><span class="sw" style="background:#1c1917"></span><span class="sw" style="background:#fffbeb"></span><span class="sw" style="background:#fbbf24"></span></div>
                   <strong>Golden Spice</strong>
                 </button>
                 <button type="button" class="palette-card" data-p="#059669" data-s="#064e3b" data-a="#ecfdf5" data-h="#34d399">
-                  <div class="palette-swatches"><i style="background:#059669"></i><i style="background:#064e3b"></i><i style="background:#ecfdf5"></i><i style="background:#34d399"></i></div>
+                  <div class="palette-swatches"><span class="sw" style="background:#059669"></span><span class="sw" style="background:#064e3b"></span><span class="sw" style="background:#ecfdf5"></span><span class="sw" style="background:#34d399"></span></div>
                   <strong>Green Fresh</strong>
                 </button>
                 <button type="button" class="palette-card" data-p="#db2777" data-s="#500724" data-a="#fdf2f8" data-h="#f472b6">
-                  <div class="palette-swatches"><i style="background:#db2777"></i><i style="background:#500724"></i><i style="background:#fdf2f8"></i><i style="background:#f472b6"></i></div>
+                  <div class="palette-swatches"><span class="sw" style="background:#db2777"></span><span class="sw" style="background:#500724"></span><span class="sw" style="background:#fdf2f8"></span><span class="sw" style="background:#f472b6"></span></div>
                   <strong>Rose Pink</strong>
                 </button>
               </div>
@@ -346,7 +356,7 @@
                 <div class="upload-content">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
                   <p id="step4-cover-help">Upload cover / banner image</p>
-                  <small>JPG or PNG, recommended 1920×1080</small>
+                  <small>Best: 1920×1080 px · JPG/WebP · Max 5MB</small>
                 </div>
               </div>
             </div>
@@ -447,8 +457,8 @@
                 <input type="file" name="gallery_images" accept="image/*,video/mp4,video/webm,video/quicktime" multiple />
                 <div class="upload-content">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                  <p>Drag & drop multiple images or click to browse</p>
-                  <small>You can upload 10–30 photos. Best quality recommended.</small>
+                  <p>Drag & drop photos or click to browse</p>
+                  <small>Best: 1200×800 px · JPG/WebP · Up to 20 images · Max 5MB each</small>
                 </div>
               </div>
             </div>
@@ -458,8 +468,8 @@
               <div class="upload-box">
                 <input type="file" name="gallery_videos" accept="video/mp4,video/webm,video/quicktime,video/*" multiple />
                 <div class="upload-content">
-                  <p>Upload short videos (MP4 / WebM, max ~20MB each)</p>
-                  <small>MP4 or WebM, max 30 seconds recommended</small>
+                  <p>Click or drag videos here</p>
+                  <small>Best: MP4 · Max 25MB · Up to 30 seconds</small>
                 </div>
               </div>
             </div>
@@ -490,9 +500,10 @@
               <label>YouTube URL</label>
               <input type="url" name="youtube" placeholder="https://youtube.com/..." />
             </div>
-            <div class="form-group">
-              <label>Google Business Profile</label>
-              <input type="url" name="google_business" placeholder="https://g.page/..." />
+            <div class="form-group full">
+              <label>Google Reviews link</label>
+              <input type="url" name="google_business" id="google_reviews_link" placeholder="https://g.page/... or Google Maps place link" />
+              <small class="helper">Paste your Google Business / Maps link. This opens the Google Reviews section on the profile.</small>
             </div>
 
             <div class="form-group full">
