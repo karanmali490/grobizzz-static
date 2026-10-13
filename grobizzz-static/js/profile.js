@@ -126,8 +126,9 @@
     parts.push('.about .sec-head,.about-text .sec-head{color:' + secondary + ' !important;}');
     parts.push('.about .sec-label,.about-text .sec-label{color:' + primary + ' !important;}');
     parts.push('.about-lead{color:' + primary + ' !important;}');
-    parts.push('.about-body p,.about-text p{color:' + secondary + ' !important;}');
-    parts.push('.about-body p:first-of-type{color:' + secondary + ' !important;font-weight:500;}');
+    parts.push('.about-body p,.about-text p{color:#2c241c !important;}');
+    parts.push('.about-body p:first-of-type{color:#1a1208 !important;font-weight:500;}');
+    parts.push('.about .sec-head{color:#1a1208 !important;}');
     parts.push('.menu-sec .sec-head,.order-sec .sec-head,.gallery-sec .sec-head{color:' + secondary + ' !important;}');
     parts.push('.menu-sec .sec-label,.order-sec .sec-label,.gallery-sec .sec-label{color:' + primary + ' !important;}');
     parts.push('.item-name,.item-desc{color:' + secondary + ' !important;}');
@@ -217,15 +218,50 @@
   
   function isVideoUrl(url) {
     if (!url) return false;
-    return /\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(url);
+    return /\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(String(url));
+  }
+
+  function splitGallery(gallery) {
+    var images = [];
+    var videos = [];
+    (gallery || []).forEach(function (g) {
+      var u = g.image_url || g.url || '';
+      if (isVideoUrl(u)) videos.push(g);
+      else if (u) images.push(g);
+    });
+    return { images: images, videos: videos };
   }
 
   function mediaTile(url, alt) {
     alt = alt || '';
-    if (isVideoUrl(url)) {
-      return '<div class="media-tile video-tile"><video src="' + esc(url) + '" controls playsinline preload="metadata"></video></div>';
-    }
     return '<img src="' + esc(url) + '" alt="' + esc(alt) + '" loading="lazy" onclick="openLB(this.src,this.alt)" />';
+  }
+
+  function videoTile(url) {
+    return (
+      '<div class="video-tile" data-video-wrap>' +
+        '<video src="' + esc(url) + '" controls playsinline preload="metadata" ' +
+        'onloadedmetadata="window.fitVideoOrient&&window.fitVideoOrient(this)"></video>' +
+      '</div>'
+    );
+  }
+
+  window.fitVideoOrient = function (v) {
+    try {
+      var wrap = v.closest('[data-video-wrap]');
+      if (!wrap) return;
+      wrap.classList.remove('vertical', 'horizontal');
+      if (v.videoHeight > v.videoWidth) wrap.classList.add('vertical');
+      else wrap.classList.add('horizontal');
+    } catch (e) {}
+  };
+
+  function getAboutImage(b, images) {
+    var feat = b.features || {};
+    if (feat.about_image_url) return feat.about_image_url;
+    if (b.about_image_url) return b.about_image_url;
+    if (images && images[0]) return images[0].image_url;
+    return null;
   }
 
   function socialSection(b) {
@@ -478,24 +514,36 @@
     if (b.email) html += '<a href="mailto:' + esc(b.email) + '" class="pill"><i class="fa-solid fa-envelope"></i> Email</a>';
     html += '</div></div><div class="scroll-dot" aria-hidden="true"><span></span>scroll</div></section>';
 
-    if (b.about || b.description) {
-      html += '<section class="about" id="about"><div class="about-inner"><div class="about-text">';
+    var split = splitGallery(gallery);
+    var images = split.images;
+    var videos = split.videos;
+    var aboutImg = getAboutImage(b, images);
+
+    if (b.about || b.description || aboutImg) {
+      html += '<section class="about" id="about"><div class="about-inner">';
+      html += '<div class="about-text">';
       html += '<p class="sec-label">Our Story</p><h2 class="sec-head">About ' + esc(b.business_name) + '</h2>';
       html += '<p class="about-lead">Every great place has a story — here is ours.</p>';
-      html += '<div class="about-body">' + formatAbout(b.about || b.description) + '</div></div>';
-      if (gallery.length) {
-        html += '<div class="collage">';
-        html += '<img class="c-a" src="' + esc(gallery[0].image_url) + '" alt="" loading="lazy" onclick="openLB(this.src,this.alt)" />';
-        if (gallery[1]) html += '<img class="c-b" src="' + esc(gallery[1].image_url) + '" alt="" loading="lazy" onclick="openLB(this.src,this.alt)" />';
-        if (gallery[2]) html += '<img class="c-c" src="' + esc(gallery[2].image_url) + '" alt="" loading="lazy" onclick="openLB(this.src,this.alt)" />';
-        html += '</div>';
+      if (b.about || b.description) html += '<div class="about-body">' + formatAbout(b.about || b.description) + '</div>';
+      html += '</div>';
+      if (aboutImg) {
+        html += '<div class="about-media"><img src="' + esc(aboutImg) + '" alt="About ' + esc(b.business_name) + '" loading="lazy" /></div>';
       }
       html += '</div></section>';
     }
-    if (gallery.length) {
-      html += '<section class="gallery-sec" id="gallery"><p class="sec-label">Gallery</p><h2 class="sec-head">The Space</h2><div class="amb-grid">';
-      gallery.forEach(function (g, i) {
+
+    if (images.length) {
+      html += '<section class="gallery-sec" id="gallery"><p class="sec-label">Gallery</p><h2 class="sec-head">Photos</h2><div class="amb-grid">';
+      images.forEach(function (g) {
         html += mediaTile(g.image_url, g.caption || '');
+      });
+      html += '</div></section>';
+    }
+
+    if (videos.length) {
+      html += '<section class="video-sec" id="videos"><p class="sec-label">Videos</p><h2 class="sec-head">Watch Us</h2><div class="video-grid">';
+      videos.forEach(function (g) {
+        html += videoTile(g.image_url);
       });
       html += '</div></section>';
     }

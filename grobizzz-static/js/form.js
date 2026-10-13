@@ -744,6 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const faviconInput = form.querySelector('input[name="favicon"]');
     const heroInput = form.querySelector('input[name="hero_media"]');
     const galleryInput = form.querySelector('input[name="gallery_images"]');
+    const aboutImageInput = form.querySelector('input[name="about_image"]');
 
     generateBtn.textContent = 'Uploading images…';
     generateBtn.disabled = true;
@@ -753,6 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let logo_url = null;
       let cover_image_url = null;
       let favicon_url = null;
+      let about_image_url = null;
       const gallery_urls = [];
 
       if (logoInput && logoInput.files && logoInput.files[0]) {
@@ -771,6 +773,12 @@ document.addEventListener('DOMContentLoaded', () => {
           generateBtn.textContent = 'Uploading cover…';
           cover_image_url = await uploadFile(f, 'business-covers');
         }
+      }
+
+      
+      if (aboutImageInput && aboutImageInput.files && aboutImageInput.files[0]) {
+        generateBtn.textContent = 'Uploading about image…';
+        about_image_url = await uploadFile(aboutImageInput.files[0], 'business-gallery');
       }
 
       if (galleryInput && galleryInput.files && galleryInput.files.length) {
@@ -845,7 +853,8 @@ document.addEventListener('DOMContentLoaded', () => {
           social: true,
           vcard: (function(){ var el=document.querySelector('input[name="add_to_contact"]'); return el ? el.checked !== false : true; })(),
           verified: false,
-          show_reviews: (function(){ var el=document.querySelector('input[name="show_reviews"]'); return el ? el.checked : true; })()
+          show_reviews: (function(){ var el=document.querySelector('input[name="show_reviews"]'); return el ? el.checked : true; })(),
+          about_image_url: about_image_url || null
         }
       };
 
