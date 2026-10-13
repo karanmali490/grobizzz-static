@@ -726,6 +726,10 @@
     var products = b.products || [];
     var gallery = b.gallery || [];
     var hours = b.hours || [];
+    var split = splitGallery(gallery);
+    var images = split.images;
+    var videos = split.videos;
+    var aboutImg = getAboutImage(b, images);
     var verified = (b.verified || features.verified) ? ' <span class="verified-pill">Verified</span>' : '';
     var coverStyle = b.cover_image_url ? "background-image:url('" + esc(b.cover_image_url) + "')" : '';
     var logo = b.logo_url
