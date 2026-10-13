@@ -756,23 +756,39 @@
     html += '<a href="#" data-vcard><i class="fa-solid fa-address-card"></i>Contact</a>';
     html += '<a href="#contact"><i class="fa-solid fa-store"></i>Visit</a></div></nav>';
 
-    if (b.about || b.description) {
-      html += '<section class="mod-sec" id="about"><div class="wrap"><div class="about-grid"><div>';
+    if (b.about || b.description || aboutImg) {
+      html += '<section class="mod-sec" id="about"><div class="wrap">';
+      html += '<div class="about-grid"><div class="about-copy">';
       html += '<div class="sec-label">Our story</div><h2 class="sec-title">About</h2>';
+      html += '<p class="about-lead">Crafted with care — here is our story.</p>';
       if (b.tagline) html += '<p class="lede">' + esc(b.tagline) + '</p>';
-      html += '<p class="sec-desc">' + esc(b.about || b.description) + '</p></div>';
+      if (b.about || b.description) html += '<div class="about-body sec-desc">' + formatAbout(b.about || b.description) + '</div>';
+      html += '</div>';
       html += '<div class="stats">';
       if (b.year_established) html += '<div class="stat"><b>' + esc(String(b.year_established)) + '</b><span>Since</span></div>';
       html += '<div class="stat"><b>★</b><span>Trusted</span></div>';
       html += '<div class="stat"><b>' + esc((b.city || 'Local').split(',')[0]) + '</b><span>Location</span></div>';
       html += '<div class="stat"><b>Open</b><span>For you</span></div>';
-      html += '</div></div></div></section>';
+      html += '</div></div>';
+      /* About image sits under the 4 stats */
+      if (aboutImg) {
+        html += '<div class="mod-about-media"><img src="' + esc(aboutImg) + '" alt="About ' + esc(b.business_name) + '" loading="lazy" /></div>';
+      }
+      html += '</div></section>';
     }
 
-    if (gallery.length) {
-      html += '<section class="mod-sec" style="background:var(--white)"><div class="wrap"><div class="sec-label">Gallery</div><h2 class="sec-title">Portfolio</h2><div class="gallery">';
-      gallery.forEach(function (g) {
-        html += '<div class="g-card" onclick="openLB(\'' + esc(g.image_url) + '\',\'' + esc(g.caption || '') + '\')"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
+    if (images.length) {
+      html += '<section class="mod-sec" style="background:var(--white)" id="gallery"><div class="wrap"><div class="sec-label">Gallery</div><h2 class="sec-title">Portfolio</h2><div class="gallery">';
+      images.forEach(function (g) {
+        html += '<div class="g-card" onclick="openLB(\'' + esc(g.image_url).replace(/'/g, "\\'") + '\',\'' + esc(g.caption || '').replace(/'/g, "\\'") + '\')"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
+      });
+      html += '</div></div></section>';
+    }
+
+    if (videos.length) {
+      html += '<section class="mod-sec video-sec mod-video-sec" id="videos"><div class="wrap"><div class="sec-label">Videos</div><h2 class="sec-title">Watch Us</h2><div class="video-grid">';
+      videos.forEach(function (g) {
+        html += videoTile(g.image_url);
       });
       html += '</div></div></section>';
     }
