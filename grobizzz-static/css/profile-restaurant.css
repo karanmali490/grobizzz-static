@@ -201,3 +201,7 @@
   .video-tile.vertical{width:min(100%,260px)}
   .about-media{min-height:280px}
 }
+
+.reviews-sec{text-align:center!important}
+.reviews-sec .sec-head,.reviews-sec .sec-label{text-align:center!important}
+.reviews-cards,.reviews-sec .order-cards{display:flex!important;justify-content:center!important;flex-wrap:wrap;gap:16px}

@@ -287,7 +287,7 @@
       '<section class="order-sec reviews-sec">' +
         '<p class="sec-label">Reviews</p>' +
         '<h2 class="sec-head">Google Reviews</h2>' +
-        '<div class="order-cards">' +
+        '<div class="order-cards reviews-cards">' +
           '<a class="o-card o-google" href="' + esc(url) + '" target="_blank" rel="noopener">' +
             '<img class="o-logo" src="images/google-reviews-logo.png" alt="Google Reviews" />' +
             '<span>Read &amp; Write Reviews</span>' +
@@ -603,25 +603,36 @@
     var products = b.products || [];
     var gallery = b.gallery || [];
     var hours = b.hours || [];
+    var split = splitGallery(gallery);
+    var images = split.images;
+    var videos = split.videos;
+    var aboutImg = getAboutImage(b, images);
     var verified = (b.verified || features.verified) ? ' <span class="verified-pill"><i class="fa-solid fa-check"></i> Verified</span>' : '';
     var avatar = b.logo_url
-      ? '<img src="' + esc(b.logo_url) + '" alt="" />'
+      ? '<img src="' + esc(b.logo_url) + '" alt="' + esc(b.business_name || '') + '" />'
       : '<div class="fallback">' + esc((b.business_name || 'D').charAt(0).toUpperCase()) + '</div>';
+    var coverStyle = b.cover_image_url
+      ? "background-image:url('" + esc(b.cover_image_url) + "')"
+      : '';
 
     var html = '';
+    /* —— Impressive hero —— */
     html += '<section class="svc-hero">';
-    if (b.cover_image_url) html += '<img class="svc-hero-cover" src="' + esc(b.cover_image_url) + '" alt="" />';
-    else html += '<div class="svc-hero-cover-fallback"></div>';
-    html += '<div class="svc-hero-content"><div class="svc-identity"><div class="svc-avatar">' + avatar + '</div><div>';
-    html += '<div class="svc-name">' + esc(b.business_name) + verified + '</div>';
-    if (b.tagline) html += '<div class="svc-clinic">' + esc(b.tagline) + '</div>';
-    if (b.subcategory) html += '<div class="svc-qual">' + esc(b.subcategory) + '</div>';
+    html += '<div class="svc-hero-bg" style="' + coverStyle + '"></div>';
+    html += '<div class="svc-hero-overlay"></div>';
+    html += '<div class="svc-hero-content">';
+    html += '<div class="svc-avatar">' + avatar + '</div>';
+    if (b.subcategory || b.category) {
+      html += '<p class="svc-eyebrow">' + esc(b.subcategory || b.category) + '</p>';
+    }
+    html += '<h1 class="svc-name">' + esc(b.business_name) + verified + '</h1>';
+    if (b.tagline) html += '<p class="svc-tagline">' + esc(b.tagline) + '</p>';
     html += '<div class="svc-cta">';
     if (b.whatsapp) html += '<a class="btn-red" href="' + waLink(b.whatsapp) + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Book / Enquire</a>';
     else if (b.phone) html += '<a class="btn-red" href="' + telLink(b.phone) + '"><i class="fa-solid fa-phone"></i> Call Now</a>';
     if (b.google_maps_url) html += '<a class="btn-ghost-svc" href="' + esc(b.google_maps_url) + '" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot"></i> Directions</a>';
     html += '<button type="button" class="btn-ghost-svc" data-vcard style="cursor:pointer;font-family:inherit"><i class="fa-solid fa-address-card"></i> Add to Contact</button>';
-    html += '</div></div></div></div></section>';
+    html += '</div></div></section>';
 
     html += '<div class="contact-row">';
     if (b.phone) html += '<a class="contact-btn" href="' + telLink(b.phone) + '"><div class="contact-icon"><i class="fa-solid fa-phone"></i></div><span class="contact-label">Call</span></a>';
@@ -630,25 +641,42 @@
     if (b.google_maps_url) html += '<a class="contact-btn" href="' + esc(b.google_maps_url) + '" target="_blank" rel="noopener"><div class="contact-icon"><i class="fa-solid fa-map-marker-alt"></i></div><span class="contact-label">Map</span></a>';
     html += '</div>';
 
-    if (b.about || b.description) {
-      html += '<section class="section"><div class="section-inner"><p class="eyebrow">About</p><h2 class="section-title">Our <span>Story</span></h2><div class="divider"></div>';
-      html += '<div class="about-body about-text">' + formatAbout(b.about || b.description) + '</div>';
-      html += '<div style="margin-top:20px">' + reviewsBtn(b) + '</div>';
+    /* —— About + image —— */
+    if (b.about || b.description || aboutImg) {
+      html += '<section class="section svc-about-sec" id="about"><div class="section-inner">';
+      html += '<p class="eyebrow">About</p><h2 class="section-title">Our <span>Story</span></h2><div class="divider"></div>';
+      html += '<div class="svc-about-grid">';
+      html += '<div class="about-text">';
+      if (b.about || b.description) html += '<div class="about-body about-text">' + formatAbout(b.about || b.description) + '</div>';
       if (b.subcategory) {
         html += '<div class="credential-row">';
-        String(b.subcategory).split(/[·,|]/).forEach(function (t) {
-          t = t.trim();
-          if (t) html += '<span class="credential-badge"><i class="fa-solid fa-check-circle"></i> ' + esc(t) + '</span>';
+        String(b.subcategory).split(/[·,|]/).forEach(function (part) {
+          part = part.trim();
+          if (part) html += '<span class="credential-badge"><i class="fa-solid fa-check-circle"></i> ' + esc(part) + '</span>';
         });
         html += '</div>';
       }
-      html += '</div></section>';
+      html += '</div>';
+      if (aboutImg) {
+        html += '<div class="about-media"><img src="' + esc(aboutImg) + '" alt="About ' + esc(b.business_name) + '" loading="lazy" /></div>';
+      }
+      html += '</div></div></section>';
     }
 
-    if (gallery.length) {
-      html += '<section class="section section-alt"><div class="section-inner"><p class="eyebrow">Gallery</p><h2 class="section-title">Portfolio</h2><div class="divider"></div><div class="gallery-grid">';
-      gallery.forEach(function (g) {
-        html += '<div class="gallery-item" onclick="openLB(\'' + esc(g.image_url) + '\',\'' + esc(g.caption || '') + '\')"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
+    /* —— Photos only —— */
+    if (images.length) {
+      html += '<section class="section section-alt" id="gallery"><div class="section-inner"><p class="eyebrow">Gallery</p><h2 class="section-title">Portfolio</h2><div class="divider"></div><div class="gallery-grid">';
+      images.forEach(function (g) {
+        html += '<div class="gallery-item" onclick="openLB(\'' + esc(g.image_url).replace(/'/g, "\\'") + '\',\'' + esc(g.caption || '').replace(/'/g, "\\'") + '\')"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
+      });
+      html += '</div></div></section>';
+    }
+
+    /* —— Videos separate —— */
+    if (videos.length) {
+      html += '<section class="section video-sec svc-video-sec" id="videos"><div class="section-inner"><p class="eyebrow">Videos</p><h2 class="section-title">Watch <span>Us</span></h2><div class="divider"></div><div class="video-grid">';
+      videos.forEach(function (g) {
+        html += videoTile(g.image_url);
       });
       html += '</div></div></section>';
     }
