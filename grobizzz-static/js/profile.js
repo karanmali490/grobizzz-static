@@ -773,12 +773,11 @@
       html += '<div class="stat"><b>★</b><span>Trusted</span></div>';
       html += '<div class="stat"><b>' + esc((b.city || 'Local').split(',')[0]) + '</b><span>Location</span></div>';
       html += '<div class="stat"><b>Open</b><span>For you</span></div>';
-      html += '</div></div>';
-      /* About image sits under the 4 stats */
+      html += '</div>';
       if (aboutImg) {
         html += '<div class="mod-about-media"><img src="' + esc(aboutImg) + '" alt="About ' + esc(b.business_name) + '" loading="lazy" /></div>';
       }
-      html += '</div></section>';
+      html += '</div></div></section>';
     }
 
     if (images.length) {
