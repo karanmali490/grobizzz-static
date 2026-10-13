@@ -691,3 +691,9 @@ small, .helper {
   color: #6b7280;
   font-size: 0.78rem;
 }
+
+.word-count-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap}
+.word-count{font-size:.8rem;font-weight:600;color:#6b7280;white-space:nowrap}
+.word-count.ok{color:#059669}
+.word-count.warn{color:#d97706}
+.word-count.bad{color:#dc2626}

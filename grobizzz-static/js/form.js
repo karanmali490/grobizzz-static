@@ -404,6 +404,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+
+  // About word count 80–100
+  function countWords(text) {
+    return String(text || '').trim().split(/\s+/).filter(Boolean).length;
+  }
+  function updateAboutWordCount() {
+    var ta = document.getElementById('field-about');
+    var el = document.getElementById('about-word-count');
+    if (!ta || !el) return countWords(ta && ta.value);
+    var n = countWords(ta.value);
+    el.textContent = n + ' / 100 words';
+    el.classList.remove('ok', 'warn', 'bad');
+    if (n === 0) { /* neutral */ }
+    else if (n >= 80 && n <= 100) el.classList.add('ok');
+    else if (n > 100) el.classList.add('bad');
+    else el.classList.add('warn');
+    return n;
+  }
+  var aboutTa = document.getElementById('field-about');
+  if (aboutTa) {
+    aboutTa.addEventListener('input', updateAboutWordCount);
+    updateAboutWordCount();
+  }
+
   // Colour palette selection (Color Hunt style)
   function applyPalette(card) {
     if (!card) return;
@@ -495,6 +519,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Validation for current step
   function validateCurrentStep() {
+    if (currentStep === 1) {
+      var wn = updateAboutWordCount();
+      var aboutEl = document.getElementById('field-about');
+      if (aboutEl && aboutEl.value.trim()) {
+        if (wn < 80) {
+          alert('About text should be at least 80 words (currently ' + wn + ').');
+          aboutEl.focus();
+          return false;
+        }
+        if (wn > 100) {
+          alert('About text should be at most 100 words (currently ' + wn + ').');
+          aboutEl.focus();
+          return false;
+        }
+      }
+    }
+
     if (currentStep === 1) {
       if (!selectedType) {
         const err = document.getElementById('biz-type-error');

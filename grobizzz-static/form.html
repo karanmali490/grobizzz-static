@@ -215,7 +215,11 @@
 
             <div class="form-group full type-dependent" hidden>
               <label>Our Story / About <span class="required">*</span></label>
-              <textarea name="about" id="field-about" rows="5" placeholder="Tell customers who you are, what makes you special, and what they can expect..."></textarea>
+              <textarea name="about" id="field-about" rows="6" maxlength="900" placeholder="Write 80–100 words about your business — who you are, what makes you special, and what customers can expect..."></textarea>
+              <div class="word-count-row">
+                <small class="helper">Use <strong>80–100 words</strong> so text matches the About image height.</small>
+                <small id="about-word-count" class="word-count">0 / 100 words</small>
+              </div>
             </div>
 
             <div class="form-group full">
@@ -225,7 +229,7 @@
                 <div class="upload-content">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
                   <p>Click or drag About image here</p>
-                  <small>Best: 600×750 px · Shows at fixed size beside About text</small>
+                  <small>Best: 680×880 px · Shown at 340×440 px beside 80–100 words</small>
                 </div>
               </div>
             </div>
