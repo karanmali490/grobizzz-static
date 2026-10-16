@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Sign up – Grobizzz</title>
+  <meta name="theme-color" content="#0a0e1a" />
+  <link rel="icon" href="images/grobizzz-logo.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --card: rgba(255,255,255,.05);
+      --line: rgba(255,255,255,.12);
+      --text: #fff;
+      --muted: rgba(255,255,255,.65);
+      --pink: #f43f5e;
+      --pink-dark: #e11d48;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(120,20,60,.4), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 90% 80%, rgba(90,10,30,.35), transparent 50%),
+        var(--bg);
+      display: flex; flex-direction: column;
+    }
+    a { color: var(--pink); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .top {
+      padding: 18px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #fff; text-decoration: none; }
+    .brand img { height: 34px; }
+    .wrap {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 24px 16px 48px;
+    }
+    .panel {
+      width: 100%; max-width: 420px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px 24px 26px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.35);
+    }
+    .panel h1 { font-size: 1.55rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -.02em; }
+    .panel .sub { color: var(--muted); font-size: .92rem; margin-bottom: 22px; }
+    .tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+      background: rgba(0,0,0,.25); border-radius: 12px; padding: 4px; margin-bottom: 22px;
+    }
+    .tab {
+      border: none; background: transparent; color: var(--muted);
+      padding: 10px; border-radius: 10px; font-weight: 700; font-size: .9rem; cursor: pointer;
+    }
+    .tab.active { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; }
+    label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: 6px; color: rgba(255,255,255,.85); }
+    .field { margin-bottom: 14px; }
+    input {
+      width: 100%; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid var(--line); background: rgba(0,0,0,.3); color: #fff;
+      font-size: .95rem; outline: none;
+    }
+    input:focus { border-color: rgba(244,63,94,.55); box-shadow: 0 0 0 3px rgba(244,63,94,.15); }
+    .btn {
+      width: 100%; margin-top: 8px; padding: 13px;
+      border: none; border-radius: 999px; font-weight: 800; font-size: .95rem;
+      cursor: pointer; color: #fff;
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      box-shadow: 0 10px 28px rgba(225,29,72,.35);
+    }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .msg { margin-top: 14px; font-size: .88rem; min-height: 1.2em; }
+    .msg.err { color: #fda4af; }
+    .msg.ok { color: #6ee7b7; }
+    .foot { margin-top: 18px; text-align: center; color: var(--muted); font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <a class="brand" href="index.html">
+      <img src="images/grobizzz-logo.png" alt="Grobizzz" onerror="this.style.display='none'" />
+      <span>Grobizzz</span>
+    </a>
+    <a href="index.html" style="color:rgba(255,255,255,.7);font-size:.9rem">← Home</a>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <h1 id="title">Welcome back</h1>
+      <p class="sub" id="subtitle">Log in to manage your business profiles.</p>
+
+      <div class="tabs">
+        <button type="button" class="tab active" data-mode="login">Login</button>
+        <button type="button" class="tab" data-mode="signup">Sign up</button>
+      </div>
+
+      <form id="auth-form" autocomplete="on">
+        <div class="field" id="name-field" hidden>
+          <label for="full_name">Full name</label>
+          <input id="full_name" name="full_name" type="text" placeholder="Your name" />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@email.com" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required minlength="6" placeholder="Min. 6 characters" />
+        </div>
+        <button class="btn" type="submit" id="submit-btn">Log in</button>
+        <p class="msg" id="msg" role="status"></p>
+      </form>
+
+      <p class="foot">By continuing you agree to use Grobizzz for your business profiles.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
