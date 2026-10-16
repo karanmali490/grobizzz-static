@@ -41,7 +41,7 @@
       display: flex; align-items: center; gap: 10px;
       font-weight: 800; padding: 6px 10px 18px;
     }
-    .brand img { height: 32px; }
+    .brand img { height: 48px; width: auto; object-fit: contain; }
     .nav-btn {
       display: flex; align-items: center; gap: 12px;
       width: 100%; padding: 12px 14px; border-radius: 12px;
@@ -144,6 +144,7 @@
     <aside class="sidebar" id="sidebar">
       <a class="brand" href="dashboard.html">
         <img src="images/grobizzz-logo.png" alt="" onerror="this.style.display='none'" />
+       
       </a>
       <button type="button" class="nav-btn active" data-panel="home"><i class="fa-solid fa-house"></i> Home</button>
       <button type="button" class="nav-btn" data-panel="profiles"><i class="fa-solid fa-store"></i> Manage / Create profile</button>
