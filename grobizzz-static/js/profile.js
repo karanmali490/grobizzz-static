@@ -888,8 +888,14 @@
       showError('Configure js/config.js with your Supabase URL and anon key.');
       return null;
     }
+    // Must persist session so preview=1 can load the owner's draft (RLS)
     window.__grobizzzSb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
-      auth: { persistSession: false, autoRefreshToken: false }
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+      }
     });
     return window.__grobizzzSb;
   }
@@ -922,12 +928,21 @@
       var sb = getSb();
       if (!sb) return;
 
+      // For preview, ensure session is restored (draft RLS needs auth.uid())
+      if (preview) {
+        var sess = await sb.auth.getSession();
+        if (!sess.data || !sess.data.session) {
+          window.location.href = 'auth.html?next=' + encodeURIComponent(window.location.href);
+          return;
+        }
+      }
+
       var q = sb
         .from('businesses')
         .select('*, templates:template_id ( slug, name, folder )')
         .eq('slug', slug);
 
-      // Public visitors only see published; preview=1 can load draft
+      // Public: published only. Preview: any status for this slug (RLS still applies)
       if (!preview) {
         q = q.eq('status', 'published');
       }
@@ -936,9 +951,12 @@
 
       if (res.error) throw new Error(res.error.message);
       if (!res.data) {
-        showError(preview
-          ? 'Draft not found. Create a profile from the form first.'
-          : 'This business profile is not published yet.');
+        // Helpful message for drafts blocked by RLS or never inserted
+        if (preview) {
+          showError('Draft not found for this slug. Either create failed, or Supabase RLS is blocking draft read. Log in as the creator and run the SQL policies for owner select.');
+        } else {
+          showError('This business profile is not published yet.');
+        }
         return;
       }
 
