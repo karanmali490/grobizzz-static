@@ -9,8 +9,8 @@ window.GROBIZZZ_CONFIG = {
 
   // Where public profile is opened after create
   // Relative path from form, or absolute URL on your domain
-  PROFILE_BASE: 'profile.html?slug=',
+  PROFILE_BASE: '/',
 
   // Optional: full public site URL for share messages
-  PUBLIC_SITE_URL: '' // e.g. 'https://grobizzz.in' – leave '' to use current origin
+  PUBLIC_SITE_URL: 'https://grobizzz.in' 
 };
