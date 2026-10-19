@@ -977,19 +977,73 @@ document.addEventListener('DOMContentLoaded', () => {
         published_at: null
       };
 
-      // Attach logged-in user (required)
+      // Attach logged-in user
       const user = await requireAuth();
       if (!user) return;
       row.user_id = user.id;
-      // payment_status for publish gate
       if (!row.features) row.features = {};
       row.features = Object.assign({}, row.features, {
         payment_status: 'unpaid',
         is_live: false
       });
 
-      const { data: business, error: insErr } = await sb.from('businesses').insert(row).select().single();
-      if (insErr) throw new Error(insErr.message || 'Failed to create profile');
+      // Insert with fallbacks if some columns are missing in Supabase
+      let business = null;
+      let insErr = null;
+
+      ({ data: business, error: insErr } = await sb.from('businesses').insert(row).select().single());
+
+      // Retry without user_id if column missing
+      if (insErr && /user_id/i.test(insErr.message || '')) {
+        console.warn('Retry without user_id:', insErr.message);
+        delete row.user_id;
+        ({ data: business, error: insErr } = await sb.from('businesses').insert(row).select().single());
+      }
+
+      // Retry without status if column missing / invalid
+      if (insErr && /status/i.test(insErr.message || '')) {
+        console.warn('Retry without status:', insErr.message);
+        delete row.status;
+        delete row.published_at;
+        ({ data: business, error: insErr } = await sb.from('businesses').insert(row).select().single());
+      }
+
+      // Retry minimal required fields only
+      if (insErr) {
+        console.warn('Full insert failed, trying minimal row:', insErr.message);
+        const minimal = {
+          business_name: row.business_name,
+          slug: row.slug,
+          category: row.category || null,
+          description: row.description || row.about || null,
+          about: row.about || null,
+          phone: row.phone || null,
+          whatsapp: row.whatsapp || null,
+          email: row.email || null,
+          address: row.address || null,
+          city: row.city || null,
+          logo_url: row.logo_url || null,
+          cover_image_url: row.cover_image_url || null,
+          primary_color: row.primary_color || null,
+          secondary_color: row.secondary_color || null,
+          accent_color: row.accent_color || null,
+          features: row.features || {}
+        };
+        if (row.user_id) minimal.user_id = row.user_id;
+        ({ data: business, error: insErr } = await sb.from('businesses').insert(minimal).select().single());
+        if (insErr && /user_id/i.test(insErr.message || '')) {
+          delete minimal.user_id;
+          ({ data: business, error: insErr } = await sb.from('businesses').insert(minimal).select().single());
+        }
+      }
+
+      if (insErr) {
+        throw new Error(
+          (insErr.message || 'Failed to create profile') +
+          ' | Tip: run supabase SQL for user_id/status, or check RLS insert policy.'
+        );
+      }
+      if (!business) throw new Error('No business row returned after insert');
 
       // Gallery rows
       const galleryUrls = payload.gallery_urls || [];
