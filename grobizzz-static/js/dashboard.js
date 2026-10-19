@@ -16,7 +16,16 @@
       document.getElementById('boot').textContent = 'Configure js/config.js with Supabase keys';
       return null;
     }
-    sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    if (window.__grobizzzSb) { sb = window.__grobizzzSb; return sb; }
+    sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+      }
+    });
+    window.__grobizzzSb = sb;
     return sb;
   }
 

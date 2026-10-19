@@ -14,7 +14,16 @@
       msg('Configure js/config.js', true);
       return null;
     }
-    return window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    if (window.__grobizzzSb) return window.__grobizzzSb;
+    window.__grobizzzSb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+      }
+    });
+    return window.__grobizzzSb;
   }
 
   document.getElementById('preview-btn').onclick = function () {

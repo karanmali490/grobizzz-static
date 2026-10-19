@@ -6,12 +6,21 @@
   var mode = 'login';
 
   function getClient() {
+    if (window.__grobizzzSb) return window.__grobizzzSb;
     if (sb) return sb;
     if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || cfg.SUPABASE_URL.indexOf('YOUR_') === 0) {
       setMsg('Configure SUPABASE_URL and SUPABASE_ANON_KEY in js/config.js', true);
       return null;
     }
-    sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+      }
+    });
+    window.__grobizzzSb = sb;
     return sb;
   }
 

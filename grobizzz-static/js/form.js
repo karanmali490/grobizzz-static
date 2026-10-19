@@ -728,7 +728,12 @@ document.addEventListener('DOMContentLoaded', () => {
       throw new Error('Supabase SDK not loaded. Check script tag in form.html');
     }
     window.__grobizzzSb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
-      auth: { persistSession: false, autoRefreshToken: false }
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+      }
     });
     return window.__grobizzzSb;
   }
