@@ -52,36 +52,72 @@
     try {
       var userRes = await c.auth.getUser();
       var user = userRes.data && userRes.data.user;
-      // Try user-owned rows; fall back to empty if column missing
-      var q = c.from('businesses').select('id,business_name,slug,is_published,created_at').order('created_at', { ascending: false }).limit(20);
-      if (user) {
-        // optional owner filter if column exists later
-        // q = q.eq('user_id', user.id);
+      if (!user) {
+        msg.textContent = 'Please log in again.';
+        return;
       }
-      var res = await q;
+
+      // Use status (not is_published) — drafts + published for this user
+      var res = await c
+        .from('businesses')
+        .select('id,business_name,slug,status,created_at,user_id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      // If user_id column missing or RLS blocks, retry without filter (dev fallback)
       if (res.error) {
-        msg.textContent = 'Could not load profiles yet. Create one from the form.';
+        console.warn('profiles by user_id failed:', res.error.message);
+        res = await c
+          .from('businesses')
+          .select('id,business_name,slug,status,created_at')
+          .order('created_at', { ascending: false })
+          .limit(20);
+      }
+
+      if (res.error) {
+        msg.textContent = 'Could not load profiles: ' + (res.error.message || 'Check Supabase columns & RLS');
         document.getElementById('stat-profiles').textContent = '0';
         return;
       }
+
       var rows = res.data || [];
       document.getElementById('stat-profiles').textContent = String(rows.length);
       if (!rows.length) {
-        msg.textContent = 'No profiles yet. Click “Open profile form” to create one.';
+        msg.textContent = 'No profiles yet. Click “Open profile form” to create a draft.';
         return;
       }
       msg.textContent = '';
       rows.forEach(function (r) {
+        var isLive = r.status === 'published';
+        var href = isLive
+          ? ((cfg.PROFILE_BASE || 'profile.html?slug=') + encodeURIComponent(r.slug || ''))
+          : ('profile.html?slug=' + encodeURIComponent(r.slug || '') + '&preview=1');
         var a = document.createElement('a');
-        a.href = (cfg.PROFILE_BASE || 'profile.html?slug=') + encodeURIComponent(r.slug || '');
+        a.href = href;
         a.target = '_blank';
+        a.rel = 'noopener';
         a.style.cssText = 'display:block;padding:12px 14px;margin-bottom:8px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)';
-        a.innerHTML = '<strong>' + (r.business_name || r.slug || 'Profile') + '</strong>' +
+        a.innerHTML =
+          '<strong>' + (r.business_name || r.slug || 'Profile') + '</strong>' +
           '<div style="font-size:.8rem;color:rgba(255,255,255,.55);margin-top:4px">/' + (r.slug || '') +
-          (r.is_published ? ' · Published' : ' · Draft') + '</div>';
+          (isLive
+            ? ' · <span style="color:#6ee7b7">Published</span>'
+            : ' · <span style="color:#fbbf24">Draft</span> — click to preview') +
+          '</div>';
         list.appendChild(a);
+
+        // Pay button for drafts
+        if (!isLive) {
+          var pay = document.createElement('a');
+          pay.href = 'payment.html?slug=' + encodeURIComponent(r.slug || '');
+          pay.textContent = '💳 Pay & Publish';
+          pay.style.cssText = 'display:inline-block;margin:0 0 14px 4px;font-size:.82rem;font-weight:700;color:#fda4af';
+          list.appendChild(pay);
+        }
       });
     } catch (e) {
+      console.error(e);
       msg.textContent = 'Could not load profiles.';
     }
   }
