@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pay & Publish – Grobizzz</title>
+  <link rel="icon" href="images/grobizzz-logo.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#0a0e1a; --pink:#e11d48; --text:#fff; --muted:rgba(255,255,255,.65); --line:rgba(255,255,255,.12); }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:Inter,system-ui,sans-serif; background:radial-gradient(ellipse at 20% 0%,rgba(225,29,72,.25),transparent 50%),var(--bg); color:var(--text); min-height:100vh; }
+    a { color:#fda4af; }
+    .wrap { max-width:480px; margin:0 auto; padding:40px 18px 60px; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:800; margin-bottom:28px; }
+    .brand img { height:44px; }
+    .card { background:rgba(255,255,255,.05); border:1px solid var(--line); border-radius:20px; padding:26px 22px; }
+    h1 { font-size:1.45rem; font-weight:800; margin-bottom:8px; }
+    .sub { color:var(--muted); font-size:.92rem; margin-bottom:20px; line-height:1.5; }
+    .price { font-size:2.4rem; font-weight:800; margin:12px 0 4px; }
+    .price span { font-size:1rem; font-weight:600; color:var(--muted); }
+    .plan { list-style:none; margin:16px 0 22px; }
+    .plan li { padding:8px 0; border-bottom:1px solid var(--line); font-size:.9rem; color:var(--muted); }
+    .plan li strong { color:#fff; }
+    .btn { display:block; width:100%; text-align:center; padding:14px; border:none; border-radius:999px; font-weight:800; font-size:1rem; cursor:pointer; color:#fff; background:linear-gradient(135deg,#f43f5e,#e11d48); margin-top:10px; }
+    .btn:disabled { opacity:.55; cursor:not-allowed; }
+    .btn-ghost { background:transparent; border:1px solid var(--line); color:#fff; }
+    .msg { margin-top:14px; font-size:.88rem; min-height:1.2em; }
+    .msg.err { color:#fda4af; }
+    .msg.ok { color:#6ee7b7; }
+    .note { margin-top:16px; font-size:.8rem; color:var(--muted); line-height:1.5; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="dashboard.html" style="color:#fff;text-decoration:none">
+      <img src="images/grobizzz-logo.png" alt="Grobizzz" onerror="this.style.display='none'" />
+      <span>Grobizzz</span>
+    </a>
+    <div class="card">
+      <h1>💳 Pay to publish</h1>
+      <p class="sub" id="biz-line">Complete payment to make your business website live for customers.</p>
+      <div class="price">₹999 <span>/ one-time publish</span></div>
+      <ul class="plan">
+        <li><strong>Public live link</strong> — shareable with anyone</li>
+        <li><strong>WhatsApp, Call, Maps</strong> — ready for customers</li>
+        <li><strong>Your design + gallery</strong> — as you set in the form</li>
+      </ul>
+      <button class="btn" type="button" id="pay-btn">Pay ₹999 &amp; Publish</button>
+      <button class="btn btn-ghost" type="button" id="preview-btn">👀 Back to preview</button>
+      <p class="msg" id="msg"></p>
+      <p class="note">Payment gateway (Razorpay / UPI) can be connected next. For now this confirms payment in your account and publishes the profile. Must be logged in as the profile owner.</p>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/payment.js"></script>
+</body>
+</html>

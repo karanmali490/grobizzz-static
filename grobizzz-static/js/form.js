@@ -706,6 +706,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ===== Supabase helpers (static / no Node) =====
+  
+  async function requireAuth() {
+    const sb = getSupabase();
+    const { data } = await sb.auth.getSession();
+    if (!data || !data.session) {
+      window.location.href = 'auth.html?next=' + encodeURIComponent('form.html');
+      return null;
+    }
+    return data.session.user;
+  }
+
   function getSupabase() {
     if (window.__grobizzzSb) return window.__grobizzzSb;
     var cfg = window.GROBIZZZ_CONFIG || {};
@@ -957,9 +968,20 @@ document.addEventListener('DOMContentLoaded', () => {
         logo_url: payload.logo_url || null,
         cover_image_url: payload.cover_image_url || null,
         favicon_url: payload.favicon_url || null,
-        status: 'published',
-        published_at: new Date().toISOString()
+        status: 'draft',
+        published_at: null
       };
+
+      // Attach logged-in user (required)
+      const user = await requireAuth();
+      if (!user) return;
+      row.user_id = user.id;
+      // payment_status for publish gate
+      if (!row.features) row.features = {};
+      row.features = Object.assign({}, row.features, {
+        payment_status: 'unpaid',
+        is_live: false
+      });
 
       const { data: business, error: insErr } = await sb.from('businesses').insert(row).select().single();
       if (insErr) throw new Error(insErr.message || 'Failed to create profile');
@@ -976,14 +998,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const siteCfg = window.GROBIZZZ_CONFIG || {};
-      const profileUrl = (siteCfg.PROFILE_BASE || 'profile.html?slug=') + encodeURIComponent(slug);
+      // Preview only — not live until payment + publish
+      const previewUrl = 'profile.html?slug=' + encodeURIComponent(slug) + '&preview=1';
       alert(
-        'Profile created successfully!\n\n' +
+        'Draft saved!\n\n' +
         business.business_name + '\n' +
-        'Slug: ' + slug + '\n\n' +
-        'Opening your profile…'
+        'Preview your website next.\n' +
+        'Publish goes live only after payment.'
       );
-      window.location.href = profileUrl;
+      window.location.href = previewUrl;
     } catch (err) {
       console.error(err);
       alert('Unable to create profile. ' + (err.message || 'Please try again.'));
@@ -992,6 +1015,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Init
-  goToStep(1);
+  // Init — must be logged in
+  requireAuth().then(function (user) {
+    if (!user) return;
+    goToStep(1);
+  });
 });

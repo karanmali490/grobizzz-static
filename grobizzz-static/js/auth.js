@@ -57,7 +57,8 @@
     if (!client) return;
     var res = await client.auth.getSession();
     if (res.data && res.data.session) {
-      window.location.href = 'dashboard.html';
+      var next = new URLSearchParams(window.location.search).get('next') || 'dashboard.html';
+        window.location.href = next;
     }
   }
   redirectIfSession();
@@ -84,7 +85,8 @@
         if (sign.error) throw sign.error;
         // If email confirmation is disabled, session may exist
         if (sign.data.session) {
-          window.location.href = 'dashboard.html';
+          var nextUrl = new URLSearchParams(window.location.search).get('next') || 'dashboard.html';
+          window.location.href = nextUrl;
           return;
         }
         setMsg('Account created. Check your email to confirm, then log in.', false);
@@ -92,7 +94,8 @@
       } else {
         var login = await client.auth.signInWithPassword({ email: email, password: password });
         if (login.error) throw login.error;
-        window.location.href = 'dashboard.html';
+        var nextUrl = new URLSearchParams(window.location.search).get('next') || 'dashboard.html';
+          window.location.href = nextUrl;
       }
     } catch (err) {
       setMsg(err.message || 'Something went wrong', true);

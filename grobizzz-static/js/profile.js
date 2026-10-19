@@ -894,24 +894,61 @@
     return window.__grobizzzSb;
   }
 
+  function isPreviewMode() {
+    try { return new URLSearchParams(window.location.search).get('preview') === '1'; }
+    catch (e) { return false; }
+  }
+
+  function showPreviewBar(b) {
+    if (document.getElementById('preview-bar')) return;
+    var bar = document.createElement('div');
+    bar.id = 'preview-bar';
+    bar.innerHTML =
+      '<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#e11d48,#be123c);color:#fff;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-family:Inter,system-ui,sans-serif">' +
+        '<strong style="font-size:.92rem">👀 PREVIEW MODE — not live on the internet yet</strong>' +
+        '<span style="opacity:.9;font-size:.85rem">Pay to publish this website for customers</span>' +
+        '<a href="payment.html?slug=' + encodeURIComponent(b.slug || '') + '" style="background:#fff;color:#be123c;font-weight:800;padding:10px 18px;border-radius:999px;text-decoration:none;font-size:.88rem">💳 Pay &amp; Publish</a>' +
+        '<a href="dashboard.html" style="color:#fff;font-size:.85rem;text-decoration:underline">Dashboard</a>' +
+      '</div>';
+    document.body.appendChild(bar);
+    document.body.style.paddingTop = '64px';
+  }
+
   async function init() {
     var slug = getSlug();
     if (!slug) { showError('Invalid profile URL. Use profile.html?slug=your-business'); return; }
+    var preview = isPreviewMode();
     try {
       var sb = getSb();
       if (!sb) return;
 
-      var res = await sb
+      var q = sb
         .from('businesses')
         .select('*, templates:template_id ( slug, name, folder )')
-        .eq('slug', slug)
-        .eq('status', 'published')
-        .maybeSingle();
+        .eq('slug', slug);
+
+      // Public visitors only see published; preview=1 can load draft
+      if (!preview) {
+        q = q.eq('status', 'published');
+      }
+
+      var res = await q.maybeSingle();
 
       if (res.error) throw new Error(res.error.message);
-      if (!res.data) { showError('This business profile is not available.'); return; }
+      if (!res.data) {
+        showError(preview
+          ? 'Draft not found. Create a profile from the form first.'
+          : 'This business profile is not published yet.');
+        return;
+      }
 
       var b = res.data;
+
+      // If someone uses preview URL on already published site, still show profile
+      if (preview && b.status !== 'published') {
+        showPreviewBar(b);
+      }
+
       var id = b.id;
       var [services, products, gallery, hours] = await Promise.all([
         sb.from('services').select('*').eq('business_id', id).eq('is_active', true).order('display_order'),
