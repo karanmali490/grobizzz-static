@@ -707,6 +707,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Supabase helpers (static / no Node) =====
   
+  let editingId = null;
+  let editingSlug = null;
+  let editingStatus = 'draft';
+
   async function requireAuth() {
     const sb = getSupabase();
     const { data } = await sb.auth.getSession();
@@ -781,6 +785,96 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ---------- Form Submit → upload images → create + publish ----------
+
+  async function loadEditProfile(slug) {
+    const sb = getSupabase();
+    const user = await requireAuth();
+    if (!user) return;
+    generateBtn.disabled = true;
+    generateBtn.textContent = 'Loading profile…';
+    try {
+      let q = sb.from('businesses').select('*').eq('slug', slug);
+      const res = await q.maybeSingle();
+      if (res.error) throw res.error;
+      if (!res.data) {
+        alert('Profile not found: ' + slug);
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate My Website 🚀';
+        return;
+      }
+      const b = res.data;
+      if (b.user_id && b.user_id !== user.id) {
+        alert('You can only edit your own profiles.');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      editingId = b.id;
+      editingSlug = b.slug;
+      editingStatus = b.status || 'draft';
+
+      function setVal(name, val) {
+        const el = form.querySelector('[name="' + name + '"]');
+        if (el && val != null) el.value = val;
+      }
+      setVal('business_name', b.business_name);
+      setVal('tagline', b.tagline);
+      setVal('about', b.about || b.description);
+      setVal('phone_primary', b.phone);
+      setVal('phone_whatsapp', b.whatsapp);
+      setVal('email', b.email);
+      setVal('address', b.address);
+      setVal('city', b.city);
+      setVal('pincode', b.pincode);
+      setVal('maps_link', b.google_maps_url);
+      setVal('instagram', b.instagram_url);
+      setVal('facebook', b.facebook_url);
+      setVal('youtube', b.youtube_url);
+      setVal('zomato_link', b.zomato_url);
+      setVal('swiggy_link', b.swiggy_url);
+      setVal('google_business', b.google_business_url);
+
+      const cat = document.getElementById('field-category');
+      if (cat && b.category) cat.value = b.category;
+      const tpl = document.getElementById('field-template');
+      if (tpl && b.template_slug) tpl.value = b.template_slug;
+
+      // Select biz type card if matches
+      if (b.category) {
+        document.querySelectorAll('.biz-type-card').forEach(function (card) {
+          const t = card.getAttribute('data-type') || '';
+          if (t && (b.category || '').toLowerCase().indexOf(t.replace(/-/g, ' ')) >= 0) {
+            card.click();
+          }
+        });
+      }
+
+      if (b.primary_color) {
+        const cp = document.getElementById('color_primary');
+        if (cp) cp.value = b.primary_color;
+      }
+      if (b.secondary_color) {
+        const cs = document.getElementById('color_secondary');
+        if (cs) cs.value = b.secondary_color;
+      }
+      if (b.accent_color) {
+        const ca = document.getElementById('color_accent');
+        if (ca) ca.value = b.accent_color;
+      }
+
+      generateBtn.textContent = editingStatus === 'published'
+        ? 'Save changes (live)'
+        : 'Save draft changes';
+      const title = document.querySelector('h1, .form-title, .sidebar .logo-text');
+      alert('Editing: ' + (b.business_name || slug) + '\\n\\nUpdate text and upload new logo/images if needed, then save.');
+    } catch (e) {
+      console.error(e);
+      alert('Could not load profile for edit: ' + (e.message || e));
+    } finally {
+      generateBtn.disabled = false;
+      if (!editingId) generateBtn.textContent = 'Generate My Website 🚀';
+    }
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!validateCurrentStep()) return;
@@ -929,10 +1023,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // 3) Create + publish via Supabase (no Node)
-      generateBtn.textContent = 'Creating profile…';
+      generateBtn.textContent = editingId ? 'Saving changes…' : 'Creating profile…';
       const sb = getSupabase();
       const baseSlug = slugifyName(payload.business_name || payload.subdomain || 'business');
-      const slug = await uniqueSlug(sb, baseSlug);
+      const slug = editingSlug || await uniqueSlug(sb, baseSlug);
 
       // Resolve template id
       let templateId = null;
@@ -987,10 +1081,27 @@ document.addEventListener('DOMContentLoaded', () => {
         is_live: false
       });
 
-      // Insert with fallbacks if some columns are missing in Supabase
+      // UPDATE existing profile (edit mode) OR INSERT new draft
       let business = null;
       let insErr = null;
 
+      if (editingId) {
+        if (editingStatus === 'published') {
+          row.status = 'published';
+          row.published_at = new Date().toISOString();
+        } else {
+          row.status = 'draft';
+          row.published_at = null;
+        }
+        if (editingSlug) row.slug = editingSlug;
+        delete row.user_id;
+        // Keep existing images unless user uploaded new ones
+        if (!row.logo_url) delete row.logo_url;
+        if (!row.cover_image_url) delete row.cover_image_url;
+        if (!row.favicon_url) delete row.favicon_url;
+        ({ data: business, error: insErr } = await sb.from('businesses').update(row).eq('id', editingId).select().single());
+        if (insErr) throw new Error(insErr.message || 'Failed to update profile');
+      } else {
       ({ data: business, error: insErr } = await sb.from('businesses').insert(row).select().single());
 
       // Retry without user_id if column missing
@@ -1044,6 +1155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       }
       if (!business) throw new Error('No business row returned after insert');
+      } // end insert else
 
       // Gallery rows
       const galleryUrls = payload.gallery_urls || [];
@@ -1059,13 +1171,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const siteCfg = window.GROBIZZZ_CONFIG || {};
       // Preview only — not live until payment + publish
       const previewUrl = 'profile.html?slug=' + encodeURIComponent(slug) + '&preview=1';
-      alert(
-        'Draft saved!\n\n' +
-        business.business_name + '\n' +
-        'Preview your website next.\n' +
-        'Publish goes live only after payment.'
-      );
-      window.location.href = previewUrl;
+      if (editingId && (business.status === 'published' || editingStatus === 'published')) {
+        alert('Changes saved!\n\nYour live profile was updated.');
+        window.location.href = (siteCfg.PROFILE_BASE || 'profile.html?slug=') + encodeURIComponent(business.slug || editingSlug || slug);
+      } else {
+        alert(
+          'Draft saved!\n\n' +
+          (business.business_name || '') + '\n' +
+          'Preview your website next.\n' +
+          'It stays private until you Pay & Publish.'
+        );
+        window.location.href = previewUrl;
+      }
     } catch (err) {
       console.error(err);
       alert('Unable to create profile. ' + (err.message || 'Please try again.'));
@@ -1078,5 +1195,7 @@ document.addEventListener('DOMContentLoaded', () => {
   requireAuth().then(function (user) {
     if (!user) return;
     goToStep(1);
+    var editSlug = new URLSearchParams(window.location.search).get('edit');
+    if (editSlug) loadEditProfile(editSlug);
   });
 });

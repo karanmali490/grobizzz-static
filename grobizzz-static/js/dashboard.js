@@ -99,31 +99,39 @@
       msg.textContent = '';
       rows.forEach(function (r) {
         var isLive = r.status === 'published';
-        var href = isLive
-          ? ((cfg.PROFILE_BASE || 'profile.html?slug=') + encodeURIComponent(r.slug || ''))
-          : ('profile.html?slug=' + encodeURIComponent(r.slug || '') + '&preview=1');
-        var a = document.createElement('a');
-        a.href = href;
-        a.target = '_blank';
-        a.rel = 'noopener';
-        a.style.cssText = 'display:block;padding:12px 14px;margin-bottom:8px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)';
-        a.innerHTML =
-          '<strong>' + (r.business_name || r.slug || 'Profile') + '</strong>' +
-          '<div style="font-size:.8rem;color:rgba(255,255,255,.55);margin-top:4px">/' + (r.slug || '') +
+        var card = document.createElement('div');
+        card.style.cssText = 'padding:14px 16px;margin-bottom:12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)';
+        card.innerHTML =
+          '<strong style="font-size:1rem">' + (r.business_name || r.slug || 'Profile') + '</strong>' +
+          '<div style="font-size:.8rem;color:rgba(255,255,255,.55);margin:6px 0 12px">/' + (r.slug || '') +
           (isLive
-            ? ' · <span style="color:#6ee7b7">Published</span>'
-            : ' · <span style="color:#fbbf24">Draft</span> — click to preview') +
-          '</div>';
-        list.appendChild(a);
+            ? ' · <span style="color:#6ee7b7">Published (public)</span>'
+            : ' · <span style="color:#fbbf24">Draft (private — not public)</span>') +
+          '</div>' +
+          '<div style="display:flex;flex-wrap:wrap;gap:8px"></div>';
+        var actions = card.querySelector('div:last-child');
 
-        // Pay button for drafts
-        if (!isLive) {
-          var pay = document.createElement('a');
-          pay.href = 'payment.html?slug=' + encodeURIComponent(r.slug || '');
-          pay.textContent = '💳 Pay & Publish';
-          pay.style.cssText = 'display:inline-block;margin:0 0 14px 4px;font-size:.82rem;font-weight:700;color:#fda4af';
-          list.appendChild(pay);
+        function linkBtn(href, label, primary) {
+          var a = document.createElement('a');
+          a.href = href;
+          a.textContent = label;
+          a.style.cssText = primary
+            ? 'padding:8px 14px;border-radius:999px;background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff;font-size:.8rem;font-weight:700;text-decoration:none'
+            : 'padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.8rem;font-weight:600;text-decoration:none';
+          return a;
         }
+
+        // Edit always
+        actions.appendChild(linkBtn('form.html?edit=' + encodeURIComponent(r.slug || ''), '✏️ Edit', false));
+
+        if (isLive) {
+          actions.appendChild(linkBtn((cfg.PROFILE_BASE || 'profile.html?slug=') + encodeURIComponent(r.slug || ''), '🌐 View live', true));
+        } else {
+          actions.appendChild(linkBtn('profile.html?slug=' + encodeURIComponent(r.slug || '') + '&preview=1', '👀 Preview', false));
+          actions.appendChild(linkBtn('payment.html?slug=' + encodeURIComponent(r.slug || ''), '💳 Pay & Publish', true));
+        }
+
+        list.appendChild(card);
       });
     } catch (e) {
       console.error(e);
