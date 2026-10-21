@@ -1,3 +1,6 @@
+/**
+ * Grobizzz Auth – Supabase email/password (existing system)
+ */
 (function () {
   'use strict';
 
@@ -8,7 +11,7 @@
   function getClient() {
     if (window.__grobizzzSb) return window.__grobizzzSb;
     if (sb) return sb;
-    if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || cfg.SUPABASE_URL.indexOf('YOUR_') === 0) {
+    if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || String(cfg.SUPABASE_URL).indexOf('YOUR_') === 0) {
       setMsg('Configure SUPABASE_URL and SUPABASE_ANON_KEY in js/config.js', true);
       return null;
     }
@@ -31,25 +34,38 @@
     el.className = 'msg ' + (isErr ? 'err' : 'ok');
   }
 
+  function ui() {
+    return window.GrobizzzAuthUI || {};
+  }
+
+  function nextUrl() {
+    return new URLSearchParams(window.location.search).get('next') || 'dashboard.html';
+  }
+
   function setMode(next) {
     mode = next;
     document.querySelectorAll('.tab').forEach(function (t) {
-      t.classList.toggle('active', t.getAttribute('data-mode') === mode);
+      var on = t.getAttribute('data-mode') === mode;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
     });
     var nameField = document.getElementById('name-field');
     var title = document.getElementById('title');
     var sub = document.getElementById('subtitle');
-    var btn = document.getElementById('submit-btn');
+    var btnText = document.querySelector('#submit-btn .btn-text');
+    var opts = document.getElementById('login-opts');
     if (mode === 'signup') {
-      nameField.hidden = false;
-      title.textContent = 'Create account';
-      sub.textContent = 'Sign up to build and manage your Grobizzz profiles.';
-      btn.textContent = 'Sign up';
+      if (nameField) nameField.hidden = false;
+      if (title) title.textContent = 'Create account';
+      if (sub) sub.textContent = 'Sign up to build and manage your Grobizzz profiles.';
+      if (btnText) btnText.textContent = 'Sign up';
+      if (opts) opts.style.display = 'none';
     } else {
-      nameField.hidden = true;
-      title.textContent = 'Welcome back';
-      sub.textContent = 'Log in to manage your business profiles.';
-      btn.textContent = 'Log in';
+      if (nameField) nameField.hidden = true;
+      if (title) title.textContent = 'Welcome Back';
+      if (sub) sub.textContent = 'Sign in to continue to your account.';
+      if (btnText) btnText.textContent = 'Sign In';
+      if (opts) opts.style.display = '';
     }
     setMsg('');
   }
@@ -60,29 +76,63 @@
     });
   });
 
-  // If already logged in → dashboard
+  // Forgot password
+  var forgotBtn = document.getElementById('forgot-btn');
+  if (forgotBtn) {
+    forgotBtn.addEventListener('click', async function () {
+      var client = getClient();
+      if (!client) return;
+      var email = (document.getElementById('email').value || '').trim();
+      if (!email) {
+        setMsg('Enter your email above, then click Forgot password.', true);
+        return;
+      }
+      ui().setLoading && ui().setLoading(true);
+      setMsg('Sending reset link…', false);
+      try {
+        var redirectTo = (cfg.PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '') + '/auth.html';
+        var res = await client.auth.resetPasswordForEmail(email, { redirectTo: redirectTo });
+        if (res.error) throw res.error;
+        setMsg('Password reset email sent. Check your inbox.', false);
+      } catch (err) {
+        setMsg(err.message || 'Could not send reset email', true);
+        ui().shake && ui().shake();
+      } finally {
+        ui().setLoading && ui().setLoading(false);
+      }
+    });
+  }
+
   async function redirectIfSession() {
     var client = getClient();
     if (!client) return;
     var res = await client.auth.getSession();
     if (res.data && res.data.session) {
-      var next = new URLSearchParams(window.location.search).get('next') || 'dashboard.html';
-        window.location.href = next;
+      window.location.href = nextUrl();
     }
   }
   redirectIfSession();
 
-  document.getElementById('auth-form').addEventListener('submit', async function (e) {
+  var form = document.getElementById('auth-form');
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
     var client = getClient();
     if (!client) return;
 
     var email = document.getElementById('email').value.trim();
     var password = document.getElementById('password').value;
-    var fullName = (document.getElementById('full_name').value || '').trim();
-    var btn = document.getElementById('submit-btn');
-    btn.disabled = true;
-    setMsg(mode === 'signup' ? 'Creating account…' : 'Logging in…', false);
+    var fullName = (document.getElementById('full_name') && document.getElementById('full_name').value || '').trim();
+
+    if (!email || !password) {
+      setMsg('Email and password are required.', true);
+      ui().shake && ui().shake();
+      return;
+    }
+
+    ui().setLoading && ui().setLoading(true);
+    setMsg(mode === 'signup' ? 'Creating account…' : 'Signing in…', false);
 
     try {
       if (mode === 'signup') {
@@ -92,10 +142,9 @@
           options: { data: { full_name: fullName || null } }
         });
         if (sign.error) throw sign.error;
-        // If email confirmation is disabled, session may exist
+        ui().saveRemember && ui().saveRemember(email);
         if (sign.data.session) {
-          var nextUrl = new URLSearchParams(window.location.search).get('next') || 'dashboard.html';
-          window.location.href = nextUrl;
+          window.location.href = nextUrl();
           return;
         }
         setMsg('Account created. Check your email to confirm, then log in.', false);
@@ -103,13 +152,14 @@
       } else {
         var login = await client.auth.signInWithPassword({ email: email, password: password });
         if (login.error) throw login.error;
-        var nextUrl = new URLSearchParams(window.location.search).get('next') || 'dashboard.html';
-          window.location.href = nextUrl;
+        ui().saveRemember && ui().saveRemember(email);
+        window.location.href = nextUrl();
       }
     } catch (err) {
       setMsg(err.message || 'Something went wrong', true);
+      ui().shake && ui().shake();
     } finally {
-      btn.disabled = false;
+      ui().setLoading && ui().setLoading(false);
     }
   });
 })();

@@ -3,127 +3,158 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login / Sign up – Grobizzz</title>
-  <meta name="theme-color" content="#0a0e1a" />
+  <title>Login – Grobizzz</title>
+  <meta name="theme-color" content="#000000" />
   <link rel="icon" href="images/grobizzz-logo.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <style>
-    :root {
-      --bg: #0a0e1a;
-      --card: rgba(255,255,255,.05);
-      --line: rgba(255,255,255,.12);
-      --text: #fff;
-      --muted: rgba(255,255,255,.65);
-      --pink: #f43f5e;
-      --pink-dark: #e11d48;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      min-height: 100vh;
-      font-family: Inter, system-ui, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(120,20,60,.4), transparent 55%),
-        radial-gradient(ellipse 60% 50% at 90% 80%, rgba(90,10,30,.35), transparent 50%),
-        var(--bg);
-      display: flex; flex-direction: column;
-    }
-    a { color: var(--pink); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .top {
-      padding: 18px 22px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #fff; text-decoration: none; }
-    .brand img { height: 48px; width: auto; object-fit: contain; }
-    .wrap {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      padding: 24px 16px 48px;
-    }
-    .panel {
-      width: 100%; max-width: 420px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 28px 24px 26px;
-      box-shadow: 0 24px 60px rgba(0,0,0,.35);
-    }
-    .panel h1 { font-size: 1.55rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -.02em; }
-    .panel .sub { color: var(--muted); font-size: .92rem; margin-bottom: 22px; }
-    .tabs {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
-      background: rgba(0,0,0,.25); border-radius: 12px; padding: 4px; margin-bottom: 22px;
-    }
-    .tab {
-      border: none; background: transparent; color: var(--muted);
-      padding: 10px; border-radius: 10px; font-weight: 700; font-size: .9rem; cursor: pointer;
-    }
-    .tab.active { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; }
-    label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: 6px; color: rgba(255,255,255,.85); }
-    .field { margin-bottom: 14px; }
-    input {
-      width: 100%; padding: 12px 14px; border-radius: 12px;
-      border: 1px solid var(--line); background: rgba(0,0,0,.3); color: #fff;
-      font-size: .95rem; outline: none;
-    }
-    input:focus { border-color: rgba(244,63,94,.55); box-shadow: 0 0 0 3px rgba(244,63,94,.15); }
-    .btn {
-      width: 100%; margin-top: 8px; padding: 13px;
-      border: none; border-radius: 999px; font-weight: 800; font-size: .95rem;
-      cursor: pointer; color: #fff;
-      background: linear-gradient(135deg, #f43f5e, #e11d48);
-      box-shadow: 0 10px 28px rgba(225,29,72,.35);
-    }
-    .btn:disabled { opacity: .6; cursor: not-allowed; }
-    .msg { margin-top: 14px; font-size: .88rem; min-height: 1.2em; }
-    .msg.err { color: #fda4af; }
-    .msg.ok { color: #6ee7b7; }
-    .foot { margin-top: 18px; text-align: center; color: var(--muted); font-size: .85rem; }
-  </style>
+  <link rel="stylesheet" href="css/auth.css" />
 </head>
 <body>
-  <div class="top">
-    <a class="brand" href="index.html">
-      <img src="images/grobizzz-logo.png" alt="Grobizzz" onerror="this.style.display='none'" />
-      <span>Grobizzz</span>
-    </a>
-    <a href="index.html" style="color:rgba(255,255,255,.7);font-size:.9rem">← Home</a>
-  </div>
+  <!-- Animated stage -->
+  <div class="auth-stage" id="auth-stage" aria-hidden="true">
+    <div class="stage-bg"></div>
+    <p class="stage-label">Login Form <span>Animation</span></p>
 
-  <div class="wrap">
-    <div class="panel">
-      <h1 id="title">Welcome back</h1>
-      <p class="sub" id="subtitle">Log in to manage your business profiles.</p>
+    <div class="stage-scene">
+      <div class="bubble bubble-1" id="bubble-1">Wait a second! Let me grab the login form for you 😊</div>
+      <div class="bubble bubble-2" id="bubble-2">Here is your form! ✨</div>
 
-      <div class="tabs">
-        <button type="button" class="tab active" data-mode="login">Login</button>
-        <button type="button" class="tab" data-mode="signup">Sign up</button>
+      <!-- CSS/SVG character (walks + idle) -->
+      <div class="character" id="character" aria-hidden="true">
+        <svg class="char-svg" viewBox="0 0 120 160" width="120" height="160">
+          <!-- legs -->
+          <g class="leg leg-l"><rect x="42" y="110" width="14" height="36" rx="7" fill="#1e293b"/><ellipse cx="49" cy="148" rx="12" ry="6" fill="#334155"/></g>
+          <g class="leg leg-r"><rect x="64" y="110" width="14" height="36" rx="7" fill="#1e293b"/><ellipse cx="71" cy="148" rx="12" ry="6" fill="#334155"/></g>
+          <!-- body -->
+          <rect class="torso" x="38" y="62" width="44" height="52" rx="14" fill="#475569"/>
+          <rect x="42" y="70" width="36" height="28" rx="8" fill="#64748b"/>
+          <!-- arms -->
+          <g class="arm arm-l"><rect x="22" y="68" width="18" height="12" rx="6" fill="#64748b"/></g>
+          <g class="arm arm-r"><rect x="80" y="68" width="18" height="12" rx="6" fill="#64748b"/></g>
+          <!-- head -->
+          <circle cx="60" cy="42" r="22" fill="#fcd9b0"/>
+          <ellipse cx="60" cy="48" rx="10" ry="6" fill="#f5c49a"/>
+          <!-- cap -->
+          <path d="M36 36 Q60 18 84 36 L84 40 Q60 28 36 40 Z" fill="#e11d48"/>
+          <ellipse cx="60" cy="36" rx="20" ry="8" fill="#be123c"/>
+          <!-- glasses -->
+          <circle cx="50" cy="42" r="7" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+          <circle cx="70" cy="42" r="7" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+          <line x1="57" y1="42" x2="63" y2="42" stroke="#0f172a" stroke-width="2"/>
+          <!-- backpack -->
+          <rect x="78" y="72" width="16" height="28" rx="6" fill="#1d4ed8"/>
+        </svg>
       </div>
 
-      <form id="auth-form" autocomplete="on">
-        <div class="field" id="name-field" hidden>
-          <label for="full_name">Full name</label>
-          <input id="full_name" name="full_name" type="text" placeholder="Your name" autocomplete="name" />
+      <div class="ghost-panel" id="ghost-panel">
+        <div class="ghost-inner">
+          <div class="ghost-logo">G</div>
+          <p class="ghost-title">Welcome Back</p>
+          <div class="ghost-line"></div>
+          <div class="ghost-line short"></div>
+          <div class="ghost-btn"></div>
         </div>
-        <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" required placeholder="you@email.com" autocomplete="username" />
-        </div>
-        <div class="field">
-          <label for="password">Password</label>
-          <input id="password" name="password" type="password" required minlength="6" placeholder="Min. 6 characters" autocomplete="current-password" />
-        </div>
-        <button class="btn" type="submit" id="submit-btn">Log in</button>
-        <p class="msg" id="msg" role="status"></p>
-      </form>
-
-      <p class="foot">By continuing you agree to use Grobizzz for your business profiles.</p>
+      </div>
     </div>
+
+    <button type="button" class="skip-btn" id="skip-intro">Skip →</button>
   </div>
+
+  <!-- Real auth UI -->
+  <main class="auth-main" id="auth-main">
+    <header class="auth-top">
+      <a class="brand" href="index.html">
+        <img src="images/grobizzz-logo.png" alt="Grobizzz" width="48" height="48" onerror="this.style.display='none'" />
+        <span>Grobizzz</span>
+      </a>
+      <a class="home-link" href="index.html">← Home</a>
+    </header>
+
+    <div class="auth-layout">
+      <!-- idle character beside form on desktop -->
+      <div class="side-char" aria-hidden="true">
+        <svg class="char-svg idle" viewBox="0 0 120 160" width="140" height="186">
+          <g class="leg leg-l"><rect x="42" y="110" width="14" height="36" rx="7" fill="#1e293b"/><ellipse cx="49" cy="148" rx="12" ry="6" fill="#334155"/></g>
+          <g class="leg leg-r"><rect x="64" y="110" width="14" height="36" rx="7" fill="#1e293b"/><ellipse cx="71" cy="148" rx="12" ry="6" fill="#334155"/></g>
+          <rect class="torso" x="38" y="62" width="44" height="52" rx="14" fill="#475569"/>
+          <rect x="42" y="70" width="36" height="28" rx="8" fill="#64748b"/>
+          <g class="arm arm-l"><rect x="22" y="68" width="18" height="12" rx="6" fill="#64748b"/></g>
+          <g class="arm arm-r"><rect x="80" y="68" width="18" height="12" rx="6" fill="#64748b"/></g>
+          <circle cx="60" cy="42" r="22" fill="#fcd9b0"/>
+          <path d="M36 36 Q60 18 84 36 L84 40 Q60 28 36 40 Z" fill="#e11d48"/>
+          <ellipse cx="60" cy="36" rx="20" ry="8" fill="#be123c"/>
+          <circle cx="50" cy="42" r="7" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+          <circle cx="70" cy="42" r="7" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+          <line x1="57" y1="42" x2="63" y2="42" stroke="#0f172a" stroke-width="2"/>
+          <rect x="78" y="72" width="16" height="28" rx="6" fill="#1d4ed8"/>
+        </svg>
+      </div>
+
+      <section class="login-panel" id="login-panel">
+        <div class="panel-glow"></div>
+        <div class="panel-body">
+          <div class="panel-brand">
+            <img src="images/grobizzz-logo.png" alt="" class="panel-logo" onerror="this.style.display='none'" />
+            <h1 id="title">Welcome Back</h1>
+            <p class="sub" id="subtitle">Sign in to continue to your account.</p>
+          </div>
+
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab active" data-mode="login" role="tab" aria-selected="true">Login</button>
+            <button type="button" class="tab" data-mode="signup" role="tab" aria-selected="false">Sign up</button>
+          </div>
+
+          <form id="auth-form" autocomplete="on" novalidate>
+            <div class="field" id="name-field" hidden>
+              <label for="full_name">Full name</label>
+              <input id="full_name" name="full_name" type="text" placeholder="Your name" autocomplete="name" />
+            </div>
+
+            <div class="field">
+              <label for="email">Email Address</label>
+              <div class="input-wrap">
+                <i class="fa-regular fa-envelope" aria-hidden="true"></i>
+                <input id="email" name="email" type="email" required placeholder="you@email.com" autocomplete="username" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                <input id="password" name="password" type="password" required minlength="6" placeholder="Min. 6 characters" autocomplete="current-password" />
+                <button type="button" class="toggle-pass" id="toggle-pass" aria-label="Show password">
+                  <i class="fa-regular fa-eye" id="toggle-pass-icon"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="row-opts" id="login-opts">
+              <label class="check">
+                <input type="checkbox" id="remember" />
+                <span>Remember me</span>
+              </label>
+              <button type="button" class="link-btn" id="forgot-btn">Forgot password?</button>
+            </div>
+
+            <button class="btn-primary" type="submit" id="submit-btn">
+              <span class="btn-text">Sign In</span>
+              <span class="btn-loader" hidden><i class="fa-solid fa-spinner fa-spin"></i></span>
+            </button>
+
+            <p class="msg" id="msg" role="status" aria-live="polite"></p>
+          </form>
+
+          <p class="foot">Protected by Grobizzz · <a href="index.html">Back to home</a></p>
+        </div>
+      </section>
+    </div>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/auth-ui.js"></script>
 </body>
 </html>
