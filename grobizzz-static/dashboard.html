@@ -144,7 +144,7 @@
     <aside class="sidebar" id="sidebar">
       <a class="brand" href="dashboard.html">
         <img src="images/grobizzz-logo.png" alt="" onerror="this.style.display='none'" />
-       
+        <span>Grobizzz</span>
       </a>
       <button type="button" class="nav-btn active" data-panel="home"><i class="fa-solid fa-house"></i> Home</button>
       <button type="button" class="nav-btn" data-panel="profiles"><i class="fa-solid fa-store"></i> Manage / Create profile</button>
@@ -171,8 +171,8 @@
             <p>This is your Grobizzz dashboard. Create business profiles, manage them, and track your plan.</p>
             <div class="stat-row">
               <div class="stat"><strong id="stat-profiles">0</strong><span>Profiles</span></div>
-              <div class="stat"><strong>Free</strong><span>Current plan</span></div>
-              <div class="stat"><strong>—</strong><span>Next billing</span></div>
+              <div class="stat"><strong id="stat-plan">Free</strong><span>Current plan</span></div>
+              <div class="stat"><strong id="stat-expiry">—</strong><span>Valid until</span></div>
             </div>
           </div>
           <div class="grid-2">
@@ -207,13 +207,12 @@
         <section class="panel" id="panel-subscription">
           <div class="card">
             <h2>View subscription</h2>
-            <p>Your current plan and limits. (Billing can be connected later.)</p>
-            <p><span class="badge">FREE PLAN</span></p>
-            <ul style="margin:12px 0 0 18px;color:var(--muted);font-size:.92rem;line-height:1.8">
-              <li>Create business profiles</li>
-              <li>Public shareable link</li>
-              <li>WhatsApp, Call, Maps buttons</li>
-            </ul>
+            <p>Your plan after purchase. Annual plan runs for 1 year from the purchase date.</p>
+            <div id="sub-summary">
+              <p><span class="badge" id="sub-badge">FREE / NO ACTIVE PLAN</span></p>
+              <div id="sub-details" style="margin-top:14px;font-size:.92rem;color:var(--muted);line-height:1.7"></div>
+            </div>
+            <div id="sub-list" style="margin-top:18px"></div>
           </div>
         </section>
 

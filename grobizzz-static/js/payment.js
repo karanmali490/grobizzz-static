@@ -66,16 +66,25 @@
       throw new Error('Only the owner can publish this profile');
     }
 
+    var paidAt = new Date();
+    var planEnd = new Date(paidAt);
+    planEnd.setFullYear(planEnd.getFullYear() + 1); // annual = 1 year
+
     var features = Object.assign({}, found.data.features || {}, {
       payment_status: 'paid',
-      paid_at: new Date().toISOString(),
+      paid_at: paidAt.toISOString(),
       is_live: true,
       payment_amount: AMOUNT_INR,
       payment_currency: 'INR',
       payment_provider: 'razorpay',
       razorpay_payment_id: payment.razorpay_payment_id || null,
       razorpay_order_id: payment.razorpay_order_id || null,
-      razorpay_signature: payment.razorpay_signature || null
+      razorpay_signature: payment.razorpay_signature || null,
+      plan_name: 'Annual Publish',
+      plan_type: 'annual',
+      plan_duration_years: 1,
+      plan_start: paidAt.toISOString(),
+      plan_end: planEnd.toISOString()
     });
 
     var upd = await client

@@ -49,6 +49,108 @@
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('show');
     if (name === 'profiles') loadProfiles();
+    if (name === 'subscription') loadSubscription();
+    if (name === 'home') { loadProfiles(); loadSubscription(); }
+  }
+
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    try {
+      var d = new Date(iso);
+      return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch (e) { return iso; }
+  }
+
+  async function loadSubscription() {
+    var badge = document.getElementById('sub-badge');
+    var details = document.getElementById('sub-details');
+    var list = document.getElementById('sub-list');
+    var c = client();
+    if (!c || !badge) return;
+    details.innerHTML = 'Loading…';
+    if (list) list.innerHTML = '';
+    try {
+      var userRes = await c.auth.getUser();
+      var user = userRes.data && userRes.data.user;
+      if (!user) {
+        details.textContent = 'Please log in again.';
+        return;
+      }
+      var res = await c
+        .from('businesses')
+        .select('id,business_name,slug,status,features,created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (res.error) {
+        details.textContent = res.error.message || 'Could not load subscription';
+        return;
+      }
+      var rows = res.data || [];
+      var paid = [];
+      rows.forEach(function (r) {
+        var f = r.features || {};
+        if (f.payment_status === 'paid' || r.status === 'published') {
+          paid.push({
+            name: r.business_name || r.slug,
+            slug: r.slug,
+            start: f.plan_start || f.paid_at,
+            end: f.plan_end,
+            amount: f.payment_amount,
+            plan: f.plan_name || 'Annual Publish'
+          });
+        }
+      });
+
+      if (!paid.length) {
+        badge.textContent = 'FREE / NO ACTIVE PLAN';
+        details.innerHTML = 'No purchase yet. Create a profile, preview it, then <strong>Pay & Publish</strong> for a 1-year annual plan.';
+        var sp = document.getElementById('stat-plan');
+        var se = document.getElementById('stat-expiry');
+        if (sp) sp.textContent = 'Free';
+        if (se) se.textContent = '—';
+        return;
+      }
+
+      // Latest / longest plan for summary
+      var best = paid[0];
+      paid.forEach(function (p) {
+        if (p.end && best.end && new Date(p.end) > new Date(best.end)) best = p;
+        if (p.end && !best.end) best = p;
+      });
+      var active = best.end ? new Date(best.end) > new Date() : true;
+      badge.textContent = active ? 'ANNUAL PLAN · ACTIVE' : 'ANNUAL PLAN · EXPIRED';
+      badge.style.background = active ? 'rgba(52,211,153,.2)' : 'rgba(244,63,94,.2)';
+      badge.style.color = active ? '#6ee7b7' : '#fda4af';
+
+      details.innerHTML =
+        '<div><strong>Plan:</strong> ' + (best.plan || 'Annual') + ' (1 year)</div>' +
+        '<div><strong>Purchased (start):</strong> ' + fmtDate(best.start) + '</div>' +
+        '<div><strong>Valid until:</strong> ' + fmtDate(best.end) + '</div>' +
+        (best.amount != null ? '<div><strong>Amount:</strong> ₹' + best.amount + '</div>' : '');
+
+      var sp = document.getElementById('stat-plan');
+      var se = document.getElementById('stat-expiry');
+      if (sp) sp.textContent = active ? 'Annual' : 'Expired';
+      if (se) se.textContent = fmtDate(best.end);
+
+      if (list) {
+        list.innerHTML = '<h3 style="font-size:.95rem;margin-bottom:10px">Profiles on plan</h3>';
+        paid.forEach(function (p) {
+          var div = document.createElement('div');
+          div.style.cssText = 'padding:12px;margin-bottom:8px;border-radius:12px;border:1px solid rgba(255,255,255,.1);font-size:.88rem';
+          div.innerHTML =
+            '<strong>' + p.name + '</strong>' +
+            '<div style="color:rgba(255,255,255,.55);margin-top:4px">/' + (p.slug || '') + '</div>' +
+            '<div style="margin-top:6px">Start: ' + fmtDate(p.start) + ' → End: ' + fmtDate(p.end) + '</div>';
+          list.appendChild(div);
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      details.textContent = 'Could not load subscription.';
+    }
   }
 
   async function loadProfiles() {
@@ -172,5 +274,6 @@
     var email = session.data.session.user && session.data.session.user.email;
     showApp(email);
     loadProfiles();
+    loadSubscription();
   })();
 })();
