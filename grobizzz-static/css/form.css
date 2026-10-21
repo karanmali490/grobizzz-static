@@ -697,3 +697,16 @@ small, .helper {
 .word-count.ok{color:#059669}
 .word-count.warn{color:#d97706}
 .word-count.bad{color:#dc2626}
+
+/* About image preview */
+#about-image-upload.has-file .upload-content { opacity: 0.35; }
+#about-image-upload .upload-preview { margin-top: 14px; }
+#about-image-upload .preview-thumb {
+  max-width: 200px;
+  max-height: 260px;
+  width: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  border: 2px solid rgba(225,29,72,.25);
+}

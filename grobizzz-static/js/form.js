@@ -684,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupImagePreview('logo');
   setupImagePreview('favicon');
+  setupImagePreview('about_image');
   setupImagePreview('hero_media');
   setupImagePreview('gallery_images');
   setupImagePreview('gallery_videos');
