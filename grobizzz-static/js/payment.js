@@ -66,9 +66,10 @@
       throw new Error('Only the owner can publish this profile');
     }
 
+    // Start = purchase date, End = +1 year
     var paidAt = new Date();
     var planEnd = new Date(paidAt);
-    planEnd.setFullYear(planEnd.getFullYear() + 1); // annual = 1 year
+    planEnd.setFullYear(planEnd.getFullYear() + 1);
 
     var features = Object.assign({}, found.data.features || {}, {
       payment_status: 'paid',
@@ -106,10 +107,12 @@
     var key = cfg.RAZORPAY_KEY_ID;
     if (!key || key.indexOf('YOUR_') === 0) {
       msg('Add RAZORPAY_KEY_ID in js/config.js (from Razorpay Dashboard → API Keys)', true);
+      document.getElementById('pay-btn').disabled = false;
       return;
     }
     if (typeof window.Razorpay !== 'function') {
       msg('Razorpay script not loaded. Check internet / script tag.', true);
+      document.getElementById('pay-btn').disabled = false;
       return;
     }
 
@@ -153,7 +156,6 @@
       }
     };
 
-    // Prefill email if logged in
     sb().auth.getUser().then(function (u) {
       if (u.data && u.data.user && u.data.user.email) {
         options.prefill.email = u.data.user.email;
