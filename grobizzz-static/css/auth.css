@@ -342,3 +342,8 @@ a:hover { text-decoration: underline; }
   .auth-stage { display: none; }
   .auth-main { opacity: 1; }
 }
+
+/* Signup name field */
+#name-field .input-wrap input {
+  padding-right: 14px;
+}
