@@ -40,18 +40,19 @@
     <div class="card">
       <h1>💳 Pay to publish</h1>
       <p class="sub" id="biz-line">Complete payment to make your business website live for customers.</p>
-      <div class="price">₹999 <span>/ one-time publish</span></div>
+      <div class="price"><span id="price-amount">₹999</span> <span>/ one-time publish</span></div>
       <ul class="plan">
         <li><strong>Public live link</strong> — shareable with anyone</li>
         <li><strong>WhatsApp, Call, Maps</strong> — ready for customers</li>
         <li><strong>Your design + gallery</strong> — as you set in the form</li>
       </ul>
-      <button class="btn" type="button" id="pay-btn">Pay ₹999 &amp; Publish</button>
+      <button class="btn" type="button" id="pay-btn">Pay with Razorpay</button>
       <button class="btn btn-ghost" type="button" id="preview-btn">👀 Back to preview</button>
       <p class="msg" id="msg"></p>
-      <p class="note">Payment gateway (Razorpay / UPI) can be connected next. For now this confirms payment in your account and publishes the profile. Must be logged in as the profile owner.</p>
+      <p class="note">Secure payment via <strong>Razorpay</strong> (UPI, cards, netbanking, wallets). After successful payment your profile goes live. You must be logged in as the profile owner.</p>
     </div>
   </div>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/payment.js"></script>

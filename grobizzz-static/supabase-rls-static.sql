@@ -42,3 +42,56 @@ CREATE POLICY "public_read_templates" ON templates FOR SELECT USING (true);
 
 -- Example storage policies (run if not already public):
 -- Note: bucket must exist: business-logos, business-covers, business-gallery
+
+
+
+
+
+
+
+
+
+
+-- Optional: owner column for businesses (run in Supabase SQL editor)
+alter table public.businesses add column if not exists user_id uuid references auth.users(id);
+create index if not exists businesses_user_id_idx on public.businesses(user_id);
+
+-- Allow authenticated users to insert their drafts
+-- (Adjust to your existing RLS — example policies)
+
+-- Public can read only published
+-- create policy "public read published" on public.businesses for select using (status = 'published');
+
+-- Owners can read their drafts
+-- create policy "owner read own" on public.businesses for select to authenticated using (auth.uid() = user_id);
+
+-- Owners can update own (pay & publish)
+-- create policy "owner update own" on public.businesses for update to authenticated using (auth.uid() = user_id);
+
+
+
+
+-- Run in Supabase SQL Editor so drafts belong to the logged-in user
+
+alter table public.businesses
+  add column if not exists user_id uuid references auth.users(id);
+
+create index if not exists businesses_user_id_idx on public.businesses(user_id);
+
+-- Example RLS (adjust names if you already have policies)
+
+-- Authenticated users insert their own rows
+-- drop policy if exists "users insert own businesses" on public.businesses;
+-- create policy "users insert own businesses" on public.businesses
+--   for insert to authenticated
+--   with check (auth.uid() = user_id);
+
+-- Users read their own drafts + published
+-- create policy "users read own businesses" on public.businesses
+--   for select to authenticated
+--   using (auth.uid() = user_id OR status = 'published');
+
+-- Public read published only
+-- create policy "public read published businesses" on public.businesses
+--   for select to anon
+--   using (status = 'published');
