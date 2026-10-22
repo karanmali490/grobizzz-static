@@ -109,176 +109,182 @@
           <div class="form-grid">
             <div class="form-group full">
               <label>Business Type <span class="required">*</span></label>
-              <p class="helper" style="margin-bottom:12px">Choose your business type. The form and profile template will adapt automatically.</p>
+              <p class="helper" style="margin-bottom:12px">Search or choose your business type. The form and profile template will adapt automatically.</p>
               <input type="hidden" name="category" id="field-category" value="" required />
               <input type="hidden" name="template_slug" id="field-template" value="modern" />
+              <div class="biz-type-search-wrap">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" id="biz-type-search" placeholder="Search e.g. healthcare, gym, fashion, lawyer…" autocomplete="off" />
+                <button type="button" id="biz-type-search-clear" class="biz-search-clear" hidden title="Clear">×</button>
+              </div>
+              <p id="biz-type-search-empty" class="helper" hidden style="margin:8px 0 4px;color:#b91c1c">No business type matches. Try another word (e.g. doctor, cafe, shop).</p>
               <div class="biz-type-grid" id="biz-type-grid">
-                <button type="button" class="biz-type-card" data-type="doctors" data-template="service">
+                <button type="button" class="biz-type-card" data-type="doctors" data-keywords="doctor doctors clinic hospital hospitals healthcare medical physician health care nurse dentist dental" data-template="service"
                   <span class="biz-type-icon">🩺</span>
                   <strong>Doctors</strong>
                   <small>Clinic &amp; services</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="hotels" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="hotels" data-keywords="hotel hotels stay lodging accommodation hospitality room booking" data-template="modern"
                   <span class="biz-type-icon">🏨</span>
                   <strong>Hotels</strong>
                   <small>Rooms &amp; facilities</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="resorts" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="resorts" data-keywords="resort resorts vacation holiday getaway stay" data-template="modern"
                   <span class="biz-type-icon">🌴</span>
                   <strong>Resorts</strong>
                   <small>Stay &amp; experiences</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="cafe-restaurant" data-template="restaurant">
+                <button type="button" class="biz-type-card" data-type="cafe-restaurant" data-keywords="cafe restaurant food dining menu kitchen coffee bakery eat" data-template="restaurant"
                   <span class="biz-type-icon">🍽️</span>
                   <strong>Cafe &amp; Restaurant</strong>
                   <small>Menu, Zomato, Swiggy</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="industry" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="industry" data-keywords="industry industrial manufacturing factory plant production" data-template="modern"
                   <span class="biz-type-icon">🏭</span>
                   <strong>Industry</strong>
                   <small>Company profile</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="home-decors" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="home-decors" data-keywords="home decor decoration furniture interior design house" data-template="modern"
                   <span class="biz-type-icon">🛋️</span>
                   <strong>Home Decors</strong>
                   <small>Products &amp; gallery</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="jewellers" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="jewellers" data-keywords="jewellery jewelry jeweller gold silver diamond ornaments" data-template="modern"
                   <span class="biz-type-icon">💎</span>
                   <strong>Jewellers</strong>
                   <small>Collections &amp; gallery</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="cake-shops" data-template="restaurant">
+                <button type="button" class="biz-type-card" data-type="cake-shops" data-keywords="cake bakery pastry dessert sweet birthday" data-template="restaurant"
                   <span class="biz-type-icon">🎂</span>
                   <strong>Cake Shops</strong>
                   <small>Menu &amp; orders</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="automobile" data-template="service">
+                <button type="button" class="biz-type-card" data-type="automobile" data-keywords="auto car vehicle garage mechanic motor automobile" data-template="service"
                   <span class="biz-type-icon">🚗</span>
                   <strong>Automobile</strong>
                   <small>Services &amp; sales</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="agro" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="agro" data-keywords="agro agriculture farm farming seeds fertilizer rural" data-template="modern"
                   <span class="biz-type-icon">🌾</span>
                   <strong>Agro</strong>
                   <small>Products &amp; contact</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="education" data-template="service">
+                <button type="button" class="biz-type-card" data-type="education" data-keywords="education school college institute training learning student" data-template="service"
                   <span class="biz-type-icon">🎓</span>
                   <strong>Education</strong>
                   <small>Courses &amp; admissions</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="general-store" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="general-store" data-keywords="store shop grocery mart retail general kirana" data-template="modern"
                   <span class="biz-type-icon">🏪</span>
                   <strong>General Store</strong>
                   <small>Products &amp; location</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="salon-spa" data-template="service">
+                <button type="button" class="biz-type-card" data-type="salon-spa" data-keywords="salon spa beauty hair parlour parlor makeup" data-template="service"
                   <span class="biz-type-icon">💇</span>
                   <strong>Salon &amp; Spa</strong>
                   <small>Services &amp; pricing</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="transportation" data-template="service">
+                <button type="button" class="biz-type-card" data-type="transportation" data-keywords="transport taxi bus cab fleet logistics travel ride" data-template="service"
                   <span class="biz-type-icon">🚌</span>
                   <strong>Transportation</strong>
                   <small>Fleet &amp; booking</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="gym-fitness" data-template="service">
+                <button type="button" class="biz-type-card" data-type="gym-fitness" data-keywords="gym fitness workout yoga crossfit trainer health exercise" data-template="service"
                   <span class="biz-type-icon">🏋️</span>
                   <strong>Gym & Fitness</strong>
                   <small>Memberships & classes</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="real-estate" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="real-estate" data-keywords="real estate property house flat plot land agent broker" data-template="modern"
                   <span class="biz-type-icon">🏠</span>
                   <strong>Real Estate</strong>
                   <small>Listings & agents</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="fashion-apparel" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="fashion-apparel" data-keywords="fashion apparel clothing clothes boutique dress wear" data-template="modern"
                   <span class="biz-type-icon">👗</span>
                   <strong>Fashion & Apparel</strong>
                   <small>Clothing & collections</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="pharmacy" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="pharmacy" data-keywords="pharmacy medical store medicine chemist drugstore healthcare" data-template="modern"
                   <span class="biz-type-icon">💊</span>
                   <strong>Pharmacy</strong>
                   <small>Medicines & delivery</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="pet-care" data-template="service">
+                <button type="button" class="biz-type-card" data-type="pet-care" data-keywords="pet veterinary vet dog cat animal clinic grooming" data-template="service"
                   <span class="biz-type-icon">🐾</span>
                   <strong>Pet Care / Vet</strong>
                   <small>Clinic & grooming</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="electronics-mobile" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="electronics-mobile" data-keywords="electronics mobile phone gadget laptop repair tech" data-template="modern"
                   <span class="biz-type-icon">📱</span>
                   <strong>Electronics & Mobile</strong>
                   <small>Gadgets & repairs</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="travel-agency" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="travel-agency" data-keywords="travel tour package trip visa tourism holiday" data-template="modern"
                   <span class="biz-type-icon">✈️</span>
                   <strong>Travel Agency</strong>
                   <small>Packages & tours</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="event-wedding" data-template="service">
+                <button type="button" class="biz-type-card" data-type="event-wedding" data-keywords="event wedding planner marriage party celebration" data-template="service"
                   <span class="biz-type-icon">💍</span>
                   <strong>Event / Wedding</strong>
                   <small>Packages & venues</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="photography" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="photography" data-keywords="photo photography studio camera wedding portfolio" data-template="modern"
                   <span class="biz-type-icon">📷</span>
                   <strong>Photography</strong>
                   <small>Packages & portfolio</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="legal-services" data-template="service">
+                <button type="button" class="biz-type-card" data-type="legal-services" data-keywords="legal lawyer advocate law court consultation document" data-template="service"
                   <span class="biz-type-icon">⚖️</span>
                   <strong>Legal Services</strong>
                   <small>Consultations</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="construction" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="construction" data-keywords="construction contractor builder building project civil" data-template="modern"
                   <span class="biz-type-icon">🏗️</span>
                   <strong>Construction</strong>
                   <small>Projects & portfolio</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="laundry" data-template="service">
+                <button type="button" class="biz-type-card" data-type="laundry" data-keywords="laundry dry clean washing clothes iron" data-template="service"
                   <span class="biz-type-icon">👕</span>
                   <strong>Laundry & Dry Clean</strong>
                   <small>Pickup & delivery</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="florist" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="florist" data-keywords="florist flower bouquet decoration plants" data-template="modern"
                   <span class="biz-type-icon">🌸</span>
                   <strong>Florist</strong>
                   <small>Bouquets & decor</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="tailor-boutique" data-template="service">
+                <button type="button" class="biz-type-card" data-type="tailor-boutique" data-keywords="tailor boutique stitching alteration custom dress" data-template="service"
                   <span class="biz-type-icon">🧵</span>
                   <strong>Tailor / Boutique</strong>
                   <small>Custom stitching</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="coaching-tuition" data-template="service">
+                <button type="button" class="biz-type-card" data-type="coaching-tuition" data-keywords="coaching tuition class course exam competitive study" data-template="service"
                   <span class="biz-type-icon">📚</span>
                   <strong>Coaching / Tuition</strong>
                   <small>Courses & batches</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="hardware-tools" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="hardware-tools" data-keywords="hardware tools paint plumbing electrical supply" data-template="modern"
                   <span class="biz-type-icon">🔧</span>
                   <strong>Hardware & Tools</strong>
                   <small>Products & supply</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="furniture-store" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="furniture-store" data-keywords="furniture sofa bed chair table modular" data-template="modern"
                   <span class="biz-type-icon">🪑</span>
                   <strong>Furniture Store</strong>
                   <small>Sofas, beds & more</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="beauty-cosmetics" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="beauty-cosmetics" data-keywords="beauty cosmetics makeup skincare cosmetic" data-template="modern"
                   <span class="biz-type-icon">💄</span>
                   <strong>Beauty / Cosmetics</strong>
                   <small>Skincare & makeup</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="bookstore" data-template="modern">
+                <button type="button" class="biz-type-card" data-type="bookstore" data-keywords="book bookstore stationery school supplies novel" data-template="modern"
                   <span class="biz-type-icon">📖</span>
                   <strong>Bookstore / Stationery</strong>
                   <small>Books & supplies</small>
                 </button>
-                <button type="button" class="biz-type-card" data-type="logistics-courier" data-template="service">
+                <button type="button" class="biz-type-card" data-type="logistics-courier" data-keywords="logistics courier shipping delivery parcel cargo fleet" data-template="service"
                   <span class="biz-type-icon">📦</span>
                   <strong>Logistics / Courier</strong>
                   <small>Shipping & tracking</small>

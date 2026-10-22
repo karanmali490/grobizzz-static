@@ -710,3 +710,50 @@ small, .helper {
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
   border: 2px solid rgba(225,29,72,.25);
 }
+
+/* Business type search */
+.biz-type-search-wrap {
+  position: relative;
+  margin-bottom: 14px;
+  max-width: 480px;
+}
+.biz-type-search-wrap > i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+#biz-type-search {
+  width: 100%;
+  padding: 12px 40px 12px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+#biz-type-search:focus {
+  border-color: rgba(225, 29, 72, 0.5);
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+}
+.biz-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: #f1f5f9;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: #64748b;
+}
+.biz-search-clear:hover { background: #e2e8f0; color: #0f172a; }
+.biz-type-card.biz-type-hidden { display: none !important; }
