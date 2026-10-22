@@ -244,3 +244,140 @@ section.mod-sec{padding:68px 0}
 .reviews-sec{text-align:center!important;padding:56px 24px!important}
 .reviews-sec .sec-label,.reviews-sec .sec-head,.reviews-sec .sec-title{text-align:center!important}
 .reviews-cards,.reviews-sec .order-cards{display:flex!important;justify-content:center!important;flex-wrap:wrap;gap:16px;margin-top:20px}
+
+
+/* ===== Site navbar (uses template CSS variables) ===== */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: color-mix(in srgb, var(--secondary, #1a1a1a) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--primary, #c97b3a) 35%, transparent);
+  transition: box-shadow .25s, background .25s;
+}
+.site-nav.scrolled {
+  box-shadow: 0 8px 28px rgba(0,0,0,.25);
+}
+.site-nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--cream, #fff);
+  font-weight: 700;
+  min-width: 0;
+}
+.nav-logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary, #c97b3a);
+  background: #fff;
+}
+.nav-logo-fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary, #c97b3a);
+  color: var(--den, #1a1a1a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+}
+.nav-brand-name {
+  font-size: .95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.nav-links a {
+  text-decoration: none;
+  color: color-mix(in srgb, var(--cream, #fff) 85%, transparent);
+  font-size: .82rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 999px;
+  transition: background .2s, color .2s;
+}
+.nav-links a:hover {
+  background: color-mix(in srgb, var(--primary, #c97b3a) 22%, transparent);
+  color: var(--cream, #fff);
+}
+.nav-links .nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary, #c97b3a);
+  color: var(--den, #111) !important;
+  font-weight: 700;
+}
+.nav-links .nav-cta:hover {
+  filter: brightness(1.08);
+}
+.nav-links .nav-wa {
+  background: #25D366 !important;
+  color: #fff !important;
+}
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+.nav-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--cream, #fff);
+  border-radius: 2px;
+  transition: transform .2s, opacity .2s;
+}
+.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 768px) {
+  .nav-toggle { display: flex; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 62px;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--secondary, #1a1a1a);
+    border: 1px solid color-mix(in srgb, var(--primary, #c97b3a) 30%, transparent);
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.35);
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { padding: 12px 14px; border-radius: 10px; }
+  .nav-brand-name { max-width: 140px; }
+}
+.site-nav { position: sticky; }

@@ -484,6 +484,58 @@
   }
 
   /* ========== RESTAURANT (Hyde-Out) ========== */
+
+  function buildNavbar(b) {
+    var name = esc(b.business_name || 'Business');
+    var logo = b.logo_url
+      ? '<img src="' + esc(b.logo_url) + '" alt="" class="nav-logo-img" />'
+      : '<span class="nav-logo-fallback">' + esc((b.business_name || 'B').charAt(0).toUpperCase()) + '</span>';
+    var phone = b.phone ? '<a class="nav-cta nav-call" href="' + telLink(b.phone) + '"><i class="fa-solid fa-phone"></i><span>Call</span></a>' : '';
+    var wa = b.whatsapp ? '<a class="nav-cta nav-wa" href="' + waLink(b.whatsapp) + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></a>' : '';
+    var html = '';
+    html += '<header class="site-nav" id="site-nav">';
+    html += '<div class="site-nav-inner">';
+    html += '<a class="nav-brand" href="#top">';
+    html += logo + '<span class="nav-brand-name">' + name + '</span>';
+    html += '</a>';
+    html += '<button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>';
+    html += '<nav class="nav-links" id="nav-links">';
+    html += '<a href="#about">About</a>';
+    html += '<a href="#menu">Menu / Services</a>';
+    html += '<a href="#gallery">Gallery</a>';
+    html += '<a href="#contact">Contact</a>';
+    html += phone + wa;
+    html += '</nav></div></header>';
+    return html;
+  }
+
+  function bindNavbar() {
+    var toggle = document.getElementById('nav-toggle');
+    var links = document.getElementById('nav-links');
+    var nav = document.getElementById('site-nav');
+    if (toggle && links) {
+      toggle.addEventListener('click', function () {
+        var open = links.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.classList.toggle('open', open);
+      });
+      links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          links.classList.remove('open');
+          toggle.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+    if (nav) {
+      var onScroll = function () {
+        nav.classList.toggle('scrolled', window.scrollY > 24);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+  }
+
   function renderRestaurant(b) {
     var features = b.features || {};
     var products = b.products || [];
@@ -497,6 +549,8 @@
     var verified = (b.verified || features.verified) ? ' <span class="verified-pill"><i class="fa-solid fa-check"></i> Verified</span>' : '';
 
     var html = '';
+    html += '<div id="top"></div>';
+    html += buildNavbar(b);
     html += '<section class="hero"><div class="hero-bg" style="' + coverStyle + '"></div><div class="hero-overlay"></div>';
     html += '<div class="hero-content"><div class="logo-ring">' + logoHtml + '</div>';
     if (b.subcategory || b.category) html += '<p class="eyebrow">' + esc(b.subcategory || b.category) + '</p>';
@@ -520,7 +574,7 @@
     var aboutImg = getAboutImage(b, images);
 
     if (b.about || b.description || aboutImg) {
-      html += '<section class="about" id="about"><div class="about-inner">';
+      html += '<section id="about" class="about" id="about"><div class="about-inner">';
       html += '<div class="about-text">';
       html += '<p class="sec-label">Our Story</p><h2 class="sec-head">About ' + esc(b.business_name) + '</h2>';
       html += '<p class="about-lead">Every great place has a story — here is ours.</p>';
@@ -533,7 +587,7 @@
     }
 
     if (images.length) {
-      html += '<section class="gallery-sec" id="gallery"><p class="sec-label">Gallery</p><h2 class="sec-head">Photos</h2><div class="amb-grid">';
+      html += '<section id="gallery" class="gallery-sec" id="gallery"><p class="sec-label">Gallery</p><h2 class="sec-head">Photos</h2><div class="amb-grid">';
       images.forEach(function (g) {
         html += mediaTile(g.image_url, g.caption || '');
       });
@@ -548,7 +602,7 @@
       html += '</div></section>';
     }
     if (products.length) {
-      html += '<section class="menu-sec" id="menu"><div class="menu-inner"><p class="sec-label">What We Serve</p><h2 class="sec-head">Menu</h2><div class="item-list">';
+      html += '<section id="menu" class="menu-sec" id="menu"><div class="menu-inner"><p class="sec-label">What We Serve</p><h2 class="sec-head">Menu</h2><div class="item-list">';
       products.forEach(function (p) {
         html += '<div class="item-card">';
         if (p.image_url) html += '<img class="item-img" src="' + esc(p.image_url) + '" alt="" loading="lazy" />';
@@ -559,7 +613,7 @@
       html += '</div></div></section>';
     }
     if (services.length) {
-      html += '<section class="menu-sec" id="services" style="background:#fff"><div class="menu-inner"><p class="sec-label">Services</p><h2 class="sec-head">What We Offer</h2><div class="item-list">';
+      html += '<section id="menu" class="menu-sec" id="services" style="background:#fff"><div class="menu-inner"><p class="sec-label">Services</p><h2 class="sec-head">What We Offer</h2><div class="item-list">';
       services.forEach(function (s) {
         html += '<div class="item-card">';
         if (s.image_url) html += '<img class="item-img" src="' + esc(s.image_url) + '" alt="" loading="lazy" />';
@@ -578,7 +632,7 @@
       if (b.swiggy_url) html += '<a class="o-card o-swiggy" href="' + esc(b.swiggy_url) + '" target="_blank" rel="noopener"><img class="o-logo" src="images/swiggy.png" alt="Swiggy" /><span>Order on Swiggy</span></a>';
       html += '</div></section>';
     }
-    html += '<section class="contact-sec"><div class="contact-panel"><div class="contact-info-col">';
+    html += '<section id="contact" class="contact-sec"><div class="contact-panel"><div class="contact-info-col">';
     html += '<h2 class="sec-head visit-title">Visit Us</h2>';
     if (b.address) html += '<div class="info-item"><div class="info-icon"><i class="fa-solid fa-location-dot"></i></div><div class="info-text"><span class="info-label">Address:</span><span class="info-value">' + esc(b.address) + (b.city ? '<br>' + esc(b.city) : '') + '</span></div></div>';
     if (b.phone) html += '<div class="info-item"><div class="info-icon"><i class="fa-solid fa-phone"></i></div><div class="info-text"><span class="info-label">Phone:</span><span class="info-value"><a href="' + telLink(b.phone) + '">' + esc(b.phone) + '</a></span></div></div>';
@@ -616,7 +670,8 @@
       : '';
 
     var html = '';
-    /* —— Impressive hero —— */
+    html += '<div id="top"></div>';
+    html += buildNavbar(b);
     html += '<section class="svc-hero">';
     html += '<div class="svc-hero-bg" style="' + coverStyle + '"></div>';
     html += '<div class="svc-hero-overlay"></div>';
@@ -737,6 +792,8 @@
       : '<div class="fallback">' + esc((b.business_name || 'B').charAt(0).toUpperCase()) + '</div>';
 
     var html = '';
+    html += '<div id="top"></div>';
+    html += buildNavbar(b);
     html += '<div class="mod-topbar"><div class="wrap"><span>' + esc(b.subcategory || b.category || 'Grobizzz') + '</span><span>';
     if (b.phone) html += '<a href="' + telLink(b.phone) + '"><i class="fa-solid fa-phone"></i> ' + esc(b.phone) + '</a>';
     html += '</span></div></div>';
@@ -812,7 +869,7 @@
       html += '<section class="mod-sec"><div class="wrap"><div class="sec-label">Timings</div><h2 class="sec-title">Hours</h2>' + hoursHtml(hours) + '</div></section>';
     }
 
-    html += '<section class="contact-strip" id="contact"><div class="wrap"><div><h3>' + esc(b.business_name) + '</h3>';
+    html += '<section id="contact" class="contact-strip" id="contact"><div class="wrap"><div><h3>' + esc(b.business_name) + '</h3>';
     if (b.tagline) html += '<p>' + esc(b.tagline) + '</p>';
     if (b.city) html += '<p>' + esc(b.city) + (b.state ? ', ' + esc(b.state) : '') + '</p>';
     html += '</div><div><h3>Call</h3>';
