@@ -421,3 +421,67 @@ img{max-width:100%;display:block}a{color:inherit;text-decoration:none}
   .nav-brand-name { max-width: 140px; }
 }
 .site-nav { position: sticky; }
+
+
+/* ===== Logo: fixed circle crop (any upload size) ===== */
+.logo-ring,
+.mod-logo,
+.svc-avatar {
+  width: 112px !important;
+  height: 112px !important;
+  min-width: 112px;
+  min-height: 112px;
+  max-width: 112px;
+  max-height: 112px;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  margin-left: auto;
+  margin-right: auto;
+  flex-shrink: 0;
+  position: relative;
+  background: #fff;
+}
+.logo-ring img,
+.mod-logo img,
+.svc-avatar img,
+.logo-ring .logo-fallback,
+.mod-logo .fallback,
+.svc-avatar .fallback {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block;
+}
+.nav-logo-img {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block;
+  background: #fff;
+}
+.nav-logo-fallback {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0;
+}
+@media (max-width: 480px) {
+  .logo-ring,
+  .mod-logo,
+  .svc-avatar {
+    width: 96px !important;
+    height: 96px !important;
+    min-width: 96px;
+    min-height: 96px;
+    max-width: 96px;
+    max-height: 96px;
+  }
+}

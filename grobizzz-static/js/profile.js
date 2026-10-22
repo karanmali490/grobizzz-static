@@ -488,7 +488,7 @@
   function buildNavbar(b) {
     var name = esc(b.business_name || 'Business');
     var logo = b.logo_url
-      ? '<img src="' + esc(b.logo_url) + '" alt="" class="nav-logo-img" />'
+      ? '<img src="' + esc(b.logo_url) + '" alt="" class="nav-logo-img" width="40" height="40" loading="eager" />'
       : '<span class="nav-logo-fallback">' + esc((b.business_name || 'B').charAt(0).toUpperCase()) + '</span>';
     var phone = b.phone ? '<a class="nav-cta nav-call" href="' + telLink(b.phone) + '"><i class="fa-solid fa-phone"></i><span>Call</span></a>' : '';
     var wa = b.whatsapp ? '<a class="nav-cta nav-wa" href="' + waLink(b.whatsapp) + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></a>' : '';
@@ -544,7 +544,7 @@
     var hours = b.hours || [];
     var coverStyle = b.cover_image_url ? "background-image:url('" + esc(b.cover_image_url) + "')" : '';
     var logoHtml = b.logo_url
-      ? '<img src="' + esc(b.logo_url) + '" alt="" />'
+      ? '<img src="' + esc(b.logo_url) + '" alt="" width="112" height="112" loading="eager" />'
       : '<div class="logo-fallback">' + esc((b.business_name || 'B').charAt(0).toUpperCase()) + '</div>';
     var verified = (b.verified || features.verified) ? ' <span class="verified-pill"><i class="fa-solid fa-check"></i> Verified</span>' : '';
 
@@ -663,7 +663,7 @@
     var aboutImg = getAboutImage(b, images);
     var verified = (b.verified || features.verified) ? ' <span class="verified-pill"><i class="fa-solid fa-check"></i> Verified</span>' : '';
     var avatar = b.logo_url
-      ? '<img src="' + esc(b.logo_url) + '" alt="' + esc(b.business_name || '') + '" />'
+      ? '<img src="' + esc(b.logo_url) + '" alt="' + esc(b.business_name || '') + '" width="112" height="112" loading="eager" />'
       : '<div class="fallback">' + esc((b.business_name || 'D').charAt(0).toUpperCase()) + '</div>';
     var coverStyle = b.cover_image_url
       ? "background-image:url('" + esc(b.cover_image_url) + "')"
@@ -788,7 +788,7 @@
     var verified = (b.verified || features.verified) ? ' <span class="verified-pill">Verified</span>' : '';
     var coverStyle = b.cover_image_url ? "background-image:url('" + esc(b.cover_image_url) + "')" : '';
     var logo = b.logo_url
-      ? '<img src="' + esc(b.logo_url) + '" alt="" />'
+      ? '<img src="' + esc(b.logo_url) + '" alt="" width="112" height="112" loading="eager" />'
       : '<div class="fallback">' + esc((b.business_name || 'B').charAt(0).toUpperCase()) + '</div>';
 
     var html = '';
