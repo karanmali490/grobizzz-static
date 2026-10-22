@@ -1,38 +1,12 @@
 /**
- * Auth UI: intro animation, password toggle, remember me, reduced motion
+ * Auth UI helpers – password toggle, remember me, loading, shake
+ * (No intro animation)
  */
 (function () {
   'use strict';
 
-  var KEY_INTRO = 'grobizzz_auth_intro_v2';
   var KEY_EMAIL = 'grobizzz_remember_email';
-  var stage = document.getElementById('auth-stage');
-  var main = document.getElementById('auth-main');
-  var skip = document.getElementById('skip-intro');
   var panel = document.getElementById('login-panel');
-
-  function showMain() {
-    if (stage) stage.classList.add('done');
-    if (main) main.classList.add('show');
-    try { sessionStorage.setItem(KEY_INTRO, '1'); } catch (e) {}
-  }
-
-  var reduce = false;
-  try {
-    reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  } catch (e) {}
-
-  var seen = false;
-  try { seen = sessionStorage.getItem(KEY_INTRO) === '1'; } catch (e) {}
-
-  if (reduce || seen) {
-    showMain();
-  } else if (skip) {
-    skip.addEventListener('click', showMain);
-    setTimeout(showMain, 4600);
-  } else {
-    showMain();
-  }
 
   // Password visibility
   var toggle = document.getElementById('toggle-pass');
@@ -60,10 +34,9 @@
     }
   } catch (e) {}
 
-  // Expose helpers for auth.js
   window.GrobizzzAuthUI = {
     shake: function () {
-      if (!panel || reduce) return;
+      if (!panel) return;
       panel.classList.remove('shake');
       void panel.offsetWidth;
       panel.classList.add('shake');
