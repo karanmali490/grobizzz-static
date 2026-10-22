@@ -8,8 +8,11 @@ window.GROBIZZZ_CONFIG = {
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibGxtdnVwem1vanJxb3Zqdmx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MTExNjEsImV4cCI6MjEwMjA4NzE2MX0.docMkiPiqSH4rpanj6We5sD42T9vv02DGOhvHTwgavA',
 
   // Links
+  // PROFILE_BASE: 'profile.html?slug=',
+  // PUBLIC_SITE_URL: 'https://grobizzz.in',
+
   PROFILE_BASE: 'profile.html?slug=',
-  PUBLIC_SITE_URL: 'https://grobizzz.in',
+  PUBLIC_SITE_URL: 'https://grobizzz-static-grobizzz-static.vercel.app',
 
   // Razorpay Test Key ID only
   RAZORPAY_KEY_ID: 'rzp_test_TqTIeeqhuAXMJa',
