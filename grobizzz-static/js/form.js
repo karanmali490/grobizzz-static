@@ -563,6 +563,22 @@ document.addEventListener('DOMContentLoaded', () => {
       featuredHint: 'List main logistics services',
     },
 
+    other: {
+      label: 'Other',
+      template: 'modern',
+      offerMode: 'services',
+      foodLinks: false,
+      specialtyPh: 'Describe your specialty',
+      namePh: 'e.g. Your Business Name',
+      taglinePh: 'Your short tagline',
+      aboutPh: 'Tell customers about your business...',
+      offerLabel: 'Service / product categories',
+      offerHelper: 'Add categories that fit your business...',
+      featuredLabel: 'Featured items (optional)',
+      featuredPh: 'e.g. Main services or products',
+      featuredHint: 'List what you want to highlight'
+    },
+
   };
 
   let selectedType = null;
@@ -766,6 +782,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ---------- Business type search / filter ----------
+  
+  // ---------- Business type search (keywords only) ----------
   function filterBizTypes(query) {
     var q = String(query || '').trim().toLowerCase();
     var grid = document.getElementById('biz-type-grid');
@@ -773,27 +791,51 @@ document.addEventListener('DOMContentLoaded', () => {
     var clearBtn = document.getElementById('biz-type-search-clear');
     if (!grid) return;
     if (clearBtn) clearBtn.hidden = !q;
+
     var cards = grid.querySelectorAll('.biz-type-card');
+    var otherCard = grid.querySelector('.biz-type-card[data-type="other"]');
     var shown = 0;
+
     cards.forEach(function (card) {
+      var type = card.getAttribute('data-type') || '';
+      // "Other" handled separately when searching
+      if (type === 'other') {
+        card.classList.add('biz-type-hidden');
+        return;
+      }
       if (!q) {
         card.classList.remove('biz-type-hidden');
         shown++;
         return;
       }
-      var type = (card.getAttribute('data-type') || '').toLowerCase().replace(/-/g, ' ');
+      // KEYWORDS ONLY (not card title)
       var kw = (card.getAttribute('data-keywords') || '').toLowerCase();
-      var label = (card.querySelector('strong') && card.querySelector('strong').textContent || '').toLowerCase();
-      var small = (card.querySelector('small') && card.querySelector('small').textContent || '').toLowerCase();
-      var hay = (type + ' ' + kw + ' ' + label + ' ' + small);
+      var slug = type.toLowerCase().replace(/-/g, ' ');
+      var hay = (kw + ' ' + slug).trim();
       var words = q.split(/\s+/).filter(Boolean);
       var ok = words.every(function (w) { return hay.indexOf(w) !== -1; });
-      // also allow partial match on full query string
       if (!ok && hay.indexOf(q) !== -1) ok = true;
       card.classList.toggle('biz-type-hidden', !ok);
       if (ok) shown++;
     });
-    if (empty) empty.hidden = shown > 0;
+
+    // If search active and nothing matched → show Other
+    if (q && shown === 0) {
+      if (otherCard) {
+        otherCard.classList.remove('biz-type-hidden');
+        shown = 1;
+      }
+      if (empty) {
+        empty.hidden = false;
+        empty.textContent = 'No exact match. Choose “Other” or try another keyword.';
+      }
+    } else {
+      if (empty) empty.hidden = true;
+      // When no search, hide Other (or show at end lightly)
+      if (!q && otherCard) {
+        otherCard.classList.remove('biz-type-hidden'); // always available at end when browsing all
+      }
+    }
   }
 
   var bizSearch = document.getElementById('biz-type-search');

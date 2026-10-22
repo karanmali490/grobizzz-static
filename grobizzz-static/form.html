@@ -117,7 +117,7 @@
                 <input type="search" id="biz-type-search" placeholder="Search e.g. healthcare, gym, fashion, lawyer…" autocomplete="off" />
                 <button type="button" id="biz-type-search-clear" class="biz-search-clear" hidden title="Clear">×</button>
               </div>
-              <p id="biz-type-search-empty" class="helper" hidden style="margin:8px 0 4px;color:#b91c1c">No business type matches. Try another word (e.g. doctor, cafe, shop).</p>
+              <p id="biz-type-search-empty" class="helper" hidden style="margin:8px 0 4px;color:#b91c1c">No exact match. Choose “Other” or try another keyword.</p>
               <div class="biz-type-grid" id="biz-type-grid">
                 <button type="button" class="biz-type-card" data-type="doctors" data-keywords="doctor doctors clinic hospital hospitals healthcare medical physician health care nurse dentist dental" data-template="service"
                   <span class="biz-type-icon">🩺</span>
@@ -289,6 +289,12 @@
                   <strong>Logistics / Courier</strong>
                   <small>Shipping & tracking</small>
                 </button>
+                <button type="button" class="biz-type-card" data-type="other" data-template="modern" data-keywords="other misc custom general business anything else">
+                  <span class="biz-type-icon">✨</span>
+                  <strong>Other</strong>
+                  <small>Custom / not listed</small>
+                </button>
+
               </div>
               <p id="biz-type-error" class="error-inline" hidden>Please select a business type to continue.</p>
             </div>
