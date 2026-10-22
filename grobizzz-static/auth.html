@@ -41,6 +41,7 @@
           </a>
         </div>
 
+        <div id="login-view">
         <h1 id="title">Welcome back</h1>
         <p class="sub" id="subtitle">Sign in to continue to your dashboard.</p>
 
@@ -92,7 +93,35 @@
 
           <p class="msg" id="msg" role="status" aria-live="polite"></p>
         </form>
+        </div><!-- /login-view -->
 
+
+        <!-- Set new password (opened from Supabase email link) -->
+        <div id="reset-panel" hidden>
+          <h1>Set new password</h1>
+          <p class="sub">Choose a new password for your Grobizzz account.</p>
+          <form id="reset-form" autocomplete="on">
+            <div class="field">
+              <label for="new_password">New password</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                <input id="new_password" name="new_password" type="password" required minlength="6" placeholder="Min. 6 characters" autocomplete="new-password" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="confirm_password">Confirm password</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                <input id="confirm_password" name="confirm_password" type="password" required minlength="6" placeholder="Repeat password" autocomplete="new-password" />
+              </div>
+            </div>
+            <button class="btn-primary" type="submit" id="reset-btn">
+              <span class="btn-text">Update password</span>
+              <span class="btn-loader" hidden><i class="fa-solid fa-spinner fa-spin"></i> Please wait…</span>
+            </button>
+            <p class="msg" id="reset-msg" role="status" aria-live="polite"></p>
+          </form>
+        </div>
         <p class="foot">
           <a href="index.html">← Back to home</a>
         </p>
