@@ -582,8 +582,15 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   let selectedType = null;
+  let editingId = null;
+  let editingSlug = null;
+  let editingStatus = 'draft';
 
   function applyTypeConfig(typeKey) {
+    if (editingId || document.body.classList.contains('edit-mode-locked')) {
+      // template / business type locked in edit mode
+      return;
+    }
     const cfg = TYPE_CONFIG[typeKey];
     if (!cfg) {
       console.warn('Unknown business type:', typeKey);
@@ -863,6 +870,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const bizGrid = document.getElementById('biz-type-grid');
   if (bizGrid) {
     bizGrid.addEventListener('click', (e) => {
+      if (editingId || document.body.classList.contains('edit-mode-locked')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       const card = e.target.closest('.biz-type-card');
       if (!card) return;
       e.preventDefault();
@@ -873,6 +885,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
+        if (editingId || document.body.classList.contains('edit-mode-locked')) return;
         applyTypeConfig(card.getAttribute('data-type'));
       });
     });
@@ -1112,70 +1125,83 @@ document.addEventListener('DOMContentLoaded', () => {
   function lockEditMode(b) {
     document.body.classList.add('edit-mode-locked');
 
-    // Lock business type / template
+    // —— Business type grid locked ——
     var grid = document.getElementById('biz-type-grid');
     if (grid) {
+      grid.classList.add('is-locked');
       grid.querySelectorAll('.biz-type-card').forEach(function (card) {
-        card.disabled = true;
+        card.setAttribute('disabled', 'disabled');
+        card.setAttribute('aria-disabled', 'true');
+        card.tabIndex = -1;
         card.style.pointerEvents = 'none';
-        card.style.opacity = card.classList.contains('selected') ? '1' : '0.45';
+        card.style.cursor = 'not-allowed';
+        if (!card.classList.contains('selected')) card.style.opacity = '0.4';
       });
     }
     var search = document.getElementById('biz-type-search');
     if (search) {
       search.disabled = true;
-      search.placeholder = 'Business type is locked while editing';
+      search.readOnly = true;
+      search.value = '';
+      search.placeholder = 'Business type locked';
     }
-    var searchWrap = document.querySelector('.biz-type-search-wrap');
-    if (searchWrap) searchWrap.style.opacity = '0.7';
+    var clearBtn = document.getElementById('biz-type-search-clear');
+    if (clearBtn) clearBtn.hidden = true;
 
     var banner = document.getElementById('selected-type-banner');
-    if (banner) {
-      banner.innerHTML = (banner.textContent || '') +
-        ' <span style="display:inline-block;margin-left:8px;padding:2px 8px;border-radius:6px;background:#fef3c7;color:#92400e;font-size:.75rem;font-weight:700">Locked</span>';
+    if (banner && banner.innerHTML.indexOf('Locked') === -1) {
+      banner.innerHTML = (banner.textContent || 'Type selected') +
+        ' <span class="lock-pill">🔒 Locked</span>';
     }
 
-    // Lock domain / slug fields
-    ['subdomain', 'slug', 'custom_domain', 'domain'].forEach(function (name) {
-      var el = form.querySelector('[name="' + name + '"]');
-      if (el) {
-        el.readOnly = true;
-        el.disabled = true;
-        el.title = 'Domain / URL cannot be changed after creation';
+    // —— Domain / subdomain locked ——
+    var sub = form.querySelector('input[name="subdomain"]');
+    if (sub) {
+      if (b && (b.slug || editingSlug)) sub.value = b.slug || editingSlug;
+      sub.readOnly = true;
+      sub.disabled = true;
+      sub.required = false;
+      sub.style.background = '#f1f5f9';
+      sub.style.cursor = 'not-allowed';
+    }
+    var custom = form.querySelector('input[name="custom_domain"]');
+    if (custom) {
+      custom.readOnly = true;
+      custom.disabled = true;
+      custom.style.background = '#f1f5f9';
+      custom.style.cursor = 'not-allowed';
+    }
+    var subWrap = document.querySelector('.subdomain-input');
+    if (subWrap) {
+      subWrap.classList.add('is-locked');
+      if (!subWrap.querySelector('.lock-note')) {
+        var note = document.createElement('p');
+        note.className = 'lock-note';
+        note.style.cssText = 'margin:8px 0 0;font-size:.82rem;color:#9a3412;font-weight:600';
+        note.textContent = '🔒 Domain / URL is fixed and cannot be changed.';
+        subWrap.parentNode.appendChild(note);
       }
-    });
-    var slugDisplay = document.getElementById('slug-preview') || document.getElementById('field-subdomain');
-    if (slugDisplay) {
-      slugDisplay.readOnly = true;
-      slugDisplay.disabled = true;
     }
 
-    // Scrolling gallery: only asked once at create — hide on edit
+    // Scrolling gallery only at create
     var scrollPerm = document.getElementById('scrolling-gallery-permission');
     if (scrollPerm) scrollPerm.style.display = 'none';
     var scrollBox = document.getElementById('field-scrolling-gallery');
-    if (scrollBox) {
-      // keep previous value if features already set
-      if (b && b.features && b.features.scrolling_gallery) {
-        scrollBox.checked = true;
-      }
+    if (scrollBox && b && b.features && b.features.scrolling_gallery) {
+      scrollBox.checked = true;
     }
 
-    // Notice banner at top of form
+    // Notice
     if (!document.getElementById('edit-lock-notice')) {
       var notice = document.createElement('div');
       notice.id = 'edit-lock-notice';
       notice.style.cssText = 'margin:0 0 16px;padding:14px 16px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:.9rem;line-height:1.5';
-      notice.innerHTML = '<strong>Editing profile</strong> — You can update text, images, contact and links. <strong>Business type, template and domain/URL stay fixed</strong> and cannot be changed.';
-      var main = document.querySelector('.main-header') || form;
-      if (main && main.parentNode) main.parentNode.insertBefore(notice, main.nextSibling);
-      else form.insertBefore(notice, form.firstChild);
+      notice.innerHTML = '<strong>Editing profile</strong> — Text, images and contact can change. <strong>Business type, template and domain are locked.</strong>';
+      var header = document.querySelector('.main-header');
+      if (header && header.parentNode) header.parentNode.insertBefore(notice, header.nextSibling);
+      else if (form) form.insertBefore(notice, form.firstChild);
     }
   }
-
-  let editingId = null;
-  let editingSlug = null;
-  let editingStatus = 'draft';
 
   async function requireAuth() {
     const sb = getSupabase();
@@ -1305,15 +1331,32 @@ document.addEventListener('DOMContentLoaded', () => {
       const tpl = document.getElementById('field-template');
       if (tpl && b.template_slug) tpl.value = b.template_slug;
 
-      // Select biz type card if matches
-      if (b.category) {
+      // Select biz type (before lock) — set selection without allowing changes after
+      var typeKey = b.category || '';
+      if (typeKey && TYPE_CONFIG[typeKey]) {
+        selectedType = typeKey;
+        document.getElementById('field-category').value = typeKey;
+        document.getElementById('field-template').value = (b.template_slug || TYPE_CONFIG[typeKey].template || 'modern');
         document.querySelectorAll('.biz-type-card').forEach(function (card) {
-          const t = card.getAttribute('data-type') || '';
-          if (t && (b.category || '').toLowerCase().indexOf(t.replace(/-/g, ' ')) >= 0) {
-            card.click();
+          card.classList.toggle('selected', card.getAttribute('data-type') === typeKey);
+        });
+        document.querySelectorAll('.type-dependent').forEach(function (el) { el.hidden = false; });
+        var bannerWrap = document.getElementById('block-after-type');
+        var banner = document.getElementById('selected-type-banner');
+        if (bannerWrap) bannerWrap.hidden = false;
+        if (banner) banner.textContent = 'Selected: ' + TYPE_CONFIG[typeKey].label + '  →  Template: ' + (b.template_slug || TYPE_CONFIG[typeKey].template);
+      } else if (b.category) {
+        document.querySelectorAll('.biz-type-card').forEach(function (card) {
+          var t = card.getAttribute('data-type') || '';
+          if (t === b.category || (b.category || '').indexOf(t) >= 0) {
+            card.classList.add('selected');
+            selectedType = t;
           }
         });
       }
+      // Prefill subdomain with locked slug
+      var subIn = form.querySelector('input[name="subdomain"]');
+      if (subIn && b.slug) subIn.value = b.slug;
 
       if (b.primary_color) {
         const cp = document.getElementById('color_primary');

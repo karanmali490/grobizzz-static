@@ -757,3 +757,29 @@ small, .helper {
 }
 .biz-search-clear:hover { background: #e2e8f0; color: #0f172a; }
 .biz-type-card.biz-type-hidden { display: none !important; }
+
+/* Edit mode locks */
+.biz-type-grid.is-locked { position: relative; }
+.biz-type-grid.is-locked::after {
+  content: 'Business type & template locked';
+  display: block;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #9a3412;
+}
+.subdomain-input.is-locked input {
+  background: #f1f5f9 !important;
+  cursor: not-allowed !important;
+}
+.lock-pill {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+body.edit-mode-locked .biz-type-card { cursor: not-allowed !important; }
