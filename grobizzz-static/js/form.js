@@ -1108,6 +1108,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Supabase helpers (static / no Node) =====
   
+
+  function lockEditMode(b) {
+    document.body.classList.add('edit-mode-locked');
+
+    // Lock business type / template
+    var grid = document.getElementById('biz-type-grid');
+    if (grid) {
+      grid.querySelectorAll('.biz-type-card').forEach(function (card) {
+        card.disabled = true;
+        card.style.pointerEvents = 'none';
+        card.style.opacity = card.classList.contains('selected') ? '1' : '0.45';
+      });
+    }
+    var search = document.getElementById('biz-type-search');
+    if (search) {
+      search.disabled = true;
+      search.placeholder = 'Business type is locked while editing';
+    }
+    var searchWrap = document.querySelector('.biz-type-search-wrap');
+    if (searchWrap) searchWrap.style.opacity = '0.7';
+
+    var banner = document.getElementById('selected-type-banner');
+    if (banner) {
+      banner.innerHTML = (banner.textContent || '') +
+        ' <span style="display:inline-block;margin-left:8px;padding:2px 8px;border-radius:6px;background:#fef3c7;color:#92400e;font-size:.75rem;font-weight:700">Locked</span>';
+    }
+
+    // Lock domain / slug fields
+    ['subdomain', 'slug', 'custom_domain', 'domain'].forEach(function (name) {
+      var el = form.querySelector('[name="' + name + '"]');
+      if (el) {
+        el.readOnly = true;
+        el.disabled = true;
+        el.title = 'Domain / URL cannot be changed after creation';
+      }
+    });
+    var slugDisplay = document.getElementById('slug-preview') || document.getElementById('field-subdomain');
+    if (slugDisplay) {
+      slugDisplay.readOnly = true;
+      slugDisplay.disabled = true;
+    }
+
+    // Scrolling gallery: only asked once at create — hide on edit
+    var scrollPerm = document.getElementById('scrolling-gallery-permission');
+    if (scrollPerm) scrollPerm.style.display = 'none';
+    var scrollBox = document.getElementById('field-scrolling-gallery');
+    if (scrollBox) {
+      // keep previous value if features already set
+      if (b && b.features && b.features.scrolling_gallery) {
+        scrollBox.checked = true;
+      }
+    }
+
+    // Notice banner at top of form
+    if (!document.getElementById('edit-lock-notice')) {
+      var notice = document.createElement('div');
+      notice.id = 'edit-lock-notice';
+      notice.style.cssText = 'margin:0 0 16px;padding:14px 16px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:.9rem;line-height:1.5';
+      notice.innerHTML = '<strong>Editing profile</strong> — You can update text, images, contact and links. <strong>Business type, template and domain/URL stay fixed</strong> and cannot be changed.';
+      var main = document.querySelector('.main-header') || form;
+      if (main && main.parentNode) main.parentNode.insertBefore(notice, main.nextSibling);
+      else form.insertBefore(notice, form.firstChild);
+    }
+  }
+
   let editingId = null;
   let editingSlug = null;
   let editingStatus = 'draft';
@@ -1212,6 +1277,7 @@ document.addEventListener('DOMContentLoaded', () => {
       editingId = b.id;
       editingSlug = b.slug;
       editingStatus = b.status || 'draft';
+      window.__editFeatures = b.features || {};
 
       function setVal(name, val) {
         const el = form.querySelector('[name="' + name + '"]');
@@ -1406,7 +1472,14 @@ document.addEventListener('DOMContentLoaded', () => {
           vcard: (function(){ var el=document.querySelector('input[name="add_to_contact"]'); return el ? el.checked !== false : true; })(),
           verified: false,
           show_reviews: (function(){ var el=document.querySelector('input[name="show_reviews"]'); return el ? el.checked : true; })(),
-          scrolling_gallery: (function(){ var el=document.querySelector('input[name="scrolling_gallery"]'); return el ? !!el.checked : false; })(),
+          scrolling_gallery: (function(){
+            var el = document.querySelector('input[name="scrolling_gallery"]');
+            if (editingId) {
+              // only asked once at create — keep existing preference on edit
+              return !!(window.__editFeatures && window.__editFeatures.scrolling_gallery);
+            }
+            return el ? !!el.checked : false;
+          })(),
           about_image_url: about_image_url || null
         }
       };
@@ -1495,7 +1568,11 @@ document.addEventListener('DOMContentLoaded', () => {
           row.status = 'draft';
           row.published_at = null;
         }
+        // Locked on edit: domain, template, business type
         if (editingSlug) row.slug = editingSlug;
+        delete row.template_id;
+        delete row.category;
+        // keep features.scrolling_gallery from previous if checkbox hidden
         delete row.user_id;
         // Keep existing images unless user uploaded new ones
         if (!row.logo_url) delete row.logo_url;
