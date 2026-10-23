@@ -485,6 +485,23 @@
 
   /* ========== RESTAURANT (Hyde-Out) ========== */
 
+
+  function scrollingGalleryHtml(b, images) {
+    var features = b.features || {};
+    if (!features.scrolling_gallery) return '';
+    var imgs = (images || []).filter(function (g) { return g && g.image_url; });
+    if (imgs.length < 1) return '';
+    // duplicate for seamless loop
+    var tiles = imgs.concat(imgs);
+    var html = '<div class="scroll-gallery" aria-label="Scrolling gallery">';
+    html += '<div class="scroll-gallery-track">';
+    tiles.forEach(function (g) {
+      html += '<div class="scroll-gallery-item"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
+    });
+    html += '</div></div>';
+    return html;
+  }
+
   function buildNavbar(b) {
     var name = esc(b.business_name || 'Business');
     var logo = b.logo_url
@@ -632,7 +649,9 @@
     }
 
     if (images.length) {
-      html += '<section id="gallery" class="gallery-sec" id="gallery"><p class="sec-label">Gallery</p><h2 class="sec-head">Photos</h2><div class="amb-grid">';
+      html += '<section id="gallery" class="gallery-sec" data-nav="gallery"><p class="sec-label">Gallery</p><h2 class="sec-head">Photos</h2>';
+      html += scrollingGalleryHtml(b, images);
+      html += '<div class="amb-grid">';
       images.forEach(function (g) {
         html += mediaTile(g.image_url, g.caption || '');
       });
@@ -768,7 +787,9 @@
 
     /* —— Photos only —— */
     if (images.length) {
-      html += '<section class="section section-alt" id="gallery"><div class="section-inner"><p class="eyebrow">Gallery</p><h2 class="section-title">Portfolio</h2><div class="divider"></div><div class="gallery-grid">';
+      html += '<section class="section section-alt" id="gallery"><div class="section-inner"><p class="eyebrow">Gallery</p><h2 class="section-title">Portfolio</h2><div class="divider"></div>';
+      html += scrollingGalleryHtml(b, images);
+      html += '<div class="gallery-grid">';
       images.forEach(function (g) {
         html += '<div class="gallery-item" onclick="openLB(\'' + esc(g.image_url).replace(/'/g, "\\'") + '\',\'' + esc(g.caption || '').replace(/'/g, "\\'") + '\')"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
       });
@@ -886,7 +907,9 @@
     }
 
     if (images.length) {
-      html += '<section class="mod-sec" style="background:var(--white)" id="gallery"><div class="wrap"><div class="sec-label">Gallery</div><h2 class="sec-title">Portfolio</h2><div class="gallery">';
+      html += '<section class="mod-sec" style="background:var(--white)" id="gallery"><div class="wrap"><div class="sec-label">Gallery</div><h2 class="sec-title">Portfolio</h2>';
+      html += scrollingGalleryHtml(b, images);
+      html += '<div class="gallery">';
       images.forEach(function (g) {
         html += '<div class="g-card" onclick="openLB(\'' + esc(g.image_url).replace(/'/g, "\\'") + '\',\'' + esc(g.caption || '').replace(/'/g, "\\'") + '\')"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
       });

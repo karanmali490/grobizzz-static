@@ -1406,6 +1406,7 @@ document.addEventListener('DOMContentLoaded', () => {
           vcard: (function(){ var el=document.querySelector('input[name="add_to_contact"]'); return el ? el.checked !== false : true; })(),
           verified: false,
           show_reviews: (function(){ var el=document.querySelector('input[name="show_reviews"]'); return el ? el.checked : true; })(),
+          scrolling_gallery: (function(){ var el=document.querySelector('input[name="scrolling_gallery"]'); return el ? !!el.checked : false; })(),
           about_image_url: about_image_url || null
         }
       };
