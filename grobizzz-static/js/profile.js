@@ -513,20 +513,65 @@
     var toggle = document.getElementById('nav-toggle');
     var links = document.getElementById('nav-links');
     var nav = document.getElementById('site-nav');
-    if (toggle && links) {
-      toggle.addEventListener('click', function () {
-        var open = links.classList.toggle('open');
-        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        toggle.classList.toggle('open', open);
-      });
-      links.querySelectorAll('a').forEach(function (a) {
-        a.addEventListener('click', function () {
-          links.classList.remove('open');
-          toggle.classList.remove('open');
-          toggle.setAttribute('aria-expanded', 'false');
-        });
-      });
+    if (!toggle || !links) return;
+
+    function closeMenu() {
+      links.classList.remove('open');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('nav-open');
     }
+    function openMenu() {
+      links.classList.add('open');
+      toggle.classList.add('open');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('nav-open');
+    }
+    function toggleMenu(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (links.classList.contains('open')) closeMenu();
+      else openMenu();
+    }
+
+    toggle.onclick = toggleMenu;
+    // also capture on spans inside button
+    Array.prototype.forEach.call(toggle.querySelectorAll('span'), function (sp) {
+      sp.style.pointerEvents = 'none';
+    });
+
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var href = a.getAttribute('href') || '';
+        if (href.charAt(0) === '#') {
+          var id = href.slice(1);
+          var target = document.getElementById(id);
+          if (!target) {
+            // fallback targets for cafe template
+            target = document.querySelector('[data-nav="' + id + '"]') ||
+              document.querySelector('.menu-sec, .order-sec, .band, #services');
+          }
+          if (target) {
+            e.preventDefault();
+            closeMenu();
+            setTimeout(function () {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+            return;
+          }
+        }
+        closeMenu();
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!links.classList.contains('open')) return;
+      if (nav && nav.contains(e.target)) return;
+      closeMenu();
+    });
+
     if (nav) {
       var onScroll = function () {
         nav.classList.toggle('scrolled', window.scrollY > 24);
@@ -602,7 +647,7 @@
       html += '</div></section>';
     }
     if (products.length) {
-      html += '<section id="menu" class="menu-sec" id="menu"><div class="menu-inner"><p class="sec-label">What We Serve</p><h2 class="sec-head">Menu</h2><div class="item-list">';
+      html += '<section id="menu" class="menu-sec" data-nav="menu"><div class="menu-inner"><p class="sec-label">What We Serve</p><h2 class="sec-head">Menu</h2><div class="item-list">';
       products.forEach(function (p) {
         html += '<div class="item-card">';
         if (p.image_url) html += '<img class="item-img" src="' + esc(p.image_url) + '" alt="" loading="lazy" />';
@@ -613,7 +658,7 @@
       html += '</div></div></section>';
     }
     if (services.length) {
-      html += '<section id="menu" class="menu-sec" id="services" style="background:#fff"><div class="menu-inner"><p class="sec-label">Services</p><h2 class="sec-head">What We Offer</h2><div class="item-list">';
+      html += '<section id="menu" class="menu-sec" data-nav="menu" style="background:#fff"><div class="menu-inner"><p class="sec-label">Services</p><h2 class="sec-head">What We Offer</h2><div class="item-list">';
       services.forEach(function (s) {
         html += '<div class="item-card">';
         if (s.image_url) html += '<img class="item-img" src="' + esc(s.image_url) + '" alt="" loading="lazy" />';
@@ -631,6 +676,9 @@
       if (b.zomato_url) html += '<a class="o-card o-zomato" href="' + esc(b.zomato_url) + '" target="_blank" rel="noopener"><img class="o-logo" src="images/zomato.png" alt="Zomato" /><span>Order on Zomato</span></a>';
       if (b.swiggy_url) html += '<a class="o-card o-swiggy" href="' + esc(b.swiggy_url) + '" target="_blank" rel="noopener"><img class="o-logo" src="images/swiggy.png" alt="Swiggy" /><span>Order on Swiggy</span></a>';
       html += '</div></section>';
+    }
+    if (!html.includes('id="menu"')) {
+      html += '<section id="menu" class="menu-sec" data-nav="menu" style="padding:8px 0;margin:0"></section>';
     }
     html += '<section id="contact" class="contact-sec"><div class="contact-panel"><div class="contact-info-col">';
     html += '<h2 class="sec-head visit-title">Visit Us</h2>';
@@ -854,7 +902,7 @@
     }
 
     if (products.length || services.length) {
-      html += '<section class="band"><div class="wrap"><div class="sec-label">Offerings</div><h2 class="sec-title">' + (products.length ? 'Products' : 'Services') + '</h2><div class="item-list">';
+      html += '<section id="menu" class="band" data-nav="menu"><div class="wrap"><div class="sec-label">Offerings</div><h2 class="sec-title">' + (products.length ? 'Products' : 'Services') + '</h2><div class="item-list">';
       (products.length ? products : services).forEach(function (item) {
         html += '<div class="item-card">';
         if (item.image_url) html += '<img class="item-img" src="' + esc(item.image_url) + '" alt="" loading="lazy" />';
@@ -922,6 +970,7 @@
     else html = renderRestaurant(b);
 
     document.getElementById('app').innerHTML = html;
+    bindNavbar();
     bindShare(b);
     bindShareScroll();
     // Always enable Add to Contact unless explicitly disabled
