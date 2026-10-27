@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit profile – Grobizzz</title>
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" href="images/grobizzz-logo.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/edit-profile.css" />
+</head>
+<body>
+  <div class="ed-shell">
+    <aside class="ed-side">
+      <a class="ed-brand" href="dashboard.html">
+        <img src="images/grobizzz-logo.png" alt="" onerror="this.style.display='none'" />
+        <span>Grobizzz</span>
+      </a>
+      <p class="ed-side-label">Edit profile</p>
+      <nav class="ed-nav" id="ed-nav">
+        <button type="button" class="ed-nav-btn active" data-sec="basics"><i class="fa-solid fa-building"></i> Basics</button>
+        <button type="button" class="ed-nav-btn" data-sec="look"><i class="fa-solid fa-palette"></i> Look &amp; logo</button>
+        <button type="button" class="ed-nav-btn" data-sec="contact"><i class="fa-solid fa-phone"></i> Contact</button>
+        <button type="button" class="ed-nav-btn" data-sec="links"><i class="fa-solid fa-link"></i> Links</button>
+        <button type="button" class="ed-nav-btn" data-sec="gallery"><i class="fa-solid fa-images"></i> Gallery</button>
+      </nav>
+      <div class="ed-side-foot">
+        <a href="dashboard.html"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+      </div>
+    </aside>
+
+    <main class="ed-main">
+      <header class="ed-top">
+        <div>
+          <p class="ed-kicker" id="ed-status">Loading…</p>
+          <h1 id="ed-title">Edit profile</h1>
+          <p class="ed-locked" id="ed-locked-line"></p>
+        </div>
+        <div class="ed-top-actions">
+          <a class="ed-btn ghost" id="ed-preview" href="#" target="_blank" rel="noopener">Preview</a>
+          <button type="button" class="ed-btn primary" id="ed-save"><i class="fa-solid fa-floppy-disk"></i> Save changes</button>
+        </div>
+      </header>
+
+      <p class="ed-msg" id="ed-msg" role="status"></p>
+
+      <form id="ed-form" novalidate>
+        <section class="ed-card ed-sec active" data-sec="basics">
+          <h2>Basics</h2>
+          <p class="ed-help">Name, tagline and about. Type, template and URL stay fixed.</p>
+          <div class="ed-grid">
+            <div class="ed-field full">
+              <label>Business name</label>
+              <input type="text" id="ed_name" required maxlength="120" />
+            </div>
+            <div class="ed-field full">
+              <label>Tagline</label>
+              <input type="text" id="ed_tagline" maxlength="160" />
+            </div>
+            <div class="ed-field full">
+              <label>About <small id="ed-about-count">0 words</small></label>
+              <textarea id="ed_about" rows="6" maxlength="1200"></textarea>
+            </div>
+            <div class="ed-field">
+              <label>Type (locked)</label>
+              <input type="text" id="ed_type" readonly class="locked" />
+            </div>
+            <div class="ed-field">
+              <label>Template (locked)</label>
+              <input type="text" id="ed_template" readonly class="locked" />
+            </div>
+            <div class="ed-field full">
+              <label>Public URL (locked)</label>
+              <input type="text" id="ed_url" readonly class="locked" />
+            </div>
+          </div>
+        </section>
+
+        <section class="ed-card ed-sec" data-sec="look">
+          <h2>Look &amp; logo</h2>
+          <p class="ed-help">Replace logo or cover. Colors update the profile style.</p>
+          <div class="ed-grid">
+            <div class="ed-field">
+              <label>Logo (square recommended)</label>
+              <div class="ed-upload">
+                <img id="ed_logo_preview" alt="" hidden />
+                <input type="file" id="ed_logo" accept="image/jpeg,image/png,image/webp" />
+              </div>
+            </div>
+            <div class="ed-field">
+              <label>Cover image</label>
+              <div class="ed-upload wide">
+                <img id="ed_cover_preview" alt="" hidden />
+                <input type="file" id="ed_cover" accept="image/jpeg,image/png,image/webp" />
+              </div>
+            </div>
+            <div class="ed-field">
+              <label>Primary color</label>
+              <input type="color" id="ed_primary" value="#c97b3a" />
+            </div>
+            <div class="ed-field">
+              <label>Secondary color</label>
+              <input type="color" id="ed_secondary" value="#1a1a1a" />
+            </div>
+            <div class="ed-field">
+              <label>Accent color</label>
+              <input type="color" id="ed_accent" value="#f5f0e8" />
+            </div>
+          </div>
+        </section>
+
+        <section class="ed-card ed-sec" data-sec="contact">
+          <h2>Contact</h2>
+          <div class="ed-grid">
+            <div class="ed-field"><label>Phone</label><input type="tel" id="ed_phone" /></div>
+            <div class="ed-field"><label>WhatsApp</label><input type="tel" id="ed_whatsapp" /></div>
+            <div class="ed-field full"><label>Email</label><input type="email" id="ed_email" /></div>
+            <div class="ed-field full"><label>Address</label><textarea id="ed_address" rows="2"></textarea></div>
+            <div class="ed-field"><label>City</label><input type="text" id="ed_city" /></div>
+            <div class="ed-field"><label>Pincode</label><input type="text" id="ed_pincode" /></div>
+            <div class="ed-field full"><label>Google Maps link</label><input type="url" id="ed_maps" /></div>
+          </div>
+        </section>
+
+        <section class="ed-card ed-sec" data-sec="links">
+          <h2>Social &amp; ordering links</h2>
+          <div class="ed-grid">
+            <div class="ed-field"><label>Instagram</label><input type="url" id="ed_instagram" /></div>
+            <div class="ed-field"><label>Facebook</label><input type="url" id="ed_facebook" /></div>
+            <div class="ed-field"><label>YouTube</label><input type="url" id="ed_youtube" /></div>
+            <div class="ed-field"><label>Google Reviews</label><input type="url" id="ed_google" /></div>
+            <div class="ed-field"><label>Zomato</label><input type="url" id="ed_zomato" /></div>
+            <div class="ed-field"><label>Swiggy</label><input type="url" id="ed_swiggy" /></div>
+          </div>
+        </section>
+
+        <section class="ed-card ed-sec" data-sec="gallery">
+          <h2>Gallery</h2>
+          <p class="ed-help">Add more photos to this profile only.</p>
+          <div class="ed-field full">
+            <label>Add gallery images</label>
+            <input type="file" id="ed_gallery" accept="image/jpeg,image/png,image/webp" multiple />
+          </div>
+          <div class="ed-gallery-list" id="ed_gallery_list"></div>
+        </section>
+      </form>
+
+      <div class="ed-bottom-bar">
+        <button type="button" class="ed-btn primary" id="ed-save-2"><i class="fa-solid fa-floppy-disk"></i> Save changes</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/edit-profile.js"></script>
+</body>
+</html>

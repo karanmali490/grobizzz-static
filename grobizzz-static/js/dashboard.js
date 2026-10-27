@@ -224,7 +224,7 @@
         }
 
         // Edit always
-        actions.appendChild(linkBtn('form.html?edit=' + encodeURIComponent(r.slug || ''), '✏️ Edit', false));
+        actions.appendChild(linkBtn('edit-profile.html?slug=' + encodeURIComponent(r.slug || ''), '✏️ Edit profile', false));
 
         if (isLive) {
           actions.appendChild(linkBtn((cfg.PROFILE_BASE || 'profile.html?slug=') + encodeURIComponent(r.slug || ''), '🌐 View live', true));
