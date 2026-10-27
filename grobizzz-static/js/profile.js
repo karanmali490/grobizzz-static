@@ -495,13 +495,16 @@
 
   function galleryItemsHtml(images, clickable) {
     var html = '';
-    (images || []).forEach(function (g, i) {
-      if (!g || !g.image_url) return;
+    var list = (images || []).filter(function (g) { return g && g.image_url; });
+    list.forEach(function (g, i) {
       var url = esc(g.image_url);
       var open = clickable
-        ? ' onclick="openLB(\'' + url.replace(/'/g, "\\'") + '\',\'\')"'
+        ? ' role="button" tabindex="0" onclick="openLB(\'' + url.replace(/'/g, "\'") + '\',\'\')"'
         : '';
-      html += '<div class="gbz-g-item gbz-g-item--' + (i % 5) + '"' + open + '><img src="' + url + '" alt="" loading="lazy" /></div>';
+      // cycle pattern classes 0-5 for collage / masonry variety
+      html += '<figure class="gbz-g-item gbz-g-item--' + (i % 6) + '"' + open + '>';
+      html += '<img src="' + url + '" alt="" loading="lazy" decoding="async" />';
+      html += '</figure>';
     });
     return html;
   }

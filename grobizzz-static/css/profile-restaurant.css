@@ -516,70 +516,109 @@ body.nav-open { overflow: hidden; }
 }
 
 
-/* Gallery layout styles (user choice) */
+/* ===== Gallery layouts (all templates) ===== */
 .gbz-gallery {
-  display: grid;
-  gap: 12px;
-  margin-top: 8px;
+  width: 100%;
+  max-width: 100%;
+  margin: 12px auto 0;
+  box-sizing: border-box;
 }
 .gbz-gallery .gbz-g-item {
+  margin: 0;
+  padding: 0;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.08);
   cursor: pointer;
-  background: rgba(0,0,0,.06);
+  position: relative;
 }
 .gbz-gallery .gbz-g-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
   display: block;
-  transition: transform .35s;
+  transition: transform .35s ease;
 }
-.gbz-gallery .gbz-g-item:hover img { transform: scale(1.04); }
+.gbz-gallery .gbz-g-item:hover img {
+  transform: scale(1.05);
+}
 
+/* GRID — short even tiles */
 .gbz-gallery--grid {
-  grid-template-columns: repeat(3, 1fr);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
-.gbz-gallery--grid .gbz-g-item { aspect-ratio: 1; }
+.gbz-gallery--grid .gbz-g-item {
+  aspect-ratio: 4 / 3;
+  max-height: 200px;
+}
 
+/* COLLAGE — neat overlapping pattern */
 .gbz-gallery--collage {
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 90px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: 88px;
   gap: 10px;
 }
-.gbz-gallery--collage .gbz-g-item--0 { grid-column: span 2; grid-row: span 2; }
-.gbz-gallery--collage .gbz-g-item--1 { grid-column: span 2; grid-row: span 1; }
-.gbz-gallery--collage .gbz-g-item--2 { grid-column: span 1; grid-row: span 2; }
-.gbz-gallery--collage .gbz-g-item--3 { grid-column: span 1; grid-row: span 1; }
+.gbz-gallery--collage .gbz-g-item--0 { grid-column: span 3; grid-row: span 2; }
+.gbz-gallery--collage .gbz-g-item--1 { grid-column: span 3; grid-row: span 1; }
+.gbz-gallery--collage .gbz-g-item--2 { grid-column: span 2; grid-row: span 2; }
+.gbz-gallery--collage .gbz-g-item--3 { grid-column: span 2; grid-row: span 1; }
 .gbz-gallery--collage .gbz-g-item--4 { grid-column: span 2; grid-row: span 1; }
+.gbz-gallery--collage .gbz-g-item--5 { grid-column: span 3; grid-row: span 1; }
+.gbz-gallery--collage .gbz-g-item img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gbz-gallery--collage .gbz-g-item { min-height: 0; }
 
+/* MASONRY — short cards, varied height */
 .gbz-gallery--masonry {
-  columns: 3;
-  column-gap: 12px;
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
-.gbz-gallery--masonry .gbz-g-item {
-  break-inside: avoid;
-  margin-bottom: 12px;
-  display: block;
-}
-.gbz-gallery--masonry .gbz-g-item img {
-  height: auto;
-  min-height: 120px;
-  max-height: 280px;
-}
+.gbz-gallery--masonry .gbz-g-item--0,
+.gbz-gallery--masonry .gbz-g-item--3 { aspect-ratio: 3 / 4; max-height: 260px; }
+.gbz-gallery--masonry .gbz-g-item--1,
+.gbz-gallery--masonry .gbz-g-item--4 { aspect-ratio: 1 / 1; max-height: 200px; }
+.gbz-gallery--masonry .gbz-g-item--2,
+.gbz-gallery--masonry .gbz-g-item--5 { aspect-ratio: 4 / 5; max-height: 240px; }
 
+/* STRIP — short wide banners */
 .gbz-gallery--strip {
+  display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 12px;
 }
 .gbz-gallery--strip .gbz-g-item {
-  aspect-ratio: 16 / 7;
-  border-radius: 14px;
+  aspect-ratio: 21 / 9;
+  max-height: 180px;
+  border-radius: 16px;
 }
 
-@media (max-width: 700px) {
-  .gbz-gallery--grid { grid-template-columns: repeat(2, 1fr); }
-  .gbz-gallery--collage { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 80px; }
-  .gbz-gallery--masonry { columns: 2; }
+@media (max-width: 800px) {
+  .gbz-gallery--grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .gbz-gallery--grid .gbz-g-item { max-height: 160px; }
+  .gbz-gallery--collage {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 72px;
+  }
+  .gbz-gallery--collage .gbz-g-item--0 { grid-column: span 2; grid-row: span 2; }
+  .gbz-gallery--collage .gbz-g-item--1 { grid-column: span 2; grid-row: span 1; }
+  .gbz-gallery--collage .gbz-g-item--2 { grid-column: span 2; grid-row: span 1; }
+  .gbz-gallery--collage .gbz-g-item--3,
+  .gbz-gallery--collage .gbz-g-item--4,
+  .gbz-gallery--collage .gbz-g-item--5 { grid-column: span 2; grid-row: span 1; }
+  .gbz-gallery--masonry { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gbz-gallery--strip .gbz-g-item { max-height: 140px; aspect-ratio: 16 / 9; }
+}
+
+@media (max-width: 480px) {
+  .gbz-gallery--grid .gbz-g-item { max-height: 140px; }
+  .gbz-gallery--collage { grid-auto-rows: 64px; gap: 8px; }
 }
