@@ -183,11 +183,30 @@
       var gInput = $('ed_gallery');
       if (gInput && gInput.files && gInput.files.length) {
         var files = Array.from(gInput.files).slice(0, 20);
+        // display_order is integer — use small sequential numbers (not Date.now())
+        var maxOrder = 0;
+        try {
+          var existing = await client
+            .from('gallery')
+            .select('display_order')
+            .eq('business_id', biz.id)
+            .order('display_order', { ascending: false })
+            .limit(1);
+          if (existing.data && existing.data[0] && existing.data[0].display_order != null) {
+            maxOrder = Number(existing.data[0].display_order) || 0;
+          }
+        } catch (e) {}
         var rows = [];
         for (var i = 0; i < files.length; i++) {
           msg('Uploading gallery ' + (i + 1) + '/' + files.length + '…', false);
           var url = await upload(client, files[i], ['business-gallery', 'gallery']);
-          if (url) rows.push({ business_id: biz.id, image_url: url, display_order: Date.now() + i });
+          if (url) {
+            rows.push({
+              business_id: biz.id,
+              image_url: url,
+              display_order: maxOrder + i + 1
+            });
+          }
         }
         if (rows.length) {
           var ins = await client.from('gallery').insert(rows);
