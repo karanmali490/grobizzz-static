@@ -1,3 +1,4 @@
+
 (function () {
   'use strict';
   var cfg = window.GROBIZZZ_CONFIG || {};
@@ -104,10 +105,6 @@
     if (b.accent_color) $('ed_accent').value = b.accent_color;
     showPreview(b.logo_url, 'ed_logo_preview');
     showPreview(b.cover_image_url, 'ed_cover_preview');
-    var gStyle = (b.features && b.features.gallery_style) || 'grid';
-    document.querySelectorAll('input[name="gallery_style"]').forEach(function (r) {
-      r.checked = r.value === gStyle;
-    });
     var prev = $('ed-preview');
     if (prev) {
       prev.href = 'profile.html?slug=' + encodeURIComponent(b.slug) + (b.status !== 'published' ? '&preview=1' : '');
@@ -166,11 +163,6 @@
       };
       if (logo_url) row.logo_url = logo_url;
       if (cover_image_url) row.cover_image_url = cover_image_url;
-
-      var styleEl = document.querySelector('input[name="gallery_style"]:checked');
-      var galleryStyle = styleEl ? styleEl.value : 'grid';
-      var features = Object.assign({}, biz.features || {}, { gallery_style: galleryStyle });
-      row.features = features;
 
       var up = await client.from('businesses').update(row).eq('id', biz.id).select().single();
       if (up.error) throw up.error;

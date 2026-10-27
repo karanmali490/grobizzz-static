@@ -487,27 +487,7 @@
 
 
 
-  function galleryStyleClass(b) {
-    var s = ((b.features || {}).gallery_style || 'grid').toLowerCase();
-    if (['grid', 'collage', 'masonry', 'strip'].indexOf(s) === -1) s = 'grid';
-    return 'gbz-gallery gbz-gallery--' + s;
-  }
 
-  function galleryItemsHtml(images, clickable) {
-    var html = '';
-    var list = (images || []).filter(function (g) { return g && g.image_url; });
-    list.forEach(function (g, i) {
-      var url = esc(g.image_url);
-      var open = clickable
-        ? ' role="button" tabindex="0" onclick="openLB(\'' + url.replace(/'/g, "\'") + '\',\'\')"'
-        : '';
-      // cycle pattern classes 0-5 for collage / masonry variety
-      html += '<figure class="gbz-g-item gbz-g-item--' + (i % 6) + '"' + open + '>';
-      html += '<img src="' + url + '" alt="" loading="lazy" decoding="async" />';
-      html += '</figure>';
-    });
-    return html;
-  }
 
   function scrollingGalleryHtml(b, images) {
     var features = b.features || {};
@@ -674,8 +654,11 @@
     if (images.length) {
       html += '<section id="gallery" class="gallery-sec" data-nav="gallery"><p class="sec-label">Gallery</p><h2 class="sec-head">Photos</h2>';
       html += scrollingGalleryHtml(b, images);
-      html += '<div class="' + galleryStyleClass(b) + '">';
-      html += galleryItemsHtml(images, true);
+      html += '<div class="amb-grid">';
+      images.forEach(function (g) {
+        if (!g || !g.image_url) return;
+        html += '<img src="' + esc(g.image_url) + '" alt="" loading="lazy" onclick="openLB(\'' + esc(g.image_url).replace(/'/g, "\\'") + '\',\'\')" />';
+      });
       html += '</div></section>';
     }
 
@@ -810,8 +793,11 @@
     if (images.length) {
       html += '<section class="section section-alt" id="gallery"><div class="section-inner"><p class="eyebrow">Gallery</p><h2 class="section-title">Portfolio</h2><div class="divider"></div>';
       html += scrollingGalleryHtml(b, images);
-      html += '<div class="' + galleryStyleClass(b) + '">';
-      html += galleryItemsHtml(images, true);
+      html += '<div class="gallery-grid">';
+      images.forEach(function (g) {
+        if (!g || !g.image_url) return;
+        html += '<div class="gallery-item" onclick="openLB(\'' + esc(g.image_url).replace(/'/g, "\'") + '\',\'\')"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
+      });
       html += '</div></div></section>';
     }
 
@@ -928,8 +914,11 @@
     if (images.length) {
       html += '<section class="mod-sec" style="background:var(--white)" id="gallery"><div class="wrap"><div class="sec-label">Gallery</div><h2 class="sec-title">Portfolio</h2>';
       html += scrollingGalleryHtml(b, images);
-      html += '<div class="' + galleryStyleClass(b) + '">';
-      html += galleryItemsHtml(images, true);
+      html += '<div class="gallery">';
+      images.forEach(function (g) {
+        if (!g || !g.image_url) return;
+        html += '<div class="g-card" onclick="openLB(\'' + esc(g.image_url).replace(/'/g, "\'") + '\',\'\')"><img src="' + esc(g.image_url) + '" alt="" loading="lazy" /></div>';
+      });
       html += '</div></div></section>';
     }
 
