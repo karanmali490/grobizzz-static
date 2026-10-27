@@ -489,6 +489,15 @@
 
 
 
+  function cacheBust(url) {
+    if (!url) return '';
+    try {
+      var u = String(url);
+      if (u.indexOf('?') >= 0) return u + '&_cb=1';
+      return u + '?_cb=1';
+    } catch (e) { return url; }
+  }
+
   function scrollingGalleryHtml(b, images) {
     var features = b.features || {};
     if (!features.scrolling_gallery) return '';
@@ -985,7 +994,22 @@
     });
   }
 
+  function normalizeMediaUrls(b) {
+    if (!b) return b;
+    if (b.logo_url) b.logo_url = cacheBust(b.logo_url);
+    if (b.cover_image_url) b.cover_image_url = cacheBust(b.cover_image_url);
+    if (b.about_image_url) b.about_image_url = cacheBust(b.about_image_url);
+    if (Array.isArray(b.gallery)) {
+      b.gallery = b.gallery.map(function (g) {
+        if (g && g.image_url) g.image_url = cacheBust(g.image_url);
+        return g;
+      });
+    }
+    return b;
+  }
+
   function render(b) {
+    b = normalizeMediaUrls(b);
     var features = b.features || {};
     var tpl = resolveTemplate(b);
     loadTemplateAssets(tpl);

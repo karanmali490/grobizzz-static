@@ -64,15 +64,28 @@
   if ($('ed_logo')) $('ed_logo').addEventListener('change', function () { filePreview(this, 'ed_logo_preview'); });
   if ($('ed_cover')) $('ed_cover').addEventListener('change', function () { filePreview(this, 'ed_cover_preview'); });
 
-  async function upload(client, file, bucket) {
+  async function upload(client, file, buckets) {
     if (!file) return null;
-    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    var path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
-    var up = await client.storage.from(bucket).upload(path, file, {
-      cacheControl: '3600', upsert: false, contentType: file.type || 'image/jpeg'
-    });
-    if (up.error) throw new Error(up.error.message || 'Upload failed');
-    return client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+    var list = Array.isArray(buckets) ? buckets : [buckets];
+    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (['jpg', 'jpeg', 'png', 'webp', 'gif'].indexOf(ext) === -1) ext = 'jpg';
+    var path = 'profiles/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+    var lastErr = null;
+    for (var i = 0; i < list.length; i++) {
+      var bucket = list[i];
+      var up = await client.storage.from(bucket).upload(path, file, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: file.type || 'image/jpeg'
+      });
+      if (!up.error) {
+        var pub = client.storage.from(bucket).getPublicUrl(path);
+        return pub.data.publicUrl;
+      }
+      lastErr = up.error.message || String(up.error);
+      console.warn('Upload to', bucket, 'failed:', lastErr);
+    }
+    throw new Error(lastErr || 'Upload failed — check Storage buckets & policies');
   }
 
   function fill(b) {
@@ -136,8 +149,8 @@
     try {
       var logoFile = $('ed_logo') && $('ed_logo').files && $('ed_logo').files[0];
       var coverFile = $('ed_cover') && $('ed_cover').files && $('ed_cover').files[0];
-      var logo_url = logoFile ? await upload(client, logoFile, 'business-logos') : null;
-      var cover_image_url = coverFile ? await upload(client, coverFile, 'business-covers') : null;
+      var logo_url = logoFile ? await upload(client, logoFile, ['business-logos', 'logos']) : null;
+      var cover_image_url = coverFile ? await upload(client, coverFile, ['business-covers', 'covers']) : null;
 
       var row = {
         business_name: $('ed_name').value.trim(),
@@ -173,17 +186,24 @@
         var rows = [];
         for (var i = 0; i < files.length; i++) {
           msg('Uploading gallery ' + (i + 1) + '/' + files.length + '…', false);
-          var url = await upload(client, files[i], 'business-gallery');
+          var url = await upload(client, files[i], ['business-gallery', 'gallery']);
           if (url) rows.push({ business_id: biz.id, image_url: url, display_order: Date.now() + i });
         }
-        if (rows.length) await client.from('gallery').insert(rows);
+        if (rows.length) {
+          var ins = await client.from('gallery').insert(rows);
+          if (ins.error) throw new Error('Gallery save failed: ' + (ins.error.message || 'RLS or table error'));
+        }
         await loadGallery(client, biz.id);
         gInput.value = '';
       }
 
       biz = Object.assign({}, biz, up.data || row);
+      if (logo_url) biz.logo_url = logo_url;
+      if (cover_image_url) biz.cover_image_url = cover_image_url;
       fill(biz);
-      msg('Saved successfully.', false);
+      if ($('ed_logo')) $('ed_logo').value = '';
+      if ($('ed_cover')) $('ed_cover').value = '';
+      msg('Saved successfully. Open Preview (hard refresh) to see new images.', false);
     } catch (err) {
       console.error(err);
       msg(err.message || 'Save failed', true);
