@@ -137,7 +137,39 @@
 
         <section class="ed-card ed-sec" data-sec="gallery">
           <h2>Gallery</h2>
-          <p class="ed-help">Add more photos to this profile only.</p>
+          <p class="ed-help">Add photos and choose how the gallery looks on your profile.</p>
+
+          <div class="ed-field full">
+            <label>Gallery layout style</label>
+            <p class="ed-help" style="margin-bottom:10px">Choose how photos appear on your public profile.</p>
+            <div class="ed-style-grid" id="ed_gallery_styles">
+              <label class="ed-style-card">
+                <input type="radio" name="gallery_style" value="grid" checked />
+                <span class="ed-style-preview ed-prev-grid"></span>
+                <strong>Grid</strong>
+                <small>Even photo tiles</small>
+              </label>
+              <label class="ed-style-card">
+                <input type="radio" name="gallery_style" value="collage" />
+                <span class="ed-style-preview ed-prev-collage"></span>
+                <strong>Collage</strong>
+                <small>Overlapping artistic layout</small>
+              </label>
+              <label class="ed-style-card">
+                <input type="radio" name="gallery_style" value="masonry" />
+                <span class="ed-style-preview ed-prev-masonry"></span>
+                <strong>Masonry</strong>
+                <small>Pinterest-style heights</small>
+              </label>
+              <label class="ed-style-card">
+                <input type="radio" name="gallery_style" value="strip" />
+                <span class="ed-style-preview ed-prev-strip"></span>
+                <strong>Wide strip</strong>
+                <small>Large horizontal photos</small>
+              </label>
+            </div>
+          </div>
+
           <div class="ed-field full">
             <label>Add gallery images</label>
             <input type="file" id="ed_gallery" accept="image/jpeg,image/png,image/webp" multiple />
