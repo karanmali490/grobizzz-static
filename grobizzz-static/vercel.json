@@ -2,6 +2,16 @@
   "version": 2,
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/", "destination": "/index.html" }
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/form", "destination": "/form.html" },
+    { "source": "/auth", "destination": "/auth.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/payment", "destination": "/payment.html" },
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/edit-profile", "destination": "/edit-profile.html" },
+    {
+      "source": "/((?!api|css|js|images|assets|form|auth|dashboard|payment|profile|edit-profile|index|_next|favicon).*)",
+      "destination": "/profile.html?slug=$1"
+    }
   ]
 }
