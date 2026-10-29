@@ -171,6 +171,9 @@
             <p>This is your Grobizzz dashboard. Create business profiles, manage them, and track your plan.</p>
             <div class="stat-row">
               <div class="stat"><strong id="stat-profiles">0</strong><span>Profiles</span></div>
+              <div class="stat"><strong id="stat-views">0</strong><span>Views</span></div>
+              <div class="stat"><strong id="stat-calls">0</strong><span>Calls</span></div>
+              <div class="stat"><strong id="stat-wa">0</strong><span>WhatsApp</span></div>
               <div class="stat"><strong id="stat-plan">Free</strong><span>Current plan</span></div>
               <div class="stat"><strong id="stat-expiry">—</strong><span>Valid until</span></div>
             </div>
@@ -187,7 +190,13 @@
               <a class="btn btn-ghost" href="https://wa.me/919699544383" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp</a>
             </div>
           </div>
-        </section>
+        
+            <div class="card" id="analytics-box" style="margin-top:18px">
+              <h3 style="margin-bottom:10px">Profile analytics</h3>
+              <p id="analytics-summary" style="opacity:.75;font-size:.9rem">Views, calls and WhatsApp taps from your public pages.</p>
+              <div id="analytics-list" style="margin-top:12px"></div>
+            </div>
+</section>
 
         <!-- PROFILES -->
         <section class="panel" id="panel-profiles">

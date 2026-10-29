@@ -264,5 +264,31 @@
     await loadGallery(client, res.data.id);
     msg('', false);
   }
+
+  // Smart text
+  (function () {
+    function addBtn(id, label, kind) {
+      var el = $(id);
+      if (!el || el.dataset.smart) return;
+      el.dataset.smart = '1';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ed-btn ghost';
+      btn.style.marginTop = '8px';
+      btn.textContent = label;
+      btn.addEventListener('click', function () {
+        if (!window.GrobizzzSmartText) return;
+        var name = ($('ed_name') || {}).value || '';
+        var type = ($('ed_type') || {}).value || '';
+        if (kind === 'about') el.value = window.GrobizzzSmartText.improveAbout(name, type, el.value);
+        else el.value = window.GrobizzzSmartText.writeTagline(name, type);
+        el.dispatchEvent(new Event('input'));
+      });
+      el.parentNode.appendChild(btn);
+    }
+    addBtn('ed_about', '✨ Improve About', 'about');
+    addBtn('ed_tagline', '✨ Write tagline', 'tagline');
+  })();
+
   boot();
 })();

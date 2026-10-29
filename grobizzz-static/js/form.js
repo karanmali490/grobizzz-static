@@ -1721,3 +1721,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (editSlug) loadEditProfile(editSlug);
   });
 });
+
+
+  // Smart text helper buttons (About / Tagline)
+  (function bindSmartText() {
+    function ensureBtn(textareaName, label, kind) {
+      var el = form.querySelector('[name="' + textareaName + '"]') || document.getElementById(textareaName);
+      if (!el || el.dataset.smartBound) return;
+      el.dataset.smartBound = '1';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = label;
+      btn.style.cssText = 'margin-top:8px;padding:8px 12px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;font-weight:600;font-size:.82rem;cursor:pointer;color:#be123c';
+      btn.addEventListener('click', function () {
+        if (!window.GrobizzzSmartText) return;
+        var name = (form.querySelector('[name="business_name"]') || {}).value || '';
+        var type = (document.getElementById('field-category') || {}).value || '';
+        if (kind === 'about') el.value = window.GrobizzzSmartText.improveAbout(name, type, el.value);
+        else el.value = window.GrobizzzSmartText.writeTagline(name, type);
+        el.dispatchEvent(new Event('input'));
+      });
+      el.parentNode.appendChild(btn);
+    }
+    ensureBtn('about', '✨ Improve About', 'about');
+    ensureBtn('tagline', '✨ Write tagline', 'tagline');
+  })();

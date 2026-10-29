@@ -9,8 +9,9 @@
     { "source": "/payment", "destination": "/payment.html" },
     { "source": "/profile", "destination": "/profile.html" },
     { "source": "/edit-profile", "destination": "/edit-profile.html" },
+    { "source": "/themes", "destination": "/themes.html" },
     {
-      "source": "/((?!api|css|js|images|assets|form|auth|dashboard|payment|profile|edit-profile|index|_next|favicon).*)",
+      "source": "/((?!api|css|js|images|assets|form|auth|dashboard|payment|profile|edit-profile|themes|index|_next|favicon).*)",
       "destination": "/profile.html?slug=$1"
     }
   ]

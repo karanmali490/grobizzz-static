@@ -50,7 +50,7 @@
     document.getElementById('overlay').classList.remove('show');
     if (name === 'profiles') loadProfiles();
     if (name === 'subscription') loadSubscription();
-    if (name === 'home') { loadProfiles(); loadSubscription(); }
+    if (name === 'home') { loadProfiles(); loadSubscription(); loadAnalytics(); }
   }
 
 
@@ -150,6 +150,64 @@
     } catch (e) {
       console.error(e);
       details.textContent = 'Could not load subscription.';
+    }
+  }
+
+
+  async function loadAnalytics() {
+    var c = client();
+    if (!c) return;
+    var summary = document.getElementById('analytics-summary');
+    var list = document.getElementById('analytics-list');
+    try {
+      var userRes = await c.auth.getUser();
+      var user = userRes.data && userRes.data.user;
+      if (!user) return;
+      var biz = await c.from('businesses').select('id,business_name,slug').eq('user_id', user.id);
+      var ids = (biz.data || []).map(function (b) { return b.id; });
+      if (!ids.length) {
+        if (summary) summary.textContent = 'Create a profile to start collecting views and clicks.';
+        return;
+      }
+      var ev = await c.from('profile_events').select('business_id,event_type').in('business_id', ids);
+      if (ev.error) {
+        if (summary) summary.textContent = 'Run supabase/profile_events.sql in Supabase to enable analytics. ' + (ev.error.message || '');
+        return;
+      }
+      var rows = ev.data || [];
+      var totals = { view: 0, call: 0, whatsapp: 0, maps: 0, share: 0 };
+      var byBiz = {};
+      rows.forEach(function (r) {
+        totals[r.event_type] = (totals[r.event_type] || 0) + 1;
+        if (!byBiz[r.business_id]) byBiz[r.business_id] = { view: 0, call: 0, whatsapp: 0 };
+        if (byBiz[r.business_id][r.event_type] != null) byBiz[r.business_id][r.event_type]++;
+        else if (r.event_type === 'view' || r.event_type === 'call' || r.event_type === 'whatsapp') {
+          byBiz[r.business_id][r.event_type] = (byBiz[r.business_id][r.event_type] || 0) + 1;
+        }
+      });
+      var elV = document.getElementById('stat-views');
+      var elC = document.getElementById('stat-calls');
+      var elW = document.getElementById('stat-wa');
+      if (elV) elV.textContent = String(totals.view || 0);
+      if (elC) elC.textContent = String(totals.call || 0);
+      if (elW) elW.textContent = String(totals.whatsapp || 0);
+      if (summary) {
+        summary.textContent = 'Total — Views: ' + (totals.view || 0) + ' · Calls: ' + (totals.call || 0) + ' · WhatsApp: ' + (totals.whatsapp || 0) + ' · Maps: ' + (totals.maps || 0);
+      }
+      if (list) {
+        list.innerHTML = '';
+        (biz.data || []).forEach(function (b) {
+          var s = byBiz[b.id] || { view: 0, call: 0, whatsapp: 0 };
+          var div = document.createElement('div');
+          div.style.cssText = 'padding:12px 14px;margin-bottom:8px;border-radius:12px;border:1px solid rgba(255,255,255,.1);font-size:.88rem';
+          div.innerHTML = '<strong>' + (b.business_name || b.slug) + '</strong>' +
+            '<div style="margin-top:6px;opacity:.8">👁 ' + (s.view || 0) + ' views · 📞 ' + (s.call || 0) + ' calls · 💬 ' + (s.whatsapp || 0) + ' WhatsApp</div>';
+          list.appendChild(div);
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      if (summary) summary.textContent = 'Could not load analytics.';
     }
   }
 
@@ -275,5 +333,6 @@
     showApp(email);
     loadProfiles();
     loadSubscription();
+    loadAnalytics();
   })();
 })();

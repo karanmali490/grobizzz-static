@@ -1025,6 +1025,16 @@
     document.getElementById('app').innerHTML = html;
     bindNavbar();
     bindShare(b);
+    try {
+      if (window.GrobizzzI18n) {
+        window.GrobizzzI18n.mountToggle();
+        window.GrobizzzI18n.applyToProfile();
+      }
+      if (window.GrobizzzAnalytics) {
+        window.GrobizzzAnalytics.trackViewOnce(b);
+        window.GrobizzzAnalytics.bindClickTracking(b);
+      }
+    } catch (eA) { console.warn(eA); }
     bindShareScroll();
     // Always enable Add to Contact unless explicitly disabled
     var feat = b.features || {};
