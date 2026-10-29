@@ -1713,6 +1713,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+
+  // Smart text helper — main create form
+  function bindSmartTextButtons() {
+    function addSmart(el, label, kind) {
+      if (!el || el.dataset.smartBound) return;
+      el.dataset.smartBound = '1';
+      var row = document.createElement('div');
+      row.className = 'smart-text-row';
+      row.style.cssText = 'margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'smart-text-btn';
+      btn.innerHTML = label;
+      btn.style.cssText = 'padding:9px 14px;border-radius:10px;border:1px solid #fecdd3;background:#fff1f2;font-weight:700;font-size:.82rem;cursor:pointer;color:#be123c';
+      btn.addEventListener('click', function () {
+        if (!window.GrobizzzSmartText) {
+          alert('Smart text helper not loaded. Check js/smart-text.js');
+          return;
+        }
+        var nameEl = form.querySelector('[name="business_name"]') || document.getElementById('field-business-name');
+        var name = (nameEl && nameEl.value) || '';
+        var type = (document.getElementById('field-category') && document.getElementById('field-category').value) || selectedType || '';
+        if (kind === 'about') {
+          el.value = window.GrobizzzSmartText.improveAbout(name, type, el.value);
+        } else {
+          el.value = window.GrobizzzSmartText.writeTagline(name, type);
+        }
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      row.appendChild(btn);
+      var hint = document.createElement('small');
+      hint.style.cssText = 'color:#64748b;font-size:.78rem';
+      hint.textContent = 'Uses your business name & type';
+      row.appendChild(hint);
+      el.parentNode.appendChild(row);
+    }
+    addSmart(document.getElementById('field-about') || form.querySelector('[name="about"]'), '✨ Improve About', 'about');
+    addSmart(document.getElementById('field-tagline') || form.querySelector('[name="tagline"]'), '✨ Write tagline', 'tagline');
+  }
+  bindSmartTextButtons();
+
   // Init — must be logged in
   requireAuth().then(function (user) {
     if (!user) return;
@@ -1722,27 +1763,3 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-
-  // Smart text helper buttons (About / Tagline)
-  (function bindSmartText() {
-    function ensureBtn(textareaName, label, kind) {
-      var el = form.querySelector('[name="' + textareaName + '"]') || document.getElementById(textareaName);
-      if (!el || el.dataset.smartBound) return;
-      el.dataset.smartBound = '1';
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = label;
-      btn.style.cssText = 'margin-top:8px;padding:8px 12px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;font-weight:600;font-size:.82rem;cursor:pointer;color:#be123c';
-      btn.addEventListener('click', function () {
-        if (!window.GrobizzzSmartText) return;
-        var name = (form.querySelector('[name="business_name"]') || {}).value || '';
-        var type = (document.getElementById('field-category') || {}).value || '';
-        if (kind === 'about') el.value = window.GrobizzzSmartText.improveAbout(name, type, el.value);
-        else el.value = window.GrobizzzSmartText.writeTagline(name, type);
-        el.dispatchEvent(new Event('input'));
-      });
-      el.parentNode.appendChild(btn);
-    }
-    ensureBtn('about', '✨ Improve About', 'about');
-    ensureBtn('tagline', '✨ Write tagline', 'tagline');
-  })();
