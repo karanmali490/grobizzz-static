@@ -529,10 +529,10 @@
     html += '</a>';
     html += '<button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>';
     html += '<nav class="nav-links" id="nav-links">';
-    html += '<a href="#about">About</a>';
-    html += '<a href="#menu">Menu / Services</a>';
-    html += '<a href="#gallery">Gallery</a>';
-    html += '<a href="#contact">Contact</a>';
+    html += '<a href="#about" data-i18n="about">About</a>';
+    html += '<a href="#menu" data-i18n="menu">Menu / Services</a>';
+    html += '<a href="#gallery" data-i18n="gallery">Gallery</a>';
+    html += '<a href="#contact" data-i18n="contact">Contact</a>';
     html += phone + wa;
     html += '</nav></div></header>';
     return html;
@@ -1029,6 +1029,7 @@
       if (window.GrobizzzI18n) {
         window.GrobizzzI18n.mountToggle();
         window.GrobizzzI18n.applyToProfile();
+        setTimeout(function () { window.GrobizzzI18n.applyToProfile(); }, 50);
       }
       if (window.GrobizzzAnalytics) {
         window.GrobizzzAnalytics.trackViewOnce(b);
