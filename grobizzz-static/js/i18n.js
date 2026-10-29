@@ -1,6 +1,6 @@
 /**
  * Profile UI language: en | hi | mr
- * Translates UI labels only (not business content).
+ * Can switch any number of times (key-based, not English-only match).
  */
 (function (w) {
   'use strict';
@@ -29,8 +29,7 @@
       call_now: 'Call Now',
       find_us: 'Find us',
       phone: 'Phone',
-      address: 'Address',
-      lang: 'Language'
+      address: 'Address'
     },
     hi: {
       about: 'हमारे बारे में',
@@ -55,8 +54,7 @@
       call_now: 'अभी कॉल करें',
       find_us: 'पता',
       phone: 'फ़ोन',
-      address: 'पता',
-      lang: 'भाषा'
+      address: 'पता'
     },
     mr: {
       about: 'आमच्याबद्दल',
@@ -81,37 +79,9 @@
       call_now: 'आता कॉल करा',
       find_us: 'पत्ता',
       phone: 'फोन',
-      address: 'पत्ता',
-      lang: 'भाषा'
+      address: 'पत्ता'
     }
   };
-
-  // English phrases → key (longest first)
-  var PHRASES = [
-    ['Menu / Services', 'menu'],
-    ['Get Directions', 'get_directions'],
-    ['Add to Contact', 'add_contact'],
-    ['Order Online', 'order'],
-    ['Book / Enquire', 'book'],
-    ['Call Now', 'call_now'],
-    ['Call Us', 'call_us'],
-    ['Visit Us', 'visit'],
-    ['Follow Us', 'follow'],
-    ['Find us', 'find_us'],
-    ['WhatsApp', 'whatsapp'],
-    ['Portfolio', 'portfolio'],
-    ['Directions', 'directions'],
-    ['Gallery', 'gallery'],
-    ['Contact', 'contact'],
-    ['Reviews', 'reviews'],
-    ['Photos', 'photos'],
-    ['About', 'about'],
-    ['Share', 'share'],
-    ['Hours', 'hours'],
-    ['Phone', 'phone'],
-    ['Address', 'address'],
-    ['Call', 'call']
-  ];
 
   function getLang() {
     try { return localStorage.getItem('grobizzz_lang') || 'en'; } catch (e) { return 'en'; }
@@ -119,73 +89,76 @@
   function setLang(code) {
     try { localStorage.setItem('grobizzz_lang', code); } catch (e) {}
   }
-  function t(key) {
-    var lang = getLang();
+  function t(key, lang) {
+    lang = lang || getLang();
     return (DICT[lang] && DICT[lang][key]) || DICT.en[key] || key;
   }
 
-  function translateTextNode(raw) {
-    var s = String(raw || '').replace(/\s+/g, ' ').trim();
+  /** Map any known label (en/hi/mr) back to key */
+  function keyFromText(text) {
+    var s = String(text || '').replace(/\s+/g, ' ').trim();
     if (!s) return null;
-    for (var i = 0; i < PHRASES.length; i++) {
-      var en = PHRASES[i][0];
-      var key = PHRASES[i][1];
-      if (s === en) return t(key);
-      // "Call Us" inside longer? exact only for safety
+    var langs = ['en', 'hi', 'mr'];
+    for (var li = 0; li < langs.length; li++) {
+      var d = DICT[langs[li]];
+      for (var k in d) {
+        if (Object.prototype.hasOwnProperty.call(d, k) && d[k] === s) return k;
+      }
     }
-    // "i Call" patterns with icons stripped already as textContent
-    if (/^Call\s*Us$/i.test(s)) return t('call_us');
-    if (/^Call\s*Now$/i.test(s)) return t('call_now');
-    if (/^WhatsApp$/i.test(s)) return t('whatsapp');
     return null;
   }
 
-  function applyToProfile() {
-    // 1) explicit data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
-      if (key) el.textContent = t(key);
+  function setElementLabel(el, key) {
+    if (!el || !key) return;
+    el.setAttribute('data-i18n', key);
+    var lang = getLang();
+    var label = t(key, lang);
+
+    // Prefer updating a text span if present (keeps icons)
+    var span = el.querySelector('span:not(.icon):not([class*="fa"])');
+    var textNodes = [];
+    Array.prototype.forEach.call(el.childNodes, function (n) {
+      if (n.nodeType === 3 && n.textContent.replace(/\s/g, '').length) textNodes.push(n);
     });
 
-    // 2) nav links
-    document.querySelectorAll('.nav-links a, .site-nav a').forEach(function (a) {
-      var href = a.getAttribute('href') || '';
-      if (href === '#about') a.childNodes.forEach(function (n) { if (n.nodeType === 3) n.textContent = t('about'); });
-      if (href === '#menu') { a.textContent = t('menu'); }
-      if (href === '#gallery') a.textContent = t('gallery');
-      if (href === '#contact') a.textContent = t('contact');
-      if (a.classList.contains('nav-call') || a.classList.contains('nav-cta') && href.indexOf('tel:') === 0) {
-        var span = a.querySelector('span');
-        if (span) span.textContent = t('call');
-      }
-      if (a.classList.contains('nav-wa')) {
-        var span2 = a.querySelector('span');
-        if (span2) span2.textContent = t('whatsapp');
-      }
-    });
+    if (span && !span.querySelector('i') && span.children.length === 0) {
+      span.textContent = label;
+    } else if (textNodes.length === 1 && el.querySelector('i, svg')) {
+      textNodes[0].textContent = ' ' + label + ' ';
+    } else if (el.children.length === 0) {
+      el.textContent = label;
+    } else if (textNodes.length) {
+      textNodes[0].textContent = ' ' + label + ' ';
+    } else {
+      el.setAttribute('aria-label', label);
+    }
+  }
 
-    // 3) common headings / buttons / labels
-    var selectors = [
-      'h2', 'h3', '.sec-head', '.sec-title', '.sec-label', '.eyebrow',
-      '.section-title', '.pill', '.btn', '.action-btn', '.contact-label',
-      '.ab-title', '.info-label', 'button', 'a.btn', '.btn-primary', '.btn-ghost',
-      '.btn-red', '.btn-ghost-svc', '.contact-btn span', '.nav-links a'
-    ];
-    document.querySelectorAll(selectors.join(',')).forEach(function (el) {
-      // don't touch inputs
+  function discoverAndTag() {
+    // Nav by href
+    document.querySelectorAll('a[href="#about"]').forEach(function (a) { a.setAttribute('data-i18n', 'about'); });
+    document.querySelectorAll('a[href="#menu"]').forEach(function (a) { a.setAttribute('data-i18n', 'menu'); });
+    document.querySelectorAll('a[href="#gallery"]').forEach(function (a) { a.setAttribute('data-i18n', 'gallery'); });
+    document.querySelectorAll('a[href="#contact"]').forEach(function (a) { a.setAttribute('data-i18n', 'contact'); });
+    document.querySelectorAll('a.nav-call, a.float-call').forEach(function (a) { a.setAttribute('data-i18n', 'call'); });
+    document.querySelectorAll('a.nav-wa, a.float-wa').forEach(function (a) { a.setAttribute('data-i18n', 'whatsapp'); });
+
+    // Tag unknown elements by matching current text to any language
+    var sel = 'h2,h3,.sec-head,.sec-title,.sec-label,.section-title,.pill,.btn,.ab-title,.contact-label,.info-label,a.btn,button,.btn-ghost,.btn-primary,.btn-red,.btn-ghost-svc,.action-btn';
+    document.querySelectorAll(sel).forEach(function (el) {
       if (el.closest('#gbz-lang')) return;
-      if (el.children.length === 0) {
-        var next = translateTextNode(el.textContent);
-        if (next) el.textContent = next;
-      } else {
-        // translate pure text leaves
-        Array.prototype.forEach.call(el.childNodes, function (n) {
-          if (n.nodeType === 3) {
-            var next2 = translateTextNode(n.textContent);
-            if (next2) n.textContent = ' ' + next2 + ' ';
-          }
-        });
-      }
+      if (el.getAttribute('data-i18n')) return;
+      var text = el.textContent.replace(/\s+/g, ' ').trim();
+      // strip leading icon-only noise
+      var key = keyFromText(text);
+      if (key) el.setAttribute('data-i18n', key);
+    });
+  }
+
+  function applyToProfile() {
+    discoverAndTag();
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      setElementLabel(el, el.getAttribute('data-i18n'));
     });
   }
 
@@ -202,16 +175,20 @@
         '<button type="button" data-lang="mr" title="Marathi">मर</button>';
       document.body.appendChild(box);
     }
-    var cur = getLang();
+    function syncButtons() {
+      var cur = getLang();
+      box.querySelectorAll('button').forEach(function (b) {
+        b.classList.toggle('on', b.getAttribute('data-lang') === cur);
+      });
+    }
     box.querySelectorAll('button').forEach(function (b) {
-      b.classList.toggle('on', b.getAttribute('data-lang') === cur);
       b.onclick = function () {
         setLang(b.getAttribute('data-lang'));
-        box.querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); });
-        b.classList.add('on');
+        syncButtons();
         applyToProfile();
       };
     });
+    syncButtons();
     applyToProfile();
   }
 
