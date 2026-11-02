@@ -239,7 +239,7 @@
 
   function videoTile(url) {
     return (
-      '<div class="video-tile" data-video-wrap>' +
+      '<div class="video-tile horizontal" data-video-wrap>' +
         '<video src="' + esc(url) + '" controls playsinline preload="metadata" ' +
         'onloadedmetadata="window.fitVideoOrient&&window.fitVideoOrient(this)"></video>' +
       '</div>'
