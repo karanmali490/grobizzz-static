@@ -1,3 +1,4 @@
+
 :root {
   --bg: #f1f5f9; --panel: #fff; --ink: #0f172a; --muted: #64748b;
   --line: #e2e8f0; --pink: #e11d48; --pink-d: #be123c; --side: #0f172a;
@@ -75,4 +76,40 @@ body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: 
   .ed-main { padding: 16px 14px 90px; }
   .ed-grid { grid-template-columns: 1fr; }
   .ed-bottom-bar { left: 0; }
+}
+
+.ed-video-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.ed-video-list .ed-vid-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0f172a;
+  border: 1px solid var(--line);
+  aspect-ratio: 16 / 9;
+}
+.ed-video-list video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: #000;
+}
+.ed-video-list .ed-vid-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: rgba(225,29,72,.92);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: .85rem;
+  z-index: 2;
 }

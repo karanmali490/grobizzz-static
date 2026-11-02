@@ -124,17 +124,63 @@
     }
   }
 
+  function isVideoUrl(url) {
+    var u = String(url || '').toLowerCase();
+    return /\.(mp4|webm|mov|m4v)(\?|$)/.test(u) || u.indexOf('/video') >= 0;
+  }
+
   async function loadGallery(client, businessId) {
     var list = $('ed_gallery_list');
-    if (!list) return;
-    list.innerHTML = '';
-    var res = await client.from('gallery').select('image_url').eq('business_id', businessId).order('display_order');
+    var vlist = $('ed_video_list');
+    if (list) list.innerHTML = '';
+    if (vlist) vlist.innerHTML = '';
+    var res = await client
+      .from('gallery')
+      .select('id,image_url,display_order')
+      .eq('business_id', businessId)
+      .order('display_order');
     (res.data || []).forEach(function (g) {
       if (!g.image_url) return;
-      var img = document.createElement('img');
-      img.src = g.image_url;
-      img.alt = '';
-      list.appendChild(img);
+      if (isVideoUrl(g.image_url)) {
+        if (!vlist) return;
+        var card = document.createElement('div');
+        card.className = 'ed-vid-card';
+        card.innerHTML = '<video src="' + g.image_url + '" controls playsinline preload="metadata"></video>';
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.className = 'ed-vid-remove';
+        rm.title = 'Remove video';
+        rm.innerHTML = '&times;';
+        rm.addEventListener('click', async function () {
+          if (!confirm('Remove this video from the profile?')) return;
+          var del = await client.from('gallery').delete().eq('id', g.id);
+          if (del.error) { alert(del.error.message); return; }
+          card.remove();
+        });
+        card.appendChild(rm);
+        vlist.appendChild(card);
+      } else if (list) {
+        var wrap = document.createElement('div');
+        wrap.style.position = 'relative';
+        var img = document.createElement('img');
+        img.src = g.image_url;
+        img.alt = '';
+        wrap.appendChild(img);
+        var rm2 = document.createElement('button');
+        rm2.type = 'button';
+        rm2.className = 'ed-vid-remove';
+        rm2.style.position = 'absolute';
+        rm2.title = 'Remove image';
+        rm2.innerHTML = '&times;';
+        rm2.addEventListener('click', async function () {
+          if (!confirm('Remove this image?')) return;
+          var del = await client.from('gallery').delete().eq('id', g.id);
+          if (del.error) { alert(del.error.message); return; }
+          wrap.remove();
+        });
+        wrap.appendChild(rm2);
+        list.appendChild(wrap);
+      }
     });
   }
 
@@ -214,6 +260,41 @@
         }
         await loadGallery(client, biz.id);
         gInput.value = '';
+      }
+
+      // Videos
+      var vInput = $('ed_videos');
+      if (vInput && vInput.files && vInput.files.length) {
+        var vfiles = Array.from(vInput.files).slice(0, 10);
+        var maxOrder = 0;
+        try {
+          var existingV = await client.from('gallery').select('display_order').eq('business_id', biz.id).order('display_order', { ascending: false }).limit(1);
+          if (existingV.data && existingV.data[0] && existingV.data[0].display_order != null) {
+            maxOrder = Number(existingV.data[0].display_order) || 0;
+          }
+        } catch (eV) {}
+        var vrows = [];
+        for (var vi = 0; vi < vfiles.length; vi++) {
+          var vf = vfiles[vi];
+          if (vf.size > 30 * 1024 * 1024) {
+            throw new Error('Video too large (max 30MB): ' + vf.name);
+          }
+          msg('Uploading video ' + (vi + 1) + '/' + vfiles.length + '…', false);
+          var vurl = await upload(client, vf, ['business-gallery', 'gallery']);
+          if (vurl) {
+            vrows.push({
+              business_id: biz.id,
+              image_url: vurl,
+              display_order: maxOrder + vi + 1
+            });
+          }
+        }
+        if (vrows.length) {
+          var vins = await client.from('gallery').insert(vrows);
+          if (vins.error) throw new Error('Video save failed: ' + (vins.error.message || 'error'));
+        }
+        await loadGallery(client, biz.id);
+        vInput.value = '';
       }
 
       biz = Object.assign({}, biz, up.data || row);

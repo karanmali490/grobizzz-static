@@ -136,13 +136,19 @@
         </section>
 
         <section class="ed-card ed-sec" data-sec="gallery">
-          <h2>Gallery</h2>
-          <p class="ed-help">Add photos and choose how the gallery looks on your profile.</p>
+          <h2>Gallery &amp; Videos</h2>
+          <p class="ed-help">Add photos and short videos for this profile. Horizontal videos show 2 per row on the live page.</p>
           <div class="ed-field full">
             <label>Add gallery images</label>
             <input type="file" id="ed_gallery" accept="image/jpeg,image/png,image/webp" multiple />
           </div>
           <div class="ed-gallery-list" id="ed_gallery_list"></div>
+          <div class="ed-field full" style="margin-top:20px">
+            <label>Add videos (MP4 / WebM)</label>
+            <input type="file" id="ed_videos" accept="video/mp4,video/webm,video/quicktime" multiple />
+            <small style="display:block;margin-top:6px;color:#64748b;font-size:.82rem">Best: MP4 · Max ~25MB each · Up to 30 seconds</small>
+          </div>
+          <div class="ed-video-list" id="ed_video_list"></div>
         </section>
       </form>
 
