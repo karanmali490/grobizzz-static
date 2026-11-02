@@ -67,25 +67,67 @@
   async function upload(client, file, buckets) {
     if (!file) return null;
     var list = Array.isArray(buckets) ? buckets : [buckets];
-    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (['jpg', 'jpeg', 'png', 'webp', 'gif'].indexOf(ext) === -1) ext = 'jpg';
-    var path = 'profiles/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
-    var lastErr = null;
-    for (var i = 0; i < list.length; i++) {
-      var bucket = list[i];
-      var up = await client.storage.from(bucket).upload(path, file, {
-        cacheControl: '3600',
-        upsert: true,
-        contentType: file.type || 'image/jpeg'
-      });
-      if (!up.error) {
-        var pub = client.storage.from(bucket).getPublicUrl(path);
-        return pub.data.publicUrl;
-      }
-      lastErr = up.error.message || String(up.error);
-      console.warn('Upload to', bucket, 'failed:', lastErr);
+    var name = file.name || 'file';
+    var ext = (name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    var isVid = (file.type && file.type.indexOf('video/') === 0) ||
+      /\.(mp4|webm|mov|m4v)$/i.test(name);
+
+    if (isVid) {
+      if (!ext || ['mp4', 'webm', 'mov', 'm4v'].indexOf(ext) < 0) ext = 'mp4';
+    } else {
+      if (['jpg', 'jpeg', 'png', 'webp', 'gif'].indexOf(ext) < 0) ext = 'jpg';
     }
-    throw new Error(lastErr || 'Upload failed — check Storage buckets & policies');
+
+    // Same path style as create form
+    var path = Date.now() + '-' + Math.random().toString(36).slice(2, 9) + '.' + ext;
+
+    var typeAttempts = [];
+    if (file.type) typeAttempts.push(file.type);
+    if (isVid) {
+      typeAttempts.push('video/mp4');
+      typeAttempts.push('video/webm');
+      typeAttempts.push('application/octet-stream');
+    } else {
+      typeAttempts.push('image/jpeg');
+      typeAttempts.push('image/png');
+    }
+    // unique
+    typeAttempts = typeAttempts.filter(function (t, i, a) { return t && a.indexOf(t) === i; });
+
+    var lastErr = null;
+    for (var b = 0; b < list.length; b++) {
+      var bucket = list[b];
+      for (var t = 0; t < typeAttempts.length; t++) {
+        var up = await client.storage.from(bucket).upload(path, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: typeAttempts[t]
+        });
+        if (!up.error) {
+          var pub = client.storage.from(bucket).getPublicUrl(path);
+          var url = pub.data && pub.data.publicUrl;
+          if (url) return url;
+        }
+        lastErr = (up.error && (up.error.message || up.error.error)) || lastErr;
+      }
+      // try without contentType
+      var up2 = await client.storage.from(bucket).upload(path, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+      if (!up2.error) {
+        var pub2 = client.storage.from(bucket).getPublicUrl(path);
+        if (pub2.data && pub2.data.publicUrl) return pub2.data.publicUrl;
+      }
+      lastErr = (up2.error && (up2.error.message || up2.error.error)) || lastErr;
+      console.warn('Upload failed bucket=', bucket, lastErr);
+    }
+    throw new Error(
+      (lastErr || 'Upload failed') +
+      (isVid
+        ? ' — For videos: Supabase Storage → business-gallery → allow MIME video/mp4, video/webm (or turn off MIME restriction).'
+        : ' — Check Storage bucket policies.')
+    );
   }
 
   function fill(b) {
@@ -126,8 +168,12 @@
 
   function isVideoUrl(url) {
     var u = String(url || '').toLowerCase();
-    return /\.(mp4|webm|mov|m4v)(\?|$)/.test(u) || u.indexOf('/video') >= 0;
+    if (/\.(mp4|webm|mov|m4v)(\?|#|$)/.test(u)) return true;
+    if (u.indexOf('video/') >= 0) return true;
+    if (/\/(profiles\/)?\d+-[a-z0-9]+\.mp4/.test(u)) return true;
+    return false;
   }
+
 
   async function loadGallery(client, businessId) {
     var list = $('ed_gallery_list');
@@ -226,41 +272,6 @@
       var up = await client.from('businesses').update(row).eq('id', biz.id).select().single();
       if (up.error) throw up.error;
 
-      var gInput = $('ed_gallery');
-      if (gInput && gInput.files && gInput.files.length) {
-        var files = Array.from(gInput.files).slice(0, 20);
-        // display_order is integer — use small sequential numbers (not Date.now())
-        var maxOrder = 0;
-        try {
-          var existing = await client
-            .from('gallery')
-            .select('display_order')
-            .eq('business_id', biz.id)
-            .order('display_order', { ascending: false })
-            .limit(1);
-          if (existing.data && existing.data[0] && existing.data[0].display_order != null) {
-            maxOrder = Number(existing.data[0].display_order) || 0;
-          }
-        } catch (e) {}
-        var rows = [];
-        for (var i = 0; i < files.length; i++) {
-          msg('Uploading gallery ' + (i + 1) + '/' + files.length + '…', false);
-          var url = await upload(client, files[i], ['business-gallery', 'gallery']);
-          if (url) {
-            rows.push({
-              business_id: biz.id,
-              image_url: url,
-              display_order: maxOrder + i + 1
-            });
-          }
-        }
-        if (rows.length) {
-          var ins = await client.from('gallery').insert(rows);
-          if (ins.error) throw new Error('Gallery save failed: ' + (ins.error.message || 'RLS or table error'));
-        }
-        await loadGallery(client, biz.id);
-        gInput.value = '';
-      }
 
       biz = Object.assign({}, biz, up.data || row);
       if (logo_url) biz.logo_url = logo_url;
@@ -335,6 +346,99 @@
     addBtn('ed_about', '✨ Improve About', 'about');
     addBtn('ed_tagline', '✨ Write tagline', 'tagline');
   })();
+
+
+
+  // —— Photos: select → preview → Add ——
+  var pendingPhotos = [];
+
+  function photoMsg(t, err) {
+    var el = $('ed_photo_msg');
+    if (!el) return;
+    el.textContent = t || '';
+    el.className = 'ed-msg ' + (err ? 'err' : 'ok');
+  }
+
+  function renderPendingPhotos() {
+    var box = $('ed_photo_pending');
+    var btn = $('ed_photo_add_btn');
+    if (!box) return;
+    box.innerHTML = '';
+    pendingPhotos.forEach(function (item, idx) {
+      var card = document.createElement('div');
+      card.className = 'ed-ph-card';
+      card.innerHTML = '<img src="' + item.url + '" alt="" />';
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'ed-vid-remove';
+      rm.innerHTML = '&times;';
+      rm.addEventListener('click', function () {
+        try { URL.revokeObjectURL(item.url); } catch (e) {}
+        pendingPhotos.splice(idx, 1);
+        renderPendingPhotos();
+      });
+      card.appendChild(rm);
+      box.appendChild(card);
+    });
+    if (btn) btn.disabled = pendingPhotos.length === 0;
+  }
+
+  var pPick = $('ed_gallery');
+  if (pPick) {
+    pPick.addEventListener('change', function () {
+      Array.from(pPick.files || []).forEach(function (f) {
+        if (f.size > 8 * 1024 * 1024) {
+          photoMsg('Too large (max 8MB): ' + f.name, true);
+          return;
+        }
+        pendingPhotos.push({ file: f, url: URL.createObjectURL(f) });
+      });
+      pPick.value = '';
+      renderPendingPhotos();
+      if (pendingPhotos.length) photoMsg(pendingPhotos.length + ' photo(s) ready — click Add photo(s)', false);
+    });
+  }
+
+  var photoAddBtn = $('ed_photo_add_btn');
+  if (photoAddBtn) {
+    photoAddBtn.addEventListener('click', async function () {
+      if (!pendingPhotos.length || !biz) {
+        photoMsg('Select a photo first', true);
+        return;
+      }
+      var client = sb();
+      if (!client) return;
+      photoAddBtn.disabled = true;
+      photoMsg('Uploading…', false);
+      try {
+        var maxOrder = 0;
+        try {
+          var existing = await client.from('gallery').select('display_order').eq('business_id', biz.id).order('display_order', { ascending: false }).limit(1);
+          if (existing.data && existing.data[0] && existing.data[0].display_order != null) {
+            maxOrder = Number(existing.data[0].display_order) || 0;
+          }
+        } catch (e0) {}
+        var rows = [];
+        for (var i = 0; i < pendingPhotos.length; i++) {
+          photoMsg('Uploading photo ' + (i + 1) + '/' + pendingPhotos.length + '…', false);
+          var url = await upload(client, pendingPhotos[i].file, ['business-gallery', 'gallery']);
+          if (url) rows.push({ business_id: biz.id, image_url: url, display_order: maxOrder + i + 1 });
+        }
+        if (!rows.length) throw new Error('Upload failed — check Storage bucket business-gallery or gallery');
+        var ins = await client.from('gallery').insert(rows);
+        if (ins.error) throw new Error(ins.error.message || 'Could not save photos');
+        pendingPhotos.forEach(function (p) { try { URL.revokeObjectURL(p.url); } catch (e) {} });
+        pendingPhotos = [];
+        renderPendingPhotos();
+        await loadGallery(client, biz.id);
+        photoMsg('Photo(s) added. Open Preview to check.', false);
+      } catch (err) {
+        console.error(err);
+        photoMsg(err.message || 'Upload failed', true);
+        photoAddBtn.disabled = pendingPhotos.length === 0;
+      }
+    });
+  }
 
 
   // —— Video select → preview → Add button ——
@@ -422,7 +526,7 @@
         var rows = [];
         for (var i = 0; i < pendingVideos.length; i++) {
           videoMsg('Uploading video ' + (i + 1) + '/' + pendingVideos.length + '…', false);
-          var url = await upload(client, pendingVideos[i].file, ['business-gallery', 'gallery']);
+          var url = await upload(client, pendingVideos[i].file, ['business-gallery', 'gallery', 'videos']);
           if (url) {
             rows.push({ business_id: biz.id, image_url: url, display_order: maxOrder + i + 1 });
           }
@@ -435,7 +539,9 @@
         pendingVideos = [];
         renderPendingVideos();
         await loadGallery(client, biz.id);
-        videoMsg('Video(s) added to your profile. Open Preview to check.', false);
+        var check = await client.from('gallery').select('id,image_url').eq('business_id', biz.id).order('display_order', { ascending: false }).limit(5);
+        console.log('gallery after video', check.data);
+        videoMsg('Video(s) added (' + rows.length + '). Scroll down to “Videos on profile”, then Preview.', false);
       } catch (err) {
         console.error(err);
         videoMsg(err.message || 'Upload failed', true);

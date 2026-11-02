@@ -139,9 +139,16 @@
           <h2>Gallery &amp; Videos</h2>
           <p class="ed-help">Add photos and short videos for this profile. Horizontal videos show 2 per row on the live page.</p>
           <div class="ed-field full">
-            <label>Add gallery images</label>
-            <input type="file" id="ed_gallery" accept="image/jpeg,image/png,image/webp" multiple />
+            <label>Add photos</label>
+            <small style="display:block;margin:4px 0 10px;color:#64748b;font-size:.82rem">Select image(s) → preview → click <strong>Add photo(s)</strong></small>
+            <input type="file" id="ed_gallery" accept="image/jpeg,image/jpg,image/png,image/webp,image/*" multiple />
+            <div class="ed-photo-pending" id="ed_photo_pending"></div>
+            <button type="button" class="ed-btn primary" id="ed_photo_add_btn" style="margin-top:12px" disabled>
+              <i class="fa-solid fa-plus"></i> Add photo(s)
+            </button>
+            <p class="ed-msg" id="ed_photo_msg" style="margin-top:8px"></p>
           </div>
+          <p style="font-size:.85rem;font-weight:700;margin:18px 0 8px;color:#334155">Photos on profile</p>
           <div class="ed-gallery-list" id="ed_gallery_list"></div>
           <div class="ed-field full" style="margin-top:20px">
             <label>Add videos (MP4 / WebM)</label>
