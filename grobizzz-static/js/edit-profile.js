@@ -262,41 +262,6 @@
         gInput.value = '';
       }
 
-      // Videos
-      var vInput = $('ed_videos');
-      if (vInput && vInput.files && vInput.files.length) {
-        var vfiles = Array.from(vInput.files).slice(0, 10);
-        var maxOrder = 0;
-        try {
-          var existingV = await client.from('gallery').select('display_order').eq('business_id', biz.id).order('display_order', { ascending: false }).limit(1);
-          if (existingV.data && existingV.data[0] && existingV.data[0].display_order != null) {
-            maxOrder = Number(existingV.data[0].display_order) || 0;
-          }
-        } catch (eV) {}
-        var vrows = [];
-        for (var vi = 0; vi < vfiles.length; vi++) {
-          var vf = vfiles[vi];
-          if (vf.size > 30 * 1024 * 1024) {
-            throw new Error('Video too large (max 30MB): ' + vf.name);
-          }
-          msg('Uploading video ' + (vi + 1) + '/' + vfiles.length + '…', false);
-          var vurl = await upload(client, vf, ['business-gallery', 'gallery']);
-          if (vurl) {
-            vrows.push({
-              business_id: biz.id,
-              image_url: vurl,
-              display_order: maxOrder + vi + 1
-            });
-          }
-        }
-        if (vrows.length) {
-          var vins = await client.from('gallery').insert(vrows);
-          if (vins.error) throw new Error('Video save failed: ' + (vins.error.message || 'error'));
-        }
-        await loadGallery(client, biz.id);
-        vInput.value = '';
-      }
-
       biz = Object.assign({}, biz, up.data || row);
       if (logo_url) biz.logo_url = logo_url;
       if (cover_image_url) biz.cover_image_url = cover_image_url;
@@ -370,6 +335,115 @@
     addBtn('ed_about', '✨ Improve About', 'about');
     addBtn('ed_tagline', '✨ Write tagline', 'tagline');
   })();
+
+
+  // —— Video select → preview → Add button ——
+  var pendingVideos = [];
+
+  function videoMsg(t, err) {
+    var el = $('ed_video_msg');
+    if (!el) return;
+    el.textContent = t || '';
+    el.className = 'ed-msg ' + (err ? 'err' : 'ok');
+  }
+
+  function renderPendingVideos() {
+    var box = $('ed_video_pending');
+    var btn = $('ed_video_add_btn');
+    if (!box) return;
+    box.innerHTML = '';
+    pendingVideos.forEach(function (item, idx) {
+      var card = document.createElement('div');
+      card.className = 'ed-vid-card';
+      card.innerHTML =
+        '<span class="ed-vid-badge">Preview</span>' +
+        '<video src="' + item.url + '" controls playsinline preload="metadata"></video>';
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'ed-vid-remove';
+      rm.innerHTML = '&times;';
+      rm.title = 'Remove from selection';
+      rm.addEventListener('click', function () {
+        try { URL.revokeObjectURL(item.url); } catch (e) {}
+        pendingVideos.splice(idx, 1);
+        renderPendingVideos();
+      });
+      card.appendChild(rm);
+      box.appendChild(card);
+    });
+    if (btn) btn.disabled = pendingVideos.length === 0;
+  }
+
+  var vPick = $('ed_videos');
+  if (vPick) {
+    vPick.addEventListener('change', function () {
+      var files = Array.from(vPick.files || []);
+      files.forEach(function (f) {
+        if (!f.type || f.type.indexOf('video') !== 0) {
+          // still allow if extension ok
+          var n = (f.name || '').toLowerCase();
+          if (!/\\.(mp4|webm|mov|m4v)$/.test(n)) {
+            videoMsg('Skip non-video: ' + f.name, true);
+            return;
+          }
+        }
+        if (f.size > 30 * 1024 * 1024) {
+          videoMsg('Too large (max 30MB): ' + f.name, true);
+          return;
+        }
+        pendingVideos.push({ file: f, url: URL.createObjectURL(f) });
+      });
+      vPick.value = '';
+      renderPendingVideos();
+      if (pendingVideos.length) videoMsg(pendingVideos.length + ' video(s) ready — click Add video(s)', false);
+    });
+  }
+
+  var addBtn = $('ed_video_add_btn');
+  if (addBtn) {
+    addBtn.addEventListener('click', async function () {
+      if (!pendingVideos.length || !biz) {
+        videoMsg('Select a video first', true);
+        return;
+      }
+      var client = sb();
+      if (!client) return;
+      addBtn.disabled = true;
+      videoMsg('Uploading…', false);
+      try {
+        var maxOrder = 0;
+        try {
+          var existing = await client.from('gallery').select('display_order').eq('business_id', biz.id).order('display_order', { ascending: false }).limit(1);
+          if (existing.data && existing.data[0] && existing.data[0].display_order != null) {
+            maxOrder = Number(existing.data[0].display_order) || 0;
+          }
+        } catch (e0) {}
+
+        var rows = [];
+        for (var i = 0; i < pendingVideos.length; i++) {
+          videoMsg('Uploading video ' + (i + 1) + '/' + pendingVideos.length + '…', false);
+          var url = await upload(client, pendingVideos[i].file, ['business-gallery', 'gallery']);
+          if (url) {
+            rows.push({ business_id: biz.id, image_url: url, display_order: maxOrder + i + 1 });
+          }
+        }
+        if (!rows.length) throw new Error('Upload returned no URL — check Storage buckets (business-gallery or gallery)');
+        var ins = await client.from('gallery').insert(rows);
+        if (ins.error) throw new Error(ins.error.message || 'Could not save video');
+
+        pendingVideos.forEach(function (p) { try { URL.revokeObjectURL(p.url); } catch (e) {} });
+        pendingVideos = [];
+        renderPendingVideos();
+        await loadGallery(client, biz.id);
+        videoMsg('Video(s) added to your profile. Open Preview to check.', false);
+      } catch (err) {
+        console.error(err);
+        videoMsg(err.message || 'Upload failed', true);
+        addBtn.disabled = pendingVideos.length === 0;
+      }
+    });
+  }
+
 
   boot();
 })();

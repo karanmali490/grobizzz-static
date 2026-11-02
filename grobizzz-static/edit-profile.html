@@ -145,9 +145,15 @@
           <div class="ed-gallery-list" id="ed_gallery_list"></div>
           <div class="ed-field full" style="margin-top:20px">
             <label>Add videos (MP4 / WebM)</label>
-            <input type="file" id="ed_videos" accept="video/mp4,video/webm,video/quicktime" multiple />
-            <small style="display:block;margin-top:6px;color:#64748b;font-size:.82rem">Best: MP4 · Max ~25MB each · Up to 30 seconds</small>
+            <small style="display:block;margin:4px 0 10px;color:#64748b;font-size:.82rem">Select file(s) → preview → click <strong>Add video(s)</strong>. Best: MP4 · Max 30MB · short clips.</small>
+            <input type="file" id="ed_videos" accept="video/mp4,video/webm,video/quicktime,video/*" multiple />
+            <div class="ed-video-pending" id="ed_video_pending"></div>
+            <button type="button" class="ed-btn primary" id="ed_video_add_btn" style="margin-top:12px" disabled>
+              <i class="fa-solid fa-plus"></i> Add video(s)
+            </button>
+            <p class="ed-msg" id="ed_video_msg" style="margin-top:8px"></p>
           </div>
+          <p style="font-size:.85rem;font-weight:700;margin:18px 0 8px;color:#334155">Videos on profile</p>
           <div class="ed-video-list" id="ed_video_list"></div>
         </section>
       </form>

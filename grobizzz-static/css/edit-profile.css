@@ -113,3 +113,34 @@ body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: 
   font-size: .85rem;
   z-index: 2;
 }
+
+.ed-video-pending {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.ed-video-pending .ed-vid-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0f172a;
+  border: 2px dashed #fb7185;
+  aspect-ratio: 16 / 9;
+}
+.ed-video-pending .ed-vid-badge {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  background: #e11d48;
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  z-index: 2;
+}
+#ed_video_add_btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
