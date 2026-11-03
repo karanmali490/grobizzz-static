@@ -175,6 +175,42 @@
   }
 
 
+  async function deleteGalleryItem(client, g, cardEl) {
+    if (!g || !g.id) {
+      alert('Cannot delete: missing image id. Reload the page and try again.');
+      return false;
+    }
+    if (!confirm('Remove this from your profile?')) return false;
+    try {
+      var del = await client.from('gallery').delete().eq('id', g.id).select('id');
+      if (del.error) {
+        // fallback by url + business
+        var del2 = await client.from('gallery').delete().eq('business_id', biz.id).eq('image_url', g.image_url).select('id');
+        if (del2.error) {
+          alert('Delete failed: ' + (del.error.message || del2.error.message) + '. Run supabase/gallery_delete_policy.sql in Supabase.');
+          return false;
+        }
+        if (!del2.data || !del2.data.length) {
+          alert('Delete blocked by database security (RLS). Run the SQL in supabase/gallery_delete_policy.sql');
+          return false;
+        }
+      } else if (!del.data || !del.data.length) {
+        // no row returned — often RLS blocked silently
+        var del3 = await client.from('gallery').delete().eq('business_id', biz.id).eq('image_url', g.image_url).select('id');
+        if (!del3.data || !del3.data.length) {
+          alert('Delete blocked by database security (RLS). Run supabase/gallery_delete_policy.sql in Supabase SQL Editor.');
+          return false;
+        }
+      }
+      if (cardEl) cardEl.remove();
+      return true;
+    } catch (e) {
+      console.error(e);
+      alert(e.message || 'Delete failed');
+      return false;
+    }
+  }
+
   async function loadGallery(client, businessId) {
     var list = $('ed_gallery_list');
     var vlist = $('ed_video_list');
@@ -185,44 +221,55 @@
       .select('id,image_url,display_order')
       .eq('business_id', businessId)
       .order('display_order');
+    if (res.error) {
+      console.error(res.error);
+      if (list) list.innerHTML = '<p style="color:#dc2626;font-size:.85rem">Could not load gallery: ' + (res.error.message || '') + '</p>';
+      return;
+    }
     (res.data || []).forEach(function (g) {
       if (!g.image_url) return;
       if (isVideoUrl(g.image_url)) {
         if (!vlist) return;
         var card = document.createElement('div');
         card.className = 'ed-vid-card';
-        card.innerHTML = '<video src="' + g.image_url + '" controls playsinline preload="metadata"></video>';
+        card.dataset.galleryId = g.id || '';
+        var vid = document.createElement('video');
+        vid.src = g.image_url;
+        vid.controls = true;
+        vid.playsInline = true;
+        vid.preload = 'metadata';
+        card.appendChild(vid);
         var rm = document.createElement('button');
         rm.type = 'button';
         rm.className = 'ed-vid-remove';
         rm.title = 'Remove video';
         rm.innerHTML = '&times;';
-        rm.addEventListener('click', async function () {
-          if (!confirm('Remove this video from the profile?')) return;
-          var del = await client.from('gallery').delete().eq('id', g.id);
-          if (del.error) { alert(del.error.message); return; }
-          card.remove();
+        rm.addEventListener('click', async function (ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          await deleteGalleryItem(client, g, card);
         });
         card.appendChild(rm);
         vlist.appendChild(card);
       } else if (list) {
         var wrap = document.createElement('div');
-        wrap.style.position = 'relative';
+        wrap.className = 'ed-ph-card ed-ph-saved';
+        wrap.dataset.galleryId = g.id || '';
+        wrap.style.cssText = 'position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;background:#f8fafc';
         var img = document.createElement('img');
         img.src = g.image_url;
         img.alt = '';
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
         wrap.appendChild(img);
         var rm2 = document.createElement('button');
         rm2.type = 'button';
         rm2.className = 'ed-vid-remove';
-        rm2.style.position = 'absolute';
         rm2.title = 'Remove image';
         rm2.innerHTML = '&times;';
-        rm2.addEventListener('click', async function () {
-          if (!confirm('Remove this image?')) return;
-          var del = await client.from('gallery').delete().eq('id', g.id);
-          if (del.error) { alert(del.error.message); return; }
-          wrap.remove();
+        rm2.addEventListener('click', async function (ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          await deleteGalleryItem(client, g, wrap);
         });
         wrap.appendChild(rm2);
         list.appendChild(wrap);
